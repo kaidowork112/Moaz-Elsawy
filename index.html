@@ -4,82 +4,29 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Moaz Elsawy | تسويق عقاري</title>
-<link rel="stylesheet" href="style.css" />
-<style>
-/* ===== السلايدر الجديد ===== */
-.slider-container {
-  position: relative;
-  width: 100%;
-  height: 400px;
-  overflow: visible;
-  margin-bottom: 50px;
-}
-
-.slider-track {
-  display: flex;
-  transition: transform 0.5s ease;
-  padding-left: 50px;
-  padding-right: 50px;
-}
-
-.slide {
-  min-width: 300px;
-  margin: 0 10px;
-  border-radius: 12px;
-  background-size: cover;
-  background-position: center;
-  flex-shrink: 0;
-  height: 100%;
-  cursor: pointer;
-  transition: transform 0.3s, opacity 0.3s;
-  opacity: 0.6;
-  transform: scale(0.9);
-}
-
-.slide.active {
-  transform: scale(1.1);
-  opacity: 1;
-  z-index: 2;
-}
-
-/* باقي الـ CSS ثابت من ملف style.css */
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-
 <header class="header">
   <div class="logo">🏠 Moaz Elsawy</div>
   <nav>
     <a href="index.html">الرئيسية</a>
     <a href="#properties">العقارات</a>
     <a href="#contact">تواصل معنا</a>
-    <a href="login.html" class="btn">تسجيل الدخول</a>
+    <a href="login.html" class="btn" id="loginBtn">تسجيل الدخول</a>
   </nav>
 </header>
 
-<!-- السلايدر الجديد -->
-<section class="slider-container">
-  <div class="slider-track" id="sliderTrack"></div>
+<!-- سلايدر العقارات -->
+<section class="slider" id="slider">
+  <div class="slides-container" id="sliderContainer"></div>
 </section>
 
+<!-- العقارات -->
 <section id="properties" class="properties">
   <h2>العقارات المتاحة</h2>
   <div id="property-list" class="property-list"></div>
 </section>
-
-<section id="contact" class="contact">
-  <h2>تواصل معنا</h2>
-  <form id="contactForm">
-    <input type="text" placeholder="الاسم الكامل" required />
-    <input type="email" placeholder="البريد الإلكتروني" required />
-    <textarea placeholder="رسالتك..." required></textarea>
-    <button type="submit">إرسال</button>
-  </form>
-</section>
-
-<footer>
-  <p>© 2025 Moaz Elsawy | جميع الحقوق محفوظة</p>
-</footer>
 
 <!-- مودال التفاصيل -->
 <div id="propertyModal" class="modal">
@@ -91,7 +38,8 @@
       <p><strong>السعر:</strong> <span id="modalPriceDetail"></span></p>
       <p><strong>الموقع:</strong> <span id="modalCity"></span></p>
       <p><strong>النوع:</strong> <span id="modalType"></span></p>
-      <p><strong>الغرف:</strong> <span id="modalRooms"></span></p>
+      <p><strong>المساحة:</strong> <span id="modalSize"></span></p>
+      <p><strong>عدد الغرف:</strong> <span id="modalRooms"></span></p>
       <p><strong>الوصف:</strong> <span id="modalDesc"></span></p>
       <a id="whatsappLink" href="#" target="_blank" class="btn whatsapp-btn">
         تواصل واتساب (استفسر الآن)
@@ -100,113 +48,6 @@
   </div>
 </div>
 
-<script>
-// بيانات التجربة
-const SELLER_PHONE = '+201115134784';
-let ALL_PROPERTIES = [
-  {id:1, title:"شقة فاخرة للبيع", city:"التجمع الخامس - القاهرة الجديدة", price:"2,000,000 جنيه", img:"https://picsum.photos/400/250?random=11", type:"شقة", rooms:3, desc:"شقة جديدة فاخرة", slider:true},
-  {id:2, title:"فيلا مستقلة بمساحة 400م", city:"مدينة الشيخ زايد - أكتوبر", price:"6,500,000 جنيه", img:"https://picsum.photos/400/250?random=12", type:"فيلا", rooms:5, desc:"فيلا جميلة", slider:true},
-  {id:3, title:"شقة على البحر مباشرة", city:"الإسكندرية - سيدي بشر", price:"3,200,000 جنيه", img:"https://picsum.photos/400/250?random=13", type:"شقة", rooms:4, desc:"إطلالة بحرية رائعة", slider:false},
-  {id:4, title:"شقة مفروشة للإيجار الشهري", city:"مدينة نصر - الحي العاشر", price:"15,000 جنيه / شهر", img:"https://picsum.photos/400/250?random=14", type:"شقة", rooms:2, desc:"مفروشة بالكامل", slider:false}
-];
-
-// ====================== السلايدر ======================
-const sliderTrack = document.getElementById('sliderTrack');
-let sliderItems = ALL_PROPERTIES.filter(p => p.slider);
-let currentSlide = 0;
-
-function renderSlider() {
-  sliderTrack.innerHTML = '';
-  sliderItems.forEach((prop, i) => {
-    const slide = document.createElement('div');
-    slide.className = 'slide' + (i===0 ? ' active' : '');
-    slide.style.backgroundImage = `url('${prop.img}')`;
-    slide.dataset.id = prop.id;
-    sliderTrack.appendChild(slide);
-    slide.addEventListener('click', () => openModal(prop.id));
-  });
-}
-
-function updateSlider() {
-  const slides = document.querySelectorAll('.slide');
-  slides.forEach(s => s.classList.remove('active'));
-  slides[currentSlide].classList.add('active');
-  const slideWidth = slides[0].offsetWidth + 20;
-  const offset = -(currentSlide*slideWidth) + (sliderTrack.parentElement.offsetWidth/2 - slideWidth/2);
-  sliderTrack.style.transform = `translateX(${offset}px)`;
-}
-
-function nextSlide() {
-  if(sliderItems.length===0) return;
-  currentSlide = (currentSlide+1)%sliderItems.length;
-  updateSlider();
-}
-
-setInterval(nextSlide, 3000);
-renderSlider();
-updateSlider();
-
-// ====================== عرض العقارات ======================
-function displayProperties(properties) {
-  const listContainer = document.getElementById("property-list");
-  listContainer.innerHTML = '';
-  if(properties.length===0){
-    listContainer.innerHTML='<p style="text-align:center; padding: 40px 0; color:#666;">لا توجد عقارات متاحة حالياً.</p>';
-    return;
-  }
-  properties.forEach(prop=>{
-    const card=document.createElement("div");
-    card.className="property-card";
-    card.dataset.id=prop.id;
-    card.innerHTML=` 
-      <img src="${prop.img}" alt="${prop.title}"> 
-      <div class="property-info">
-        <h3>${prop.title}</h3>
-        <p><strong>الموقع:</strong> ${prop.city || 'غير محدد'}</p>
-        <p><strong>الغرف:</strong> ${prop.rooms || '؟'}</p>
-        <span>${prop.price}</span>
-      </div>`;
-    listContainer.appendChild(card);
-    card.addEventListener('click',()=>openModal(prop.id));
-  });
-}
-
-// ====================== المودال ======================
-function openModal(id){
-  const prop = ALL_PROPERTIES.find(p=>p.id==id);
-  if(!prop) return;
-  document.getElementById('modalImg').src = prop.img;
-  document.getElementById('modalTitle').textContent = prop.title;
-  document.getElementById('modalPriceDetail').textContent = prop.price;
-  document.getElementById('modalCity').textContent = prop.city || 'غير محدد';
-  document.getElementById('modalType').textContent = prop.type || 'غير محدد';
-  document.getElementById('modalRooms').textContent = prop.rooms || '؟';
-  document.getElementById('modalDesc').textContent = prop.desc || 'لا يوجد وصف متاح لهذا العقار.';
-  const whatsappMessage = `مرحباً، أود الاستفسار عن العقار: ${prop.title}, الموقع: ${prop.city}, السعر: ${prop.price}`;
-  document.getElementById('whatsappLink').href = `https://wa.me/${SELLER_PHONE}?text=${encodeURIComponent(whatsappMessage)}`;
-  document.getElementById('propertyModal').style.display = 'block';
-}
-
-document.querySelector('.close-button').onclick=function(){
-  document.getElementById('propertyModal').style.display='none';
-}
-window.onclick=function(event){
-  const modal=document.getElementById('propertyModal');
-  if(event.target==modal) modal.style.display='none';
-}
-
-// ====================== تواصل معنا ======================
-document.getElementById("contactForm")?.addEventListener("submit",(e)=>{
-  e.preventDefault();
-  alert("تم إرسال رسالتك بنجاح ✅");
-  e.target.reset();
-});
-
-// ====================== بدء التشغيل ======================
-document.addEventListener("DOMContentLoaded",()=>{
-  displayProperties(ALL_PROPERTIES);
-});
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>
