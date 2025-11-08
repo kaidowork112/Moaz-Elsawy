@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>تسجيل الدخول | Moaz Elsawy</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .login-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(120deg, #0a74da, #005bb5);
+      color: white;
+    }
+
+    .login-box {
+      background: white;
+      color: #000;
+      padding: 30px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .login-box h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #0a74da;
+    }
+
+    .login-box input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    .login-box button {
+      width: 100%;
+      background: #f5b800;
+      color: #000;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .login-box button:hover {
+      background: #ffcc33;
+    }
+
+    .verify {
+      display: none;
+    }
+
+    .error {
+      color: red;
+      font-size: 14px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-container">
+    <div class="login-box">
+      <h2>تسجيل الدخول</h2>
+      <form id="loginForm">
+        <input type="text" id="email" placeholder="البريد الإلكتروني" required />
+        <input type="password" id="password" placeholder="كلمة المرور" required />
+        <input type="tel" id="phone" placeholder="رقم الموبايل" required pattern="[0-9]{11}" />
+        <div class="verify">
+          <input type="text" id="code" placeholder="أدخل كود التأكيد" />
+        </div>
+        <div class="error" id="errorMsg"></div>
+        <button type="submit">تسجيل الدخول</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById("loginForm");
+    const verifyDiv = document.querySelector(".verify");
+    const errorMsg = document.getElementById("errorMsg");
+
+    // بيانات الدخول التجريبية
+    const ADMIN = {
+      email: "admin@moazelsawy.com",
+      password: "admin123",
+      phone: "01000000000"
+    };
+
+    let codeSent = false;
+    let generatedCode = "";
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+
+      if (!codeSent) {
+        if (!email || !password || !phone) {
+          errorMsg.textContent = "من فضلك أدخل جميع البيانات";
+          return;
+        }
+
+        // توليد كود عشوائي (محاكاة تأكيد الموبايل)
+        generatedCode = Math.floor(1000 + Math.random() * 9000).toString();
+        alert("كود التأكيد المرسل هو: " + generatedCode + " (تجريبي فقط)");
+        verifyDiv.style.display = "block";
+        codeSent = true;
+      } else {
+        const code = document.getElementById("code").value.trim();
+        if (code === generatedCode) {
+          if (
+            email === ADMIN.email &&
+            password === ADMIN.password &&
+            phone === ADMIN.phone
+          ) {
+            alert("تم تسجيل الدخول كأدمن ✅");
+            window.location.href = "admin.html";
+          } else {
+            alert("تم تسجيل الدخول كمستخدم عادي ✅");
+            window.location.href = "index.html";
+          }
+        } else {
+          errorMsg.textContent = "كود التأكيد غير صحيح!";
+        }
+      }
+    });
+  </script>
+</body>
+</html>
