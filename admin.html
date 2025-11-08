@@ -3,44 +3,39 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>لوحة الأدمن</title>
+<title>لوحة الأدمن | Moaz Elsawy</title>
+<link rel="stylesheet" href="style.css">
 <style>
-body { font-family: "Cairo", sans-serif; background:#f4f8ff; padding:20px; }
-.container { max-width:800px; margin:auto; background:white; padding:20px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.1); }
-h2 { color:#0a74da; text-align:center; margin-bottom:20px; }
-form input, form textarea { width:100%; padding:10px; margin:5px 0; border:1px solid #ccc; border-radius:6px; }
-form button { padding:10px 20px; background:#f5b800; border:none; border-radius:6px; cursor:pointer; font-weight:bold; margin-top:10px; }
-form button:hover { background:#ffcc33; }
-.property-list { margin-top:20px; }
-.property-card { background:#f9f9f9; padding:10px; border-radius:8px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; }
-.property-card img { width:80px; height:60px; object-fit:cover; border-radius:6px; }
-.property-card button { margin-left:5px; padding:5px 10px; border:none; border-radius:6px; cursor:pointer; }
-.edit-btn { background:#0a74da; color:white; }
-.delete-btn { background:#ff4d4d; color:white; }
+.admin-container{padding:40px}
+.admin-container h2{color:#0a74da;text-align:center;margin-bottom:30px}
+.property-form input, .property-form textarea{width:100%;padding:10px;margin:5px 0;border:1px solid #ccc;border-radius:6px}
+.property-form button{background:#0a74da;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer}
+.property-form button:hover{background:#005bb5;color:white}
+.property-list-admin{margin-top:30px}
+.property-card-admin{background:white;padding:15px;border-radius:10px;margin-bottom:10px;box-shadow:0 3px 10px rgba(0,0,0,0.1);display:flex;justify-content:space-between;align-items:center}
+.property-card-admin button{margin-left:10px}
 </style>
 </head>
 <body>
+<div class="admin-container">
+<h2>لوحة الأدمن</h2>
+<form id="addPropertyForm" class="property-form">
+<input type="text" id="propTitle" placeholder="عنوان العقار" required>
+<input type="text" id="propLocation" placeholder="الموقع" required>
+<input type="text" id="propPrice" placeholder="السعر" required>
+<input type="text" id="propType" placeholder="النوع">
+<input type="number" id="propRooms" placeholder="عدد الغرف">
+<textarea id="propDesc" placeholder="الوصف"></textarea>
+<input type="text" id="propImg" placeholder="رابط الصورة">
+<button type="submit">إضافة عقار</button>
+</form>
 
-<div class="container">
-  <h2>لوحة الأدمن لإدارة العقارات</h2>
-
-  <form id="propertyForm">
-    <input type="text" id="title" placeholder="عنوان العقار" required>
-    <input type="text" id="location" placeholder="الموقع" required>
-    <input type="text" id="price" placeholder="السعر" required>
-    <input type="text" id="img" placeholder="رابط صورة العقار" required>
-    <textarea id="desc" placeholder="وصف العقار"></textarea>
-    <input type="text" id="type" placeholder="نوع العقار">
-    <input type="text" id="rooms" placeholder="عدد الغرف">
-    <button type="submit">إضافة / تحديث العقار</button>
-  </form>
-
-  <div class="property-list" id="propertyList"></div>
+<div id="propertyList" class="property-list-admin"></div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { getFirestore, collection, doc, setDoc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBxEWaPWqpUIgZtasxnE7-82SN6OEzSx7Q",
@@ -51,80 +46,55 @@ const firebaseConfig = {
   appId: "1:859568017117:web:38a7d0c96532f0f7681534",
   measurementId: "G-JY1XN1VRCP"
 };
-
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const form = document.getElementById("propertyForm");
-const listContainer = document.getElementById("propertyList");
+function protectAdminPage(){
+  const user = JSON.parse(localStorage.getItem('realestate_user')||'{}');
+  if(!user.is_admin){ alert("يجب تسجيل الدخول كأدمن"); window.location.href="login.html"; }
+}
+protectAdminPage();
 
-let editId = null;
+const propertyListDiv = document.getElementById("propertyList");
+const addForm = document.getElementById("addPropertyForm");
 
-// تحميل العقارات من Firestore
-async function loadProperties() {
-  listContainer.innerHTML = '';
-  const snapshot = await getDocs(collection(db,"properties"));
-  snapshot.forEach(docSnap => {
-    const prop = { id: docSnap.id, ...docSnap.data() };
+async function loadProperties(){
+  const querySnapshot = await getDocs(collection(db,"properties"));
+  propertyListDiv.innerHTML="";
+  querySnapshot.forEach(docSnap=>{
+    const data = docSnap.data();
     const card = document.createElement("div");
-    card.className = "property-card";
-    card.innerHTML = `
-      <div>
-        <img src="${prop.img}" alt="${prop.title}">
-        <strong>${prop.title}</strong><br>
-        <span>${prop.location}</span> | <span>${prop.price}</span>
-      </div>
-      <div>
-        <button class="edit-btn">تعديل</button>
-        <button class="delete-btn">حذف</button>
-      </div>
-    `;
-    listContainer.appendChild(card);
-
-    card.querySelector(".edit-btn").onclick = () => {
-      document.getElementById("title").value = prop.title;
-      document.getElementById("location").value = prop.location;
-      document.getElementById("price").value = prop.price;
-      document.getElementById("img").value = prop.img;
-      document.getElementById("desc").value = prop.desc || '';
-      document.getElementById("type").value = prop.type || '';
-      document.getElementById("rooms").value = prop.rooms || '';
-      editId = prop.id;
-    };
-
-    card.querySelector(".delete-btn").onclick = async () => {
-      if(confirm("هل تريد حذف هذا العقار؟")){
-        await deleteDoc(doc(db,"properties",prop.id));
-        loadProperties();
-      }
-    };
+    card.className="property-card-admin";
+    card.innerHTML=`<span>${data.title} - ${data.city||data.location||''} - ${data.price}</span>
+    <div>
+    <button onclick='deleteProperty("${docSnap.id}")'>مسح</button>
+    </div>`;
+    propertyListDiv.appendChild(card);
   });
 }
+window.deleteProperty = async function(id){
+  await deleteDoc(doc(db,"properties",id));
+  loadProperties();
+}
 
-form.addEventListener("submit", async (e) => {
+addForm.addEventListener("submit", async e=>{
   e.preventDefault();
-  const data = {
-    title: document.getElementById("title").value,
-    location: document.getElementById("location").value,
-    price: document.getElementById("price").value,
-    img: document.getElementById("img").value,
-    desc: document.getElementById("desc").value,
-    type: document.getElementById("type").value,
-    rooms: document.getElementById("rooms").value
+  const id = Date.now().toString();
+  const newProp = {
+    title: document.getElementById("propTitle").value,
+    location: document.getElementById("propLocation").value,
+    price: document.getElementById("propPrice").value,
+    type: document.getElementById("propType").value,
+    rooms: document.getElementById("propRooms").value,
+    desc: document.getElementById("propDesc").value,
+    img: document.getElementById("propImg").value
   };
-
-  if(editId){
-    await updateDoc(doc(db,"properties",editId), data);
-    editId = null;
-  } else {
-    await addDoc(collection(db,"properties"), data);
-  }
-  form.reset();
+  await setDoc(doc(db,"properties",id),newProp);
+  addForm.reset();
   loadProperties();
 });
 
-window.onload = loadProperties;
+loadProperties();
 </script>
-
 </body>
 </html>
