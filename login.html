@@ -3,58 +3,60 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>تسجيل الدخول أو إنشاء حساب</title>
+  <title>تسجيل الدخول / إنشاء حساب</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
       font-family: "Cairo", sans-serif;
       background: linear-gradient(135deg, #0a74da, #002b5b);
-      height: 100vh;
+      min-height: 100vh;
       display: flex;
-      align-items: center;
       justify-content: center;
+      align-items: center;
+      color: #fff;
     }
 
-    .card {
-      width: 380px;
+    .container {
       background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(15px);
-      padding: 30px;
+      backdrop-filter: blur(10px);
       border-radius: 15px;
-      color: #fff;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-      transition: all 0.5s ease;
+      padding: 30px 40px;
+      width: 380px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
     }
 
     h2 {
       text-align: center;
-      margin-bottom: 25px;
-      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
     }
 
     input {
       width: 100%;
       padding: 12px;
-      margin: 10px 0;
       border: none;
       border-radius: 8px;
-      font-size: 15px;
       outline: none;
+      font-size: 15px;
+      margin-top: 5px;
     }
 
     button {
       width: 100%;
       padding: 12px;
-      margin-top: 15px;
       border: none;
       border-radius: 8px;
       background-color: #f5b800;
       color: #000;
-      font-size: 16px;
       font-weight: bold;
+      font-size: 16px;
       cursor: pointer;
       transition: 0.3s;
+      margin-top: 10px;
     }
 
     button:hover {
@@ -64,7 +66,6 @@
     .switch {
       text-align: center;
       margin-top: 15px;
-      color: #fff;
       cursor: pointer;
       text-decoration: underline;
     }
@@ -75,12 +76,18 @@
   </style>
 </head>
 <body>
-  <div class="card">
+  <div class="container">
     <!-- تسجيل الدخول -->
     <div id="loginBox">
       <h2>تسجيل الدخول</h2>
-      <input type="email" id="loginEmail" placeholder="البريد الإلكتروني" required />
-      <input type="password" id="loginPassword" placeholder="كلمة المرور" required />
+      <div class="form-group">
+        <label>البريد الإلكتروني</label>
+        <input type="email" id="loginEmail" placeholder="example@email.com" required />
+      </div>
+      <div class="form-group">
+        <label>كلمة المرور</label>
+        <input type="password" id="loginPassword" placeholder="••••••••" required />
+      </div>
       <button id="loginBtn">تسجيل الدخول</button>
       <div class="switch" id="toRegister">ليس لديك حساب؟ إنشاء حساب</div>
     </div>
@@ -88,17 +95,29 @@
     <!-- إنشاء حساب -->
     <div id="registerBox" class="hidden">
       <h2>إنشاء حساب جديد</h2>
-      <input type="text" id="regName" placeholder="الاسم الكامل" required />
-      <input type="text" id="regPhone" placeholder="رقم الهاتف (11 رقم)" maxlength="11" pattern="[0-9]{11}" required />
-      <input type="email" id="regEmail" placeholder="البريد الإلكتروني" required />
-      <input type="password" id="regPassword" placeholder="كلمة المرور" required />
+      <div class="form-group">
+        <label>الاسم الكامل</label>
+        <input type="text" id="regName" placeholder="الاسم الكامل" required />
+      </div>
+      <div class="form-group">
+        <label>رقم الهاتف</label>
+        <input type="text" id="regPhone" maxlength="11" pattern="[0-9]{11}" placeholder="01123456789" required />
+      </div>
+      <div class="form-group">
+        <label>البريد الإلكتروني</label>
+        <input type="email" id="regEmail" placeholder="example@email.com" required />
+      </div>
+      <div class="form-group">
+        <label>كلمة المرور</label>
+        <input type="password" id="regPassword" placeholder="••••••••" required />
+      </div>
       <button id="registerBtn">إنشاء الحساب</button>
-      <div class="switch" id="toLogin">لديك حساب بالفعل؟ تسجيل الدخول</div>
+      <div class="switch" id="toLogin">لديك حساب؟ تسجيل الدخول</div>
     </div>
   </div>
 
   <script type="module">
-    // Firebase imports
+    // Firebase Imports
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
@@ -124,17 +143,18 @@
     const toRegister = document.getElementById("toRegister");
     const toLogin = document.getElementById("toLogin");
 
-    // تبديل النماذج
+    // التبديل بين النماذج
     toRegister.addEventListener("click", () => {
       loginBox.classList.add("hidden");
       registerBox.classList.remove("hidden");
     });
+
     toLogin.addEventListener("click", () => {
       registerBox.classList.add("hidden");
       loginBox.classList.remove("hidden");
     });
 
-    // إنشاء حساب جديد
+    // إنشاء حساب
     document.getElementById("registerBtn").addEventListener("click", async () => {
       const name = document.getElementById("regName").value.trim();
       const phone = document.getElementById("regPhone").value.trim();
@@ -142,13 +162,19 @@
       const password = document.getElementById("regPassword").value.trim();
 
       if (!name || !phone || !email || !password) {
-        alert("يرجى إدخال جميع البيانات المطلوبة");
+        alert("من فضلك املأ جميع الحقول");
+        return;
+      }
+
+      if (phone.length !== 11) {
+        alert("رقم الهاتف يجب أن يكون 11 رقمًا");
         return;
       }
 
       try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
+
         await updateProfile(user, { displayName: name });
 
         await setDoc(doc(db, "users", user.uid), {
@@ -159,7 +185,8 @@
           createdAt: new Date().toISOString()
         });
 
-        localStorage.setItem("user", JSON.stringify({ name, email, phone, isAdmin: false }));
+        localStorage.setItem("user", JSON.stringify({ name, phone, email, isAdmin: false }));
+
         alert("تم إنشاء الحساب بنجاح ✅");
         window.location.href = "index.html";
       } catch (error) {
