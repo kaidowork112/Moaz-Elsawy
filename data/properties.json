@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "title": "شقة فاخرة للبيع",
+    "location": "التجمع الخامس - القاهرة الجديدة",
+    "price": "2,000,000 جنيه",
+    "image": "https://picsum.photos/400/250?random=11"
+  },
+  {
+    "id": 2,
+    "title": "فيلا مستقلة بمساحة 400م",
+    "location": "مدينة الشيخ زايد - أكتوبر",
+    "price": "6,500,000 جنيه",
+    "image": "https://picsum.photos/400/250?random=12"
+  },
+  {
+    "id": 3,
+    "title": "شقة على البحر مباشرة",
+    "location": "الإسكندرية - سيدي بشر",
+    "price": "3,200,000 جنيه",
+    "image": "https://picsum.photos/400/250?random=13"
+  },
+  {
+    "id": 4,
+    "title": "شقة مفروشة للإيجار الشهري",
+    "location": "مدينة نصر - الحي العاشر",
+    "price": "15,000 جنيه / شهر",
+    "image": "https://picsum.photos/400/250?random=14"
+  }
+]
