@@ -1,7 +1,78 @@
-// استبدال جزء loadProperties في script.js
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moaz Elsawy | تسويق عقاري</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">🏠 Moaz Elsawy</div>
+  <nav>
+    <a href="index.html">الرئيسية</a>
+    <a href="#properties">العقارات</a>
+    <a href="#contact">تواصل معنا</a>
+    <a href="login.html" class="btn">تسجيل الدخول</a>
+  </nav>
+</header>
+
+<section class="slider" id="slider">
+  <div class="slides-container">
+    <div class="slide active" style="background-image:url('https://picsum.photos/1200/600?random=1')">
+      <div class="caption">شقق فاخرة للبيع في القاهرة</div>
+    </div>
+    <div class="slide" style="background-image:url('https://picsum.photos/1200/600?random=2')">
+      <div class="caption">فلل مميزة في التجمع الخامس</div>
+    </div>
+    <div class="slide" style="background-image:url('https://picsum.photos/1200/600?random=3')">
+      <div class="caption">عقارات بإطلالات بحرية رائعة</div>
+    </div>
+  </div>
+</section>
+
+<section id="properties" class="properties">
+  <h2>العقارات المتاحة</h2>
+  <div id="property-list" class="property-list"></div>
+</section>
+
+<section id="contact" class="contact">
+  <h2>تواصل معنا</h2>
+  <form id="contactForm">
+    <input type="text" placeholder="الاسم الكامل" required>
+    <input type="email" placeholder="البريد الإلكتروني" required>
+    <textarea placeholder="رسالتك..." required></textarea>
+    <button type="submit">إرسال</button>
+  </form>
+</section>
+
+<footer>
+  <p>© 2025 Moaz Elsawy | جميع الحقوق محفوظة</p>
+</footer>
+
+<!-- المودال -->
+<div id="propertyModal" class="modal">
+  <div class="modal-content">
+    <span class="close-button">&times;</span>
+    <div id="modalDetails">
+      <img id="modalImg" src="" alt="صورة العقار">
+      <h2 id="modalTitle"></h2>
+      <p><strong>السعر:</strong> <span id="modalPriceDetail"></span></p>
+      <p><strong>الموقع:</strong> <span id="modalCity"></span></p>
+      <p><strong>النوع:</strong> <span id="modalType"></span></p>
+      <p><strong>عدد الغرف:</strong> <span id="modalRooms"></span></p>
+      <p><strong>الوصف:</strong> <span id="modalDesc"></span></p>
+      <a id="whatsappLink" href="#" target="_blank" class="btn whatsapp-btn">تواصل واتساب (استفسر الآن)</a>
+    </div>
+  </div>
+</div>
+
+<script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
+// إعداد Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBxEWaPWqpUIgZtasxnE7-82SN6OEzSx7Q",
   authDomain: "moaz-elsawy.firebaseapp.com",
@@ -14,7 +85,20 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-async function loadProperties() {
+// الزرار الخاص بالواتساب
+const SELLER_PHONE = '+201115134784';
+
+// السلايدر
+let currentSlide = 0;
+const slides = document.querySelectorAll(".slide");
+function showSlide(index){
+  slides.forEach((s,i)=>{ s.classList.remove("active"); if(i===index)s.classList.add("active"); });
+}
+function nextSlide(){ currentSlide=(currentSlide+1)%slides.length; showSlide(currentSlide); }
+setInterval(nextSlide,5000);
+
+// تحميل العقارات
+async function loadProperties(){
   const listContainer = document.getElementById("property-list");
   listContainer.innerHTML = '';
 
@@ -27,7 +111,7 @@ async function loadProperties() {
     return;
   }
 
-  allProperties.forEach((prop) => {
+  allProperties.forEach((prop)=>{
     const card = document.createElement("div");
     card.className = "property-card";
     card.dataset.id = prop.id;
@@ -42,10 +126,33 @@ async function loadProperties() {
     `;
     listContainer.appendChild(card);
 
-    card.addEventListener('click', () => openModal(prop.id));
+    card.addEventListener('click',()=>openModal(prop));
   });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  loadProperties();
+// فتح المودال
+function openModal(prop){
+  document.getElementById('modalImg').src = prop.img;
+  document.getElementById('modalTitle').textContent = prop.title;
+  document.getElementById('modalPriceDetail').textContent = prop.price;
+  document.getElementById('modalCity').textContent = prop.location;
+  document.getElementById('modalType').textContent = prop.type || 'غير محدد';
+  document.getElementById('modalRooms').textContent = prop.rooms || '؟';
+  document.getElementById('modalDesc').textContent = prop.desc || 'لا يوجد وصف متاح.';
+  document.getElementById('whatsappLink').href = `https://wa.me/${SELLER_PHONE}?text=${encodeURIComponent('مرحباً، أود الاستفسار عن العقار: '+prop.title+'، في مدينة: '+prop.location+'. سعره: '+prop.price)}`;
+  document.getElementById('propertyModal').style.display='block';
+}
+
+// إغلاق المودال
+document.querySelector('.close-button').onclick = ()=>{ document.getElementById('propertyModal').style.display='none'; }
+window.onclick = (e)=>{ if(e.target==document.getElementById('propertyModal')) document.getElementById('propertyModal').style.display='none'; }
+
+// نموذج التواصل
+document.getElementById("contactForm").addEventListener("submit",(e)=>{
+  e.preventDefault(); alert("تم إرسال رسالتك بنجاح ✅"); e.target.reset();
 });
+
+document.addEventListener("DOMContentLoaded",loadProperties);
+</script>
+</body>
+</html>
