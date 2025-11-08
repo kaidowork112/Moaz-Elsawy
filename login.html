@@ -1,156 +1,143 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>تسجيل الدخول | Moaz Elsawy</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تسجيل الدخول / التسجيل | Moaz Elsawy</title>
+  <link rel="stylesheet" href="style.css">
   <style>
-    .login-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      background: linear-gradient(120deg, #0a74da, #005bb5);
-      color: white;
-      padding: 20px;
-    }
-    .login-box {
-      background: white;
-      color: #000;
-      padding: 30px;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 400px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    }
-    .login-box h2 {
-      text-align: center;
-      margin-bottom: 20px;
-      color: #0a74da;
-    }
-    .login-box input {
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
-    }
-    .login-box button {
-      width: 100%;
-      background: #f5b800;
-      color: #000;
-      padding: 12px;
-      border: none;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    .login-box button:hover {
-      background: #ffcc33;
-    }
-    .verify {
-      display: none;
-    }
-    .error {
-      color: red;
-      font-size: 14px;
-      text-align: center;
-    }
+    body { background: #f4f8ff; font-family: "Cairo", sans-serif; }
+    .auth-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+    .auth-box { background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 400px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+    h2 { text-align: center; color: #0a74da; margin-bottom: 20px; }
+    input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 6px; border: 1px solid #ccc; }
+    button { width: 100%; padding: 12px; border-radius: 6px; border: none; background: #f5b800; font-weight: bold; cursor: pointer; }
+    button:hover { background: #ffcc33; }
+    .switch-link { text-align: center; margin-top: 10px; cursor: pointer; color: #0a74da; text-decoration: underline; }
+    .error { color: red; text-align: center; margin-top: 5px; }
   </style>
 </head>
 <body>
 
-  <div class="login-container">
-    <div class="login-box">
+<div class="auth-container">
+  <div class="auth-box">
+    <!-- Login Form -->
+    <div id="loginFormDiv">
       <h2>تسجيل الدخول</h2>
       <form id="loginForm">
-        <input type="email" id="email" placeholder="البريد الإلكتروني" required />
-        <input type="password" id="password" placeholder="كلمة المرور" required />
-        <input type="tel" id="phone" placeholder="رقم الموبايل (مثال: 010xxxxxxxx)" required pattern="[0-9]{11}" />
-        
-        <div class="verify">
-          <input type="text" id="code" placeholder="أدخل كود التأكيد المرسل" />
-        </div>
-        
-        <div class="error" id="errorMsg"></div>
+        <input type="email" id="loginEmail" placeholder="البريد الإلكتروني" required>
+        <input type="password" id="loginPassword" placeholder="كلمة المرور" required>
+        <div class="error" id="loginError"></div>
         <button type="submit">تسجيل الدخول</button>
       </form>
+      <div class="switch-link" onclick="showRegister()">ليس لديك حساب؟ سجل الآن</div>
+    </div>
+
+    <!-- Register Form -->
+    <div id="registerFormDiv" style="display:none;">
+      <h2>تسجيل جديد</h2>
+      <form id="registerForm">
+        <input type="text" id="regName" placeholder="الاسم الكامل" required>
+        <input type="email" id="regEmail" placeholder="البريد الإلكتروني" required>
+        <input type="password" id="regPassword" placeholder="كلمة المرور" required>
+        <input type="tel" id="regPhone" placeholder="رقم الموبايل (اختياري)">
+        <div class="error" id="regError"></div>
+        <button type="submit">تسجيل جديد</button>
+      </form>
+      <div class="switch-link" onclick="showLogin()">لديك حساب؟ تسجيل الدخول</div>
     </div>
   </div>
+</div>
 
-  <script>
-    const form = document.getElementById("loginForm");
-    const verifyDiv = document.querySelector(".verify");
-    const errorMsg = document.getElementById("errorMsg");
+<script>
+const OWNER = 'kaidowork112';
+const REPO = 'Moaz-Elsawy';
+const FILE_PATH = 'data/users.json';
+const GITHUB_TOKEN = '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'; // ضع التوكن هنا
+let currentFileSHA = '';
 
-    // ⭐ بيانات الأدمن: يجب أن تتطابق مع التوكن المستخدم في admin.html
-    const ADMIN = {
-      email: "admin@moazelsawy.com",
-      password: "admin123",
-      phone: "01000000000"
-    };
+// --- تبديل بين الفورمات ---
+function showRegister() {
+  document.getElementById('loginFormDiv').style.display = 'none';
+  document.getElementById('registerFormDiv').style.display = 'block';
+}
+function showLogin() {
+  document.getElementById('loginFormDiv').style.display = 'block';
+  document.getElementById('registerFormDiv').style.display = 'none';
+}
 
-    let codeSent = false;
-    let generatedCode = "";
-    
-    // لإخفاء أي رسالة خطأ سابقة
-    errorMsg.textContent = "";
+// --- جلب المستخدمين من GitHub ---
+async function fetchUsers() {
+  const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`, {
+    headers: { Authorization: `token ${GITHUB_TOKEN}` }
+  });
+  const data = await res.json();
+  currentFileSHA = data.sha;
+  return JSON.parse(atob(data.content));
+}
 
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
+// --- تحديث المستخدمين على GitHub ---
+async function updateUsers(users, commitMsg) {
+  const content = btoa(JSON.stringify(users, null, 2));
+  await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`, {
+    method: 'PUT',
+    headers: { Authorization: `token ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: commitMsg, content, sha: currentFileSHA })
+  });
+}
 
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
-      const phone = document.getElementById("phone").value.trim();
+// --- تسجيل الدخول ---
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value.trim();
+  const users = await fetchUsers();
 
-      if (!codeSent) {
-        // الخطوة الأولى: التحقق من البيانات وإرسال كود التأكيد
-        if (!email || !password || !phone) {
-          errorMsg.textContent = "من فضلك أدخل جميع البيانات";
-          return;
-        }
-        
-        // توليد كود عشوائي (محاكاة تأكيد الموبايل)
-        generatedCode = Math.floor(1000 + Math.random() * 9000).toString();
-        alert("كود التأكيد المرسل هو: " + generatedCode + " (تجريبي فقط)");
-        verifyDiv.style.display = "block";
-        errorMsg.textContent = "";
-        codeSent = true;
-        // تغيير نص الزر
-        form.querySelector('button[type="submit"]').textContent = 'تأكيد الكود والدخول';
+  const user = users.find(u => u.email === email && u.password === password);
+  if (!user) {
+    document.getElementById('loginError').textContent = 'البريد الإلكتروني أو كلمة المرور غير صحيحة!';
+    return;
+  }
 
-      } else {
-        // الخطوة الثانية: التحقق من الكود والدخول
-        const code = document.getElementById("code").value.trim();
-        if (code === generatedCode) {
-          
-          let userObject = { email: email, is_admin: false }; // افتراضياً مستخدم عادي
+  localStorage.setItem('realestate_user', JSON.stringify(user));
 
-          if (
-            email === ADMIN.email &&
-            password === ADMIN.password &&
-            phone === ADMIN.phone
-          ) {
-            // ⭐ حفظ حالة الأدمن في LocalStorage
-            userObject.is_admin = true;
-            localStorage.setItem('realestate_user', JSON.stringify(userObject));
-            alert("تم تسجيل الدخول كأدمن ✅");
-            window.location.href = "admin.html";
-          } else {
-            // ⭐ حفظ حالة المستخدم العادي في LocalStorage
-            localStorage.setItem('realestate_user', JSON.stringify(userObject));
-            alert("تم تسجيل الدخول كمستخدم عادي ✅");
-            window.location.href = "index.html";
-          }
-        } else {
-          errorMsg.textContent = "كود التأكيد غير صحيح! حاول مرة أخرى.";
-        }
-      }
-    });
-  </script>
+  if (user.is_admin) {
+    alert('تم تسجيل الدخول كأدمن ✅');
+    window.location.href = 'admin.html';
+  } else {
+    alert('تم تسجيل الدخول كمستخدم عادي ✅');
+    window.location.href = 'index.html';
+  }
+});
+
+// --- تسجيل جديد ---
+document.getElementById('registerForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const password = document.getElementById('regPassword').value.trim();
+  const phone = document.getElementById('regPhone').value.trim();
+
+  let users = await fetchUsers();
+  if (users.some(u => u.email === email)) {
+    document.getElementById('regError').textContent = 'البريد الإلكتروني مسجل مسبقًا!';
+    return;
+  }
+
+  const newUser = {
+    id: Date.now(),
+    name,
+    email,
+    password,
+    phone: phone || '',
+    is_admin: false
+  };
+
+  users.push(newUser);
+  await updateUsers(users, `إضافة مستخدم جديد: ${email}`);
+  alert('تم التسجيل بنجاح ✅');
+  showLogin();
+});
+</script>
 </body>
 </html>
