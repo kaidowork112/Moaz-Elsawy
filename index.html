@@ -3,186 +3,253 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>العقارات</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500&display=swap" rel="stylesheet">
+  <title>Moaz Elsawy | تسويق عقاري</title>
+  <link rel="stylesheet" href="style.css">
   <style>
-    body {
-      font-family: "Cairo", sans-serif;
-      background: #fafafa;
-      margin: 0;
-      padding: 0;
+    /* ----- السلايدر ----- */
+    .slider {
+      position: relative;
+      width: 100%;
+      height: 300px;
+      overflow: hidden;
+      margin-bottom: 30px;
     }
-    header {
-      background: #0078d4;
-      color: #fff;
-      padding: 10px 20px;
+    .slides-container {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 22px;
-    }
-    header nav a {
-      color: #fff;
-      text-decoration: none;
-      margin-left: 15px;
-      background: rgba(255,255,255,0.2);
-      padding: 6px 10px;
-      border-radius: 6px;
-      transition: 0.3s;
-    }
-    header nav a:hover {
-      background: rgba(255,255,255,0.4);
-    }
-
-    #slider {
-      display: flex;
-      overflow-x: auto;
-      scroll-behavior: smooth;
-      gap: 15px;
-      padding: 15px;
+      transition: transform 0.5s ease-in-out;
     }
     .slide {
-      min-width: 300px;
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-      transition: transform 0.3s;
-      flex-shrink: 0;
+      min-width: 100%;
+      height: 300px;
+      background-size: cover;
+      background-position: center;
+      border-radius: 12px;
+      cursor: pointer;
+      margin: 0 5px;
     }
-    .slide img {
+    .caption {
+      position: absolute;
+      bottom: 15px;
+      right: 20px;
+      background: rgba(0,0,0,0.5);
+      color: #fff;
+      padding: 8px 15px;
+      border-radius: 6px;
+    }
+
+    /* ----- العقارات ----- */
+    .properties {
+      padding: 20px;
+      text-align: center;
+    }
+    .property-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+    .property-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      width: 280px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .property-card:hover { transform: translateY(-5px); }
+    .property-card img {
       width: 100%;
-      height: 200px;
+      height: 180px;
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
       object-fit: cover;
     }
-    .slide:hover { transform: scale(1.05); }
+    .property-info { padding: 10px; text-align: right; }
+    .property-info h3 { color: #333; margin-bottom: 5px; }
+    .property-info p { font-size: 14px; color: #666; margin: 3px 0; }
+    .property-info span { color: #f5b800; font-weight: bold; display: block; margin-top: 5px; }
 
-    #posts {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 15px;
-      padding: 20px;
-    }
-    .post {
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      padding: 10px;
-    }
-    .post img {
-      width: 100%;
-      border-radius: 10px;
-      margin-bottom: 10px;
-    }
+    /* ----- المودال ----- */
+    .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:1000; }
+    .modal-content { background:#fff; max-width:700px; margin:50px auto; border-radius:12px; padding:20px; position: relative; }
+    .close-button { position: absolute; left:20px; top:10px; font-size:28px; cursor:pointer; color:#aaa; }
+    .close-button:hover { color:#000; }
+    #modalDetails img { width:100%; max-height:400px; object-fit:cover; border-radius:8px; margin-bottom:15px; }
+    #modalDetails h2 { color:#0a74da; margin-bottom:10px; }
+    #modalDetails p { margin:8px 0; font-size:15px; }
+    .whatsapp-btn { display:block; width:100%; text-align:center; background:#25d366; color:#fff; padding:12px 0; font-weight:bold; border-radius:8px; text-decoration:none; margin-top:15px; }
+
+    /* ----- الهيدر ----- */
+    .header { background:#0a74da; color:white; display:flex; justify-content:space-between; align-items:center; padding:15px 20px; }
+    .header nav a { color:white; text-decoration:none; margin-left:15px; }
+    .header nav a.btn { background:#f5b800; color:#000; padding:6px 12px; border-radius:6px; }
   </style>
 </head>
 <body>
 
-<header>
-  <h1>العقارات</h1>
-  <nav>
-    <a id="adminBtn" href="admin.html" style="display:none;">لوحة الأدمن</a>
-    <a id="loginBtn" href="login.html">تسجيل دخول</a>
-  </nav>
-</header>
+  <header class="header">
+    <div class="logo">🏠 Moaz Elsawy</div>
+    <nav>
+      <a href="index.html">الرئيسية</a>
+      <a href="#properties">العقارات</a>
+      <a href="#contact">تواصل معنا</a>
+      <a href="#" id="loginBtn" class="btn">تسجيل الدخول</a>
+    </nav>
+  </header>
 
-<section>
-  <h2 style="padding:10px;">عقارات مميزة</h2>
-  <div id="slider"></div>
-</section>
+  <!-- سلايدر -->
+  <section class="slider" id="slider">
+    <div class="slides-container" id="slidesContainer"></div>
+  </section>
 
-<h2 style="padding:10px;">كل العقارات</h2>
-<div id="posts"></div>
+  <!-- العقارات -->
+  <section id="properties" class="properties">
+    <h2>العقارات المتاحة</h2>
+    <div id="property-list" class="property-list"></div>
+  </section>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+  <!-- تواصل معنا -->
+  <section id="contact" class="contact">
+    <h2>تواصل معنا</h2>
+    <form id="contactForm">
+      <input type="text" placeholder="الاسم الكامل" required>
+      <input type="email" placeholder="البريد الإلكتروني" required>
+      <textarea placeholder="رسالتك..." required></textarea>
+      <button type="submit">إرسال</button>
+    </form>
+  </section>
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyBxEWaPWqpUIgZtasxnE7-82SN6OEzSx7Q",
-    authDomain: "moaz-elsawy.firebaseapp.com",
-    projectId: "moaz-elsawy",
-    storageBucket: "moaz-elsawy.firebasestorage.app",
-    messagingSenderId: "859568017117",
-    appId: "1:859568017117:web:38a7d0c96532f0f7681534",
-    measurementId: "G-JY1XN1VRCP"
-  };
+  <!-- مودال التفاصيل -->
+  <div id="propertyModal" class="modal">
+    <div class="modal-content">
+      <span class="close-button">&times;</span>
+      <div id="modalDetails">
+        <img id="modalImg" src="" alt="صورة العقار">
+        <h2 id="modalTitle"></h2>
+        <p><strong>السعر:</strong> <span id="modalPriceDetail"></span></p>
+        <p><strong>الموقع:</strong> <span id="modalCity"></span></p>
+        <p><strong>النوع:</strong> <span id="modalType"></span></p>
+        <p><strong>عدد الغرف:</strong> <span id="modalRooms"></span></p>
+        <p><strong>الوصف:</strong> <span id="modalDesc"></span></p>
+        <a id="whatsappLink" href="#" target="_blank" class="whatsapp-btn">تواصل واتساب</a>
+      </div>
+    </div>
+  </div>
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const auth = getAuth(app);
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js";
 
-  const slider = document.getElementById("slider");
-  const postsDiv = document.getElementById("posts");
-  const loginBtn = document.getElementById("loginBtn");
-  const adminBtn = document.getElementById("adminBtn");
+    const firebaseConfig = {
+      apiKey: "AIzaSyBxEWaPWqpUIgZtasxnE7-82SN6OEzSx7Q",
+      authDomain: "moaz-elsawy.firebaseapp.com",
+      projectId: "moaz-elsawy",
+      storageBucket: "moaz-elsawy.appspot.com",
+      messagingSenderId: "859568017117",
+      appId: "1:859568017117:web:38a7d0c96532f0f7681534",
+      measurementId: "G-JY1XN1VRCP"
+    };
 
-  // تحميل العقارات
-  async function loadPosts() {
-    postsDiv.innerHTML = "";
-    slider.innerHTML = "";
-    const querySnapshot = await getDocs(collection(db, "posts"));
-    querySnapshot.forEach((docu) => {
-      const p = docu.data();
-      const postHTML = `
-        <div class="post">
-          <img src="${p.image}" alt="${p.title}">
-          <h3>${p.title}</h3>
-          <p>${p.description}</p>
-          <p>النوع: ${p.type} | المساحة: ${p.area} م²</p>
-          ${p.location ? `<p>📍 ${p.location}</p>` : ""}
-        </div>
-      `;
-      postsDiv.innerHTML += postHTML;
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-      if (p.inSlider) {
-        slider.innerHTML += `
-          <div class="slide">
-            <img src="${p.image}" alt="${p.title}">
-            <div style="padding:10px;">
-              <h3>${p.title}</h3>
+    const slidesContainer = document.getElementById('slidesContainer');
+    const propertyList = document.getElementById('property-list');
+    const propertyModal = document.getElementById('propertyModal');
+    const closeButton = document.querySelector('.close-button');
+
+    let ALL_PROPERTIES = [];
+    let sliderIndex = 0;
+
+    async function loadProperties() {
+      ALL_PROPERTIES = [];
+      propertyList.innerHTML = '';
+      slidesContainer.innerHTML = '';
+
+      const querySnapshot = await getDocs(collection(db, "properties"));
+      querySnapshot.forEach((docSnap) => {
+        const prop = docSnap.data();
+        prop.id = docSnap.id;
+        ALL_PROPERTIES.push(prop);
+
+        // السلايدر
+        if(prop.showSlider) {
+          const slideDiv = document.createElement('div');
+          slideDiv.className = 'slide';
+          slideDiv.style.backgroundImage = `url(${prop.img})`;
+          slideDiv.dataset.id = prop.id;
+          const caption = document.createElement('div');
+          caption.className = 'caption';
+          caption.innerText = prop.title;
+          slideDiv.appendChild(caption);
+          slidesContainer.appendChild(slideDiv);
+
+          slideDiv.addEventListener('click', ()=> openModal(prop.id));
+        }
+
+        // البطاقات
+        if(prop.location){
+          const card = document.createElement('div');
+          card.className = 'property-card';
+          card.dataset.id = prop.id;
+          card.innerHTML = `
+            <img src="${prop.img}">
+            <div class="property-info">
+              <h3>${prop.title}</h3>
+              <p><strong>الموقع:</strong> ${prop.location}</p>
+              <p><strong>الغرف:</strong> ${prop.rooms}</p>
+              <span>${prop.price}</span>
             </div>
-          </div>
-        `;
-      }
+          `;
+          card.addEventListener('click', ()=> openModal(prop.id));
+          propertyList.appendChild(card);
+        }
+      });
+    }
+
+    function openModal(id){
+      const prop = ALL_PROPERTIES.find(p => p.id === id);
+      if(!prop) return;
+      document.getElementById('modalImg').src = prop.img;
+      document.getElementById('modalTitle').textContent = prop.title;
+      document.getElementById('modalPriceDetail').textContent = prop.price;
+      document.getElementById('modalCity').textContent = prop.location || 'غير محدد';
+      document.getElementById('modalType').textContent = prop.type;
+      document.getElementById('modalRooms').textContent = prop.rooms;
+      document.getElementById('modalDesc').textContent = prop.desc || '-';
+      document.getElementById('whatsappLink').href = `https://wa.me/+201115134784?text=${encodeURIComponent("مرحباً، أريد الاستفسار عن العقار: " + prop.title)}`;
+      propertyModal.style.display = 'block';
+    }
+
+    closeButton.onclick = ()=> propertyModal.style.display='none';
+    window.onclick = (e)=> { if(e.target == propertyModal) propertyModal.style.display='none'; }
+
+    // السلايدر التلقائي
+    setInterval(()=>{
+      const slides = document.querySelectorAll('.slide');
+      if(slides.length ===0) return;
+      sliderIndex = (sliderIndex+1)%slides.length;
+      slidesContainer.style.transform = `translateX(-${sliderIndex*100}%)`;
+    },3000);
+
+    // التحقق من المستخدم وعرض زر الأدمن
+    const loginBtn = document.getElementById('loginBtn');
+    const user = JSON.parse(localStorage.getItem('realestate_user')|| '{}');
+    if(user.email){
+      loginBtn.textContent = 'تسجيل خروج';
+      loginBtn.onclick = ()=> { localStorage.removeItem('realestate_user'); location.reload(); };
+      if(user.is_admin) loginBtn.href='admin.html';
+    } else loginBtn.href='login.html';
+
+    loadProperties();
+
+    // نموذج التواصل
+    document.getElementById("contactForm").addEventListener("submit", (e)=>{
+      e.preventDefault();
+      alert("تم إرسال رسالتك بنجاح ✅");
+      e.target.reset();
     });
-  }
-
-  // تحريك السلايدر تلقائيًا
-  setInterval(() => {
-    slider.scrollBy({ left: 320, behavior: "smooth" });
-    if (slider.scrollLeft + slider.clientWidth >= slider.scrollWidth) {
-      slider.scrollTo({ left: 0, behavior: "smooth" });
-    }
-  }, 3000);
-
-  // التحكم في حالة المستخدم
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      loginBtn.textContent = "تسجيل خروج";
-      loginBtn.href = "#";
-      loginBtn.onclick = async () => {
-        await signOut(auth);
-        location.reload();
-      };
-
-      // التحقق من أنه أدمن
-      if (user.email === "admin@moazelsawy.com") {
-        adminBtn.style.display = "inline-block";
-      } else {
-        adminBtn.style.display = "none";
-      }
-    } else {
-      loginBtn.textContent = "تسجيل دخول";
-      loginBtn.href = "login.html";
-      adminBtn.style.display = "none";
-    }
-  });
-
-  loadPosts();
-</script>
+  </script>
 </body>
 </html>
