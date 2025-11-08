@@ -2,36 +2,51 @@
   {
     "id": 1,
     "title": "شقة فاخرة للبيع",
-    "location": "التجمع الخامس - القاهرة الجديدة",
     "price": "2,000,000 جنيه",
-    "image": "https://picsum.photos/400/250?random=11"
+    "rooms": 3,
+    "type": "apartment",
+    "city": "التجمع الخامس - القاهرة الجديدة",
+    "img": "https://picsum.photos/400/250?random=11",
+    "desc": "شقة واسعة ومشرقة تقع في قلب القاهرة الجديدة، مجهزة بكل المرافق الحديثة."
   },
   {
     "id": 2,
     "title": "فيلا مستقلة بمساحة 400م",
-    "location": "مدينة الشيخ زايد - أكتوبر",
     "price": "6,500,000 جنيه",
-    "image": "https://picsum.photos/400/250?random=12"
+    "rooms": 5,
+    "type": "villa",
+    "city": "مدينة الشيخ زايد - أكتوبر",
+    "img": "https://picsum.photos/400/250?random=12",
+    "desc": "فيلا فاخرة بمساحة 400 متر مربع، حديقة خاصة ومسبح."
   },
   {
     "id": 3,
     "title": "شقة على البحر مباشرة",
-    "location": "الإسكندرية - سيدي بشر",
     "price": "3,200,000 جنيه",
-    "image": "https://picsum.photos/400/250?random=13"
+    "rooms": 4,
+    "type": "apartment",
+    "city": "الإسكندرية - سيدي بشر",
+    "img": "https://picsum.photos/400/250?random=13",
+    "desc": "إطلالة بحرية رائعة لشقة حديثة تقع على بعد خطوات من الشاطئ."
   },
   {
     "id": 4,
     "title": "شقة مفروشة للإيجار الشهري",
-    "location": "مدينة نصر - الحي العاشر",
     "price": "15,000 جنيه / شهر",
-    "image": "https://picsum.photos/400/250?random=14"
+    "rooms": 2,
+    "type": "apartment",
+    "city": "مدينة نصر - الحي العاشر",
+    "img": "https://picsum.photos/400/250?random=14",
+    "desc": "شقة مفروشة بالكامل للإيجار، قريبة من جميع الخدمات."
   },
   {
-  "id": 1762597081329,
-  "title": "Gamal abdelnaser",
-  "location": "اول جمال",
-  "price": "35000",
-  "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQHhzDskeVcTtEYKJdNH7cFQVu5_0_tebeN14uk0o8ArF4LdTqFOU7jtQQj&s=10"
-}
+    "id": 5,
+    "title": "محل تجاري في موقع مميز",
+    "price": "350,000 جنيه",
+    "rooms": 1,
+    "type": "shop",
+    "city": "أول جمال",
+    "img": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQHhzDskeVcTtEYKJdNH7cFQVu5_0_tebeN14uk0o8ArF4LdTqFOU7jtQQj&s=10",
+    "desc": "محل تجاري بموقع استراتيجي، مناسب لجميع أنواع الأنشطة."
+  }
 ]
