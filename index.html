@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Moaz Elsawy | تسويق عقاري</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moaz Elsawy | تسويق عقاري</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -14,7 +14,7 @@
     <a href="index.html">الرئيسية</a>
     <a href="#properties">العقارات</a>
     <a href="#contact">تواصل معنا</a>
-    <a href="login.html" class="btn">تسجيل الدخول</a>
+    <a href="#" id="loginBtn" class="btn">تسجيل الدخول</a>
   </nav>
 </header>
 
@@ -40,8 +40,8 @@
 <section id="contact" class="contact">
   <h2>تواصل معنا</h2>
   <form id="contactForm">
-    <input type="text" placeholder="الاسم الكامل" required>
-    <input type="email" placeholder="البريد الإلكتروني" required>
+    <input type="text" placeholder="الاسم الكامل" required />
+    <input type="email" placeholder="البريد الإلكتروني" required />
     <textarea placeholder="رسالتك..." required></textarea>
     <button type="submit">إرسال</button>
   </form>
@@ -51,7 +51,6 @@
   <p>© 2025 Moaz Elsawy | جميع الحقوق محفوظة</p>
 </footer>
 
-<!-- المودال -->
 <div id="propertyModal" class="modal">
   <div class="modal-content">
     <span class="close-button">&times;</span>
@@ -68,91 +67,6 @@
   </div>
 </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-
-// إعداد Firebase
-const firebaseConfig = {
-  apiKey: "AIzaSyBxEWaPWqpUIgZtasxnE7-82SN6OEzSx7Q",
-  authDomain: "moaz-elsawy.firebaseapp.com",
-  projectId: "moaz-elsawy",
-  storageBucket: "moaz-elsawy.firebasestorage.app",
-  messagingSenderId: "859568017117",
-  appId: "1:859568017117:web:38a7d0c96532f0f7681534",
-  measurementId: "G-JY1XN1VRCP"
-};
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-// الزرار الخاص بالواتساب
-const SELLER_PHONE = '+201115134784';
-
-// السلايدر
-let currentSlide = 0;
-const slides = document.querySelectorAll(".slide");
-function showSlide(index){
-  slides.forEach((s,i)=>{ s.classList.remove("active"); if(i===index)s.classList.add("active"); });
-}
-function nextSlide(){ currentSlide=(currentSlide+1)%slides.length; showSlide(currentSlide); }
-setInterval(nextSlide,5000);
-
-// تحميل العقارات
-async function loadProperties(){
-  const listContainer = document.getElementById("property-list");
-  listContainer.innerHTML = '';
-
-  const snapshot = await getDocs(collection(db,"properties"));
-  const allProperties = [];
-  snapshot.forEach(docSnap => allProperties.push({ id: docSnap.id, ...docSnap.data() }));
-
-  if(allProperties.length === 0){
-    listContainer.innerHTML = '<p style="text-align:center; padding:40px 0; color:#666;">لا توجد عقارات حالياً.</p>';
-    return;
-  }
-
-  allProperties.forEach((prop)=>{
-    const card = document.createElement("div");
-    card.className = "property-card";
-    card.dataset.id = prop.id;
-    card.innerHTML = `
-      <img src="${prop.img}" alt="${prop.title}">
-      <div class="property-info">
-        <h3>${prop.title}</h3>
-        <p><strong>الموقع:</strong> ${prop.location}</p>
-        <p><strong>الغرف:</strong> ${prop.rooms || '؟'}</p>
-        <span>${prop.price}</span>
-      </div>
-    `;
-    listContainer.appendChild(card);
-
-    card.addEventListener('click',()=>openModal(prop));
-  });
-}
-
-// فتح المودال
-function openModal(prop){
-  document.getElementById('modalImg').src = prop.img;
-  document.getElementById('modalTitle').textContent = prop.title;
-  document.getElementById('modalPriceDetail').textContent = prop.price;
-  document.getElementById('modalCity').textContent = prop.location;
-  document.getElementById('modalType').textContent = prop.type || 'غير محدد';
-  document.getElementById('modalRooms').textContent = prop.rooms || '؟';
-  document.getElementById('modalDesc').textContent = prop.desc || 'لا يوجد وصف متاح.';
-  document.getElementById('whatsappLink').href = `https://wa.me/${SELLER_PHONE}?text=${encodeURIComponent('مرحباً، أود الاستفسار عن العقار: '+prop.title+'، في مدينة: '+prop.location+'. سعره: '+prop.price)}`;
-  document.getElementById('propertyModal').style.display='block';
-}
-
-// إغلاق المودال
-document.querySelector('.close-button').onclick = ()=>{ document.getElementById('propertyModal').style.display='none'; }
-window.onclick = (e)=>{ if(e.target==document.getElementById('propertyModal')) document.getElementById('propertyModal').style.display='none'; }
-
-// نموذج التواصل
-document.getElementById("contactForm").addEventListener("submit",(e)=>{
-  e.preventDefault(); alert("تم إرسال رسالتك بنجاح ✅"); e.target.reset();
-});
-
-document.addEventListener("DOMContentLoaded",loadProperties);
-</script>
+<script type="module" src="script.js"></script>
 </body>
 </html>
