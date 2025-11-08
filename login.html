@@ -1,162 +1,160 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تسجيل/دخول | Moaz Elsawy</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>تسجيل الدخول / التسجيل | Moaz Elsawy</title>
+<link rel="stylesheet" href="style.css" />
 <style>
-  body { font-family: "Cairo", sans-serif; background:#f4f8ff; display:flex; justify-content:center; align-items:center; min-height:100vh; }
-  .auth-container { background:white; padding:30px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.2); width:90%; max-width:400px; text-align:center; }
-  h2 { color:#0a74da; margin-bottom:20px; }
-  input { width:100%; padding:12px; margin:8px 0; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; }
-  button { width:100%; padding:12px; background:#f5b800; border:none; border-radius:6px; cursor:pointer; font-weight:bold; margin-top:10px; }
-  button:hover { background:#ffcc33; }
-  .switch { margin-top:15px; color:#0a74da; cursor:pointer; text-decoration:underline; }
-  .error { color:red; font-size:14px; margin-top:10px; }
+  body { background: #f4f8ff; font-family: "Cairo", sans-serif; }
+  .auth-container { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; }
+  .auth-box { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); width: 90%; max-width: 400px; text-align: center; }
+  .auth-box h2 { color: #0a74da; margin-bottom: 20px; }
+  .auth-box input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 6px; border: 1px solid #ccc; }
+  .auth-box button { width: 100%; background: #f5b800; color: #000; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+  .auth-box button:hover { background: #ffcc33; }
+  .toggle-link { cursor: pointer; color: #0a74da; margin-top: 10px; display: block; }
+  .error { color: red; font-size: 14px; margin-top: 10px; }
 </style>
 </head>
 <body>
 
 <div class="auth-container">
-  <h2 id="formTitle">تسجيل الدخول</h2>
-  <div class="error" id="errorMsg"></div>
-  <form id="authForm">
-    <input type="text" id="name" placeholder="الاسم الكامل" style="display:none;" />
-    <input type="email" id="email" placeholder="البريد الإلكتروني" required />
-    <input type="password" id="password" placeholder="كلمة المرور" required />
-    <input type="tel" id="phone" placeholder="رقم الموبايل (اختياري)" />
-    <button type="submit" id="submitBtn">تسجيل الدخول</button>
-  </form>
-  <div class="switch" id="switchForm">ليس لديك حساب؟ سجل الآن</div>
+  <div class="auth-box" id="loginBox">
+    <h2>تسجيل الدخول</h2>
+    <form id="loginForm">
+      <input type="email" id="loginEmail" placeholder="البريد الإلكتروني" required />
+      <input type="password" id="loginPassword" placeholder="كلمة المرور" required />
+      <div class="error" id="loginError"></div>
+      <button type="submit">تسجيل الدخول</button>
+    </form>
+    <span class="toggle-link" id="showRegister">إنشاء حساب جديد</span>
+  </div>
+
+  <div class="auth-box" id="registerBox" style="display:none;">
+    <h2>تسجيل حساب جديد</h2>
+    <form id="registerForm">
+      <input type="text" id="regName" placeholder="الاسم الكامل" required />
+      <input type="email" id="regEmail" placeholder="البريد الإلكتروني" required />
+      <input type="password" id="regPassword" placeholder="كلمة المرور" required />
+      <input type="tel" id="regPhone" placeholder="رقم الهاتف (اختياري)" />
+      <div class="error" id="registerError"></div>
+      <button type="submit">إنشاء الحساب</button>
+    </form>
+    <span class="toggle-link" id="showLogin">لديك حساب بالفعل؟ تسجيل الدخول</span>
+  </div>
 </div>
 
 <script>
 const OWNER = 'kaidowork112';
 const REPO = 'Moaz-Elsawy';
-const FILE_PATH = 'data/users.json';
-const GITHUB_TOKEN = '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';
+const USERS_FILE = 'data/users.json';
+const GITHUB_TOKEN = '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'; // ضع توكن GitHub هنا
 
-let currentFileSHA = null;
-let allUsers = [];
-let isRegister = false;
+const ADMIN = { email: 'admin@moazelsawy.com', password: 'admin123' };
 
-const formTitle = document.getElementById('formTitle');
-const authForm = document.getElementById('authForm');
-const submitBtn = document.getElementById('submitBtn');
-const switchForm = document.getElementById('switchForm');
-const errorMsg = document.getElementById('errorMsg');
-const nameInput = document.getElementById('name');
-const phoneInput = document.getElementById('phone');
-const emailInput = document.getElementById('email');
-const passwordInput = document.getElementById('password');
+// تبديل بين تسجيل الدخول والتسجيل
+document.getElementById('showRegister').onclick = () => {
+  document.getElementById('loginBox').style.display = 'none';
+  document.getElementById('registerBox').style.display = 'block';
+};
+document.getElementById('showLogin').onclick = () => {
+  document.getElementById('loginBox').style.display = 'block';
+  document.getElementById('registerBox').style.display = 'none';
+};
 
-// ===================================
-// جلب بيانات المستخدمين وSHA
-// ===================================
-async function fetchUsers() {
+// ==== تسجيل الدخول ====
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value.trim();
+  const errorEl = document.getElementById('loginError');
+  errorEl.textContent = '';
+
+  if (email === ADMIN.email && password === ADMIN.password) {
+    localStorage.setItem('realestate_user', JSON.stringify({ email, is_admin: true }));
+    alert('تم تسجيل الدخول كأدمن ✅');
+    window.location.href = 'admin.html';
+    return;
+  }
+
   try {
-    const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`, {
+    const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${USERS_FILE}`, {
       headers: { Authorization: `token ${GITHUB_TOKEN}` }
     });
-    if (!res.ok) throw new Error('فشل جلب البيانات');
+    if (!res.ok) throw new Error('فشل في جلب بيانات المستخدمين');
     const data = await res.json();
-    currentFileSHA = data.sha;
-    allUsers = JSON.parse(atob(data.content));
-  } catch(e) {
-    // إذا الملف غير موجود نبدأ بمصفوفة فارغة
-    allUsers = [];
-    currentFileSHA = null;
+    const users = JSON.parse(atob(data.content));
+    const user = users.find(u => u.email === email && u.password === password);
+    if (!user) {
+      errorEl.textContent = 'بيانات المستخدم غير صحيحة';
+    } else {
+      localStorage.setItem('realestate_user', JSON.stringify({ ...user, is_admin: false }));
+      alert('تم تسجيل الدخول كمستخدم عادي ✅');
+      window.location.href = 'index.html';
+    }
+  } catch (err) {
+    console.error(err);
+    errorEl.textContent = 'فشل الوصول إلى بيانات المستخدمين';
   }
-}
+});
 
-// ===================================
-// حفظ المستخدمين على GitHub
-// ===================================
-async function saveUsers(commitMsg) {
-  const content = btoa(JSON.stringify(allUsers, null, 2));
-  const payload = { message: commitMsg, content };
-  if(currentFileSHA) payload.sha = currentFileSHA;
+// ==== التسجيل ====
+document.getElementById('registerForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const password = document.getElementById('regPassword').value.trim();
+  const phone = document.getElementById('regPhone').value.trim();
+  const errorEl = document.getElementById('registerError');
+  errorEl.textContent = '';
+
+  if (!name || !email || !password) {
+    errorEl.textContent = 'يرجى ملء جميع الحقول المطلوبة';
+    return;
+  }
 
   try {
-    const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`, {
-      method: 'PUT',
-      headers: { Authorization: `token ${GITHUB_TOKEN}`, 'Content-Type':'application/json' },
-      body: JSON.stringify(payload)
+    // جلب البيانات الحالية
+    const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${USERS_FILE}`, {
+      headers: { Authorization: `token ${GITHUB_TOKEN}` }
     });
-    if (!res.ok) throw new Error('فشل في الحفظ على GitHub');
-    const result = await res.json();
-    currentFileSHA = result.content.sha;
-    return true;
-  } catch(e) {
-    console.error(e);
-    return false;
-  }
-}
-
-// ===================================
-// تبديل بين تسجيل الدخول والتسجيل
-// ===================================
-switchForm.onclick = () => {
-  isRegister = !isRegister;
-  if(isRegister) {
-    formTitle.textContent = 'تسجيل حساب جديد';
-    submitBtn.textContent = 'تسجيل';
-    switchForm.textContent = 'لديك حساب بالفعل؟ تسجيل الدخول';
-    nameInput.style.display = 'block';
-    phoneInput.style.display = 'block';
-  } else {
-    formTitle.textContent = 'تسجيل الدخول';
-    submitBtn.textContent = 'تسجيل الدخول';
-    switchForm.textContent = 'ليس لديك حساب؟ سجل الآن';
-    nameInput.style.display = 'none';
-    phoneInput.style.display = 'none';
-  }
-  errorMsg.textContent = '';
-}
-
-// ===================================
-// التعامل مع النموذج
-// ===================================
-authForm.onsubmit = async (e) => {
-  e.preventDefault();
-  errorMsg.textContent = '';
-
-  const email = emailInput.value.trim().toLowerCase();
-  const password = passwordInput.value.trim();
-  const name = nameInput.value.trim();
-  const phone = phoneInput.value.trim();
-
-  await fetchUsers();
-
-  if(isRegister) {
-    if(!name) { errorMsg.textContent='أدخل الاسم الكامل'; return; }
-    if(allUsers.some(u=>u.email.toLowerCase()===email)) {
-      errorMsg.textContent='هذا البريد مسجل بالفعل';
+    if (!res.ok) throw new Error('فشل في جلب بيانات المستخدمين');
+    const data = await res.json();
+    const users = JSON.parse(atob(data.content));
+    const existing = users.find(u => u.email === email);
+    if (existing) {
+      errorEl.textContent = 'هذا البريد مستخدم مسبقاً';
       return;
     }
-    const newUser = { id: Date.now(), email, password, name };
-    if(phone) newUser.phone = phone;
-    allUsers.push(newUser);
-    const saved = await saveUsers(`تم إضافة مستخدم جديد: ${email}`);
-    if(saved){
-      alert('تم إنشاء الحساب بنجاح ✅');
-      switchForm.click(); // العودة لتسجيل الدخول
-      emailInput.value=''; passwordInput.value=''; nameInput.value=''; phoneInput.value='';
-    } else {
-      errorMsg.textContent='فشل إنشاء الحساب';
-    }
-  } else {
-    // تسجيل دخول
-    const user = allUsers.find(u=>u.email.toLowerCase()===email && u.password===password);
-    if(user){
-      localStorage.setItem('realestate_user', JSON.stringify(user));
-      alert('تم تسجيل الدخول ✅');
-      // إذا كنت تريد إعادة توجيه الأدمن:
-      if(email==='admin@moazelsawy.com') window.location.href='admin.html';
-      else window.location.href='index.html';
-    } else errorMsg.textContent='بيانات الدخول غير صحيحة';
+
+    const newUser = { id: Date.now(), name, email, password, phone };
+    users.push(newUser);
+
+    // تحديث GitHub
+    const updateRes = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${USERS_FILE}`, {
+      method: 'PUT',
+      headers: { 
+        Authorization: `token ${GITHUB_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        message: `إضافة مستخدم جديد: ${email}`,
+        content: btoa(JSON.stringify(users, null, 2)),
+        sha: data.sha
+      })
+    });
+    if (!updateRes.ok) throw new Error('فشل في حفظ المستخدم الجديد على GitHub');
+
+    alert('تم إنشاء الحساب بنجاح ✅');
+    document.getElementById('registerForm').reset();
+    document.getElementById('loginBox').style.display = 'block';
+    document.getElementById('registerBox').style.display = 'none';
+  } catch (err) {
+    console.error(err);
+    errorEl.textContent = 'فشل إنشاء الحساب';
   }
-}
+});
 </script>
 </body>
 </html>
