@@ -3,180 +3,212 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>صفحة الأدمن</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500&display=swap" rel="stylesheet">
+  <title>لوحة الأدمن - إدارة العقارات</title>
+  <link rel="stylesheet" href="style.css">
   <style>
     body {
       font-family: "Cairo", sans-serif;
       background: #f4f4f4;
       padding: 20px;
     }
-    h1 {
-      text-align: center;
-      color: #222;
-    }
-    form {
+
+    h2 { color: #0a74da; text-align: center; margin-bottom: 20px; }
+
+    .card {
       background: #fff;
-      padding: 15px;
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      margin-bottom: 25px;
-    }
-    input, textarea, select {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      margin-bottom: 10px;
-    }
-    label { font-size: 14px; color: #333; }
-    button {
-      background-color: #0078d4;
-      color: #fff;
-      border: none;
-      padding: 10px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    button:hover { background-color: #005ea3; }
-    .post {
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       padding: 15px;
-      margin-bottom: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
-    .post img {
-      width: 100%;
-      border-radius: 10px;
-      margin-bottom: 10px;
+
+    .card h3 { margin-bottom: 10px; }
+    .card label { display: block; margin: 8px 0 4px; font-weight: 600; }
+    .card input, .card select, .card textarea {
+      width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc;
+      margin-bottom: 10px; box-sizing: border-box;
     }
-    .controls button {
-      margin-left: 5px;
-      background: #e33;
+
+    .btn {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
     }
-    .controls button:first-child {
-      background: #28a745;
-    }
+    .btn-primary { background: #0a74da; color: white; }
+    .btn-danger { background: #f44336; color: white; }
+    .btn-success { background: #28a745; color: white; }
+    .btn:hover { opacity: 0.9; }
+
+    .flex { display: flex; gap: 10px; flex-wrap: wrap; }
+    .users-list, .properties-list { margin-top: 20px; }
+    .list-item { background: #fff; border-radius: 12px; padding: 10px; margin-bottom: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    .list-item p { margin: 5px 0; }
   </style>
 </head>
 <body>
 
-<h1>لوحة تحكم الأدمن</h1>
+  <h2>لوحة الأدمن - إدارة العقارات</h2>
 
-<form id="postForm">
-  <label>اسم العقار</label>
-  <input type="text" id="title" required>
+  <!-- فورم إضافة عقار -->
+  <div class="card">
+    <h3>إضافة / تعديل عقار</h3>
+    <form id="propertyForm">
+      <label>العنوان</label>
+      <input type="text" id="title" required>
 
-  <label>الوصف</label>
-  <textarea id="description" required></textarea>
+      <label>النوع</label>
+      <select id="type" required>
+        <option value="شقة">شقة</option>
+        <option value="فيلا">فيلا</option>
+      </select>
 
-  <label>النوع</label>
-  <select id="type">
-    <option value="شقة">شقة</option>
-    <option value="فيلا">فيلا</option>
-  </select>
+      <label>المساحة (م²)</label>
+      <input type="number" id="area" required>
 
-  <label>المساحة (م²)</label>
-  <input type="number" id="area" required>
+      <label>الموقع (اختياري)</label>
+      <input type="text" id="location">
 
-  <label>الموقع (اختياري)</label>
-  <input type="text" id="location">
+      <label>عدد الغرف</label>
+      <input type="number" id="rooms" required>
 
-  <label>رابط الصورة</label>
-  <input type="url" id="image" required>
+      <label>السعر</label>
+      <input type="text" id="price" required>
 
-  <label>
-    <input type="checkbox" id="slider"> إضافة للسلايدر
-  </label>
+      <label>رابط الصورة (URL)</label>
+      <input type="url" id="img" required>
 
-  <button type="submit">إضافة العقار</button>
-</form>
+      <label>الوصف</label>
+      <textarea id="desc" rows="3"></textarea>
 
-<div id="postsContainer"></div>
+      <label><input type="checkbox" id="showSlider"> إظهار في السلايدر</label>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-  import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+      <button type="submit" class="btn btn-primary">إضافة العقار</button>
+    </form>
+  </div>
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyBxEWaPWqpUIgZtasxnE7-82SN6OEzSx7Q",
-    authDomain: "moaz-elsawy.firebaseapp.com",
-    projectId: "moaz-elsawy",
-    storageBucket: "moaz-elsawy.firebasestorage.app",
-    messagingSenderId: "859568017117",
-    appId: "1:859568017117:web:38a7d0c96532f0f7681534",
-    measurementId: "G-JY1XN1VRCP"
-  };
+  <!-- قائمة العقارات -->
+  <h3>قائمة العقارات</h3>
+  <div class="properties-list" id="propertiesList"></div>
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+  <!-- قائمة المستخدمين -->
+  <h3>قائمة المستخدمين</h3>
+  <div class="users-list" id="usersList"></div>
 
-  const postForm = document.getElementById("postForm");
-  const postsContainer = document.getElementById("postsContainer");
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, updateDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js";
 
-  // إضافة منشور جديد
-  postForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const newPost = {
-      title: title.value,
-      description: description.value,
-      type: type.value,
-      area: area.value,
-      location: location.value || "",
-      image: image.value,
-      inSlider: slider.checked,
-      createdAt: new Date().toISOString()
+    const firebaseConfig = {
+      apiKey: "AIzaSyBxEWaPWqpUIgZtasxnE7-82SN6OEzSx7Q",
+      authDomain: "moaz-elsawy.firebaseapp.com",
+      projectId: "moaz-elsawy",
+      storageBucket: "moaz-elsawy.appspot.com",
+      messagingSenderId: "859568017117",
+      appId: "1:859568017117:web:38a7d0c96532f0f7681534",
+      measurementId: "G-JY1XN1VRCP"
     };
-    await addDoc(collection(db, "posts"), newPost);
-    alert("تم إضافة العقار بنجاح ✅");
-    postForm.reset();
-    loadPosts();
-  });
 
-  // عرض المنشورات
-  async function loadPosts() {
-    postsContainer.innerHTML = "";
-    const querySnapshot = await getDocs(collection(db, "posts"));
-    querySnapshot.forEach((docu) => {
-      const p = docu.data();
-      const div = document.createElement("div");
-      div.className = "post";
-      div.innerHTML = `
-        <img src="${p.image}" alt="${p.title}">
-        <h3>${p.title}</h3>
-        <p>${p.description}</p>
-        <p>النوع: ${p.type} - المساحة: ${p.area} م²</p>
-        ${p.location ? `<p>📍 الموقع: ${p.location}</p>` : ""}
-        <p>${p.inSlider ? "⭐ في السلايدر" : ""}</p>
-        <div class="controls">
-          <button onclick="editPost('${docu.id}')">تعديل</button>
-          <button onclick="deletePost('${docu.id}')">حذف</button>
-        </div>
-      `;
-      postsContainer.appendChild(div);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const propertyForm = document.getElementById('propertyForm');
+    const propertiesList = document.getElementById('propertiesList');
+    const usersList = document.getElementById('usersList');
+
+    // إضافة عقار جديد
+    propertyForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const newProp = {
+        title: document.getElementById('title').value,
+        type: document.getElementById('type').value,
+        area: parseInt(document.getElementById('area').value),
+        location: document.getElementById('location').value || '',
+        rooms: parseInt(document.getElementById('rooms').value),
+        price: document.getElementById('price').value,
+        img: document.getElementById('img').value,
+        desc: document.getElementById('desc').value,
+        showSlider: document.getElementById('showSlider').checked
+      };
+      try {
+        await addDoc(collection(db, "properties"), newProp);
+        alert("تم إضافة العقار ✅");
+        propertyForm.reset();
+        loadProperties();
+      } catch (err) {
+        console.error(err);
+        alert("حدث خطأ أثناء إضافة العقار");
+      }
     });
-  }
 
-  // تعديل منشور
-  window.editPost = async (id) => {
-    const newTitle = prompt("اكتب العنوان الجديد:");
-    if (!newTitle) return;
-    await updateDoc(doc(db, "posts", id), { title: newTitle });
-    alert("تم تعديل المنشور ✅");
-    loadPosts();
-  };
+    // تحميل العقارات
+    async function loadProperties() {
+      propertiesList.innerHTML = '';
+      const querySnapshot = await getDocs(collection(db, "properties"));
+      querySnapshot.forEach((docSnap) => {
+        const prop = docSnap.data();
+        const div = document.createElement('div');
+        div.className = 'list-item';
+        div.innerHTML = `
+          <h4>${prop.title} - ${prop.type}</h4>
+          <p>المساحة: ${prop.area} م² | الغرف: ${prop.rooms} | السعر: ${prop.price}</p>
+          <p>الموقع: ${prop.location || 'غير محدد'}</p>
+          <div class="flex">
+            <button class="btn btn-success" onclick="editProperty('${docSnap.id}')">تعديل</button>
+            <button class="btn btn-danger" onclick="deleteProperty('${docSnap.id}')">حذف</button>
+          </div>
+        `;
+        propertiesList.appendChild(div);
+      });
+    }
 
-  // حذف منشور
-  window.deletePost = async (id) => {
-    if (!confirm("هل أنت متأكد من حذف المنشور؟")) return;
-    await deleteDoc(doc(db, "posts", id));
-    alert("تم حذف المنشور ❌");
-    loadPosts();
-  };
+    window.editProperty = async (id) => {
+      const docRef = doc(db, "properties", id);
+      const docSnap = await getDocs(collection(db, "properties"));
+      const propData = (await docRef.get()).data();
+      if (!propData) return;
+      document.getElementById('title').value = propData.title;
+      document.getElementById('type').value = propData.type;
+      document.getElementById('area').value = propData.area;
+      document.getElementById('location').value = propData.location;
+      document.getElementById('rooms').value = propData.rooms;
+      document.getElementById('price').value = propData.price;
+      document.getElementById('img').value = propData.img;
+      document.getElementById('desc').value = propData.desc;
+      document.getElementById('showSlider').checked = propData.showSlider;
+      // حذف القديم بعد التعديل
+      await deleteDoc(doc(db, "properties", id));
+    };
 
-  loadPosts();
-</script>
+    window.deleteProperty = async (id) => {
+      if(confirm("هل تريد حذف هذا العقار؟")) {
+        await deleteDoc(doc(db, "properties", id));
+        loadProperties();
+      }
+    };
+
+    // تحميل المستخدمين
+    async function loadUsers() {
+      usersList.innerHTML = '';
+      const querySnapshot = await getDocs(collection(db, "users"));
+      querySnapshot.forEach((docSnap) => {
+        const user = docSnap.data();
+        const div = document.createElement('div');
+        div.className = 'list-item';
+        div.innerHTML = `
+          <p>الاسم: ${user.name}</p>
+          <p>الإيميل: ${user.email}</p>
+          <p>الهاتف: ${user.phone || '-'}</p>
+          <p>أدمن: ${user.isAdmin ? 'نعم' : 'لا'}</p>
+        `;
+        usersList.appendChild(div);
+      });
+    }
+
+    loadProperties();
+    loadUsers();
+  </script>
 </body>
 </html>
