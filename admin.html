@@ -12,7 +12,7 @@
     .btn{display:inline-block;text-align:center;text-decoration:none;border:none;cursor:pointer;padding:8px 14px;border-radius:8px;transition:0.3s;}
     .btn:hover{opacity:0.85;}
     .property-form, .property-list{background:white;padding:20px;border-radius:12px;box-shadow:0 4px 10px rgba(0,0,0,0.1);margin-bottom:30px;}
-    .property-form input, .property-form textarea{width:100%;padding:10px;margin:8px 0;border:1px solid #ccc;border-radius:6px;}
+    .property-form input, .property-form textarea, .property-form select{width:100%;padding:10px;margin:8px 0;border:1px solid #ccc;border-radius:6px;}
     .property-form button{background:#0a74da;color:white;width:100%;padding:12px;font-weight:bold;border-radius:6px;}
     .property-card{display:flex;align-items:center;justify-content:space-between;padding:10px;border-bottom:1px solid #eee;}
     .property-card img{width:80px;height:50px;object-fit:cover;border-radius:6px;margin-left:10px;}
@@ -29,9 +29,7 @@
 
 <h2>لوحة الأدمن لإدارة العقارات</h2>
 
-<div class="property-list" id="propertyList">
-  <!-- قائمة العقارات -->
-</div>
+<div class="property-list" id="propertyList"></div>
 
 <div class="floating-btn" id="addPropertyBtn">إضافة عقار جديد +</div>
 
@@ -42,112 +40,115 @@
     <h3 id="modalTitleText">إضافة عقار جديد</h3>
     <form id="propertyForm" class="property-form">
       <input type="text" id="propTitle" placeholder="عنوان العقار" required />
-      <input type="text" id="propCity" placeholder="الموقع" required />
+      <input type="number" id="propArea" placeholder="مساحة العقار (م²)" required />
+      <select id="propType" required>
+        <option value="">اختر نوع العقار</option>
+        <option value="شقة">شقة</option>
+        <option value="فيلا">فيلا</option>
+      </select>
+      <input type="text" id="propCity" placeholder="الموقع (اختياري)" />
       <input type="text" id="propPrice" placeholder="السعر" required />
       <input type="text" id="propImg" placeholder="رابط الصورة" required />
       <textarea id="propDesc" placeholder="وصف العقار"></textarea>
-      <input type="text" id="propType" placeholder="النوع" />
-      <input type="number" id="propRooms" placeholder="عدد الغرف" />
+      <label>
+        <input type="checkbox" id="propSlider" /> إظهار في السلايدر
+      </label>
       <button type="submit">حفظ العقار</button>
     </form>
   </div>
 </div>
 
 <script>
-  const propertyList = document.getElementById('propertyList');
-  const addBtn = document.getElementById('addPropertyBtn');
-  const modal = document.getElementById('propertyModal');
-  const closeModal = document.getElementById('closeModal');
-  const modalTitleText = document.getElementById('modalTitleText');
-  const propertyForm = document.getElementById('propertyForm');
+const propertyList = document.getElementById('propertyList');
+const addBtn = document.getElementById('addPropertyBtn');
+const modal = document.getElementById('propertyModal');
+const closeModal = document.getElementById('closeModal');
+const modalTitleText = document.getElementById('modalTitleText');
+const propertyForm = document.getElementById('propertyForm');
 
-  let properties = JSON.parse(localStorage.getItem('rs_local_props') || '[]');
-  let editId = null;
+let properties = JSON.parse(localStorage.getItem('rs_local_props') || '[]');
+let editId = null;
 
-  function renderProperties() {
-    propertyList.innerHTML = '';
-    if(properties.length===0) propertyList.innerHTML='<p style="text-align:center;padding:20px;color:#666;">لا توجد عقارات حالياً.</p>';
-    properties.forEach(prop=>{
-      const card = document.createElement('div');
-      card.className = 'property-card';
-      card.innerHTML = `<div>
-        <h4>${prop.title}</h4>
-        <p>${prop.city} - ${prop.price}</p>
-      </div>
-      <img src="${prop.img}" alt="${prop.title}">
-      <div class="property-actions">
-        <button class="edit-btn" onclick="editProperty(${prop.id})">تعديل</button>
-        <button class="delete-btn" onclick="deleteProperty(${prop.id})">مسح</button>
-      </div>`;
-      propertyList.appendChild(card);
-    });
-  }
-
-  function openModal() {
-    modal.style.display = 'flex';
-  }
-
-  function closeModalFunc() {
-    modal.style.display = 'none';
-    propertyForm.reset();
-    editId = null;
-    modalTitleText.textContent = 'إضافة عقار جديد';
-  }
-
-  addBtn.addEventListener('click',()=>{
-    openModal();
+function renderProperties() {
+  propertyList.innerHTML = '';
+  if(properties.length===0) propertyList.innerHTML='<p style="text-align:center;padding:20px;color:#666;">لا توجد عقارات حالياً.</p>';
+  properties.forEach(prop=>{
+    const card = document.createElement('div');
+    card.className = 'property-card';
+    card.innerHTML = `<div>
+      <h4>${prop.title} (${prop.area} م²)</h4>
+      <p>${prop.type}${prop.city ? ' - ' + prop.city : ''} - ${prop.price}${prop.slider ? ' 🌟' : ''}</p>
+    </div>
+    <img src="${prop.img}" alt="${prop.title}">
+    <div class="property-actions">
+      <button class="edit-btn" onclick="editProperty(${prop.id})">تعديل</button>
+      <button class="delete-btn" onclick="deleteProperty(${prop.id})">مسح</button>
+    </div>`;
+    propertyList.appendChild(card);
   });
+}
 
-  closeModal.addEventListener('click', closeModalFunc);
-  window.onclick = e => { if(e.target==modal) closeModalFunc(); }
+function openModal() { modal.style.display = 'flex'; }
+function closeModalFunc() { 
+  modal.style.display = 'none'; 
+  propertyForm.reset(); 
+  editId=null;
+  modalTitleText.textContent='إضافة عقار جديد';
+}
 
-  propertyForm.addEventListener('submit', e=>{
-    e.preventDefault();
-    const newProp = {
-      id: editId || Date.now(),
-      title: document.getElementById('propTitle').value,
-      city: document.getElementById('propCity').value,
-      price: document.getElementById('propPrice').value,
-      img: document.getElementById('propImg').value,
-      desc: document.getElementById('propDesc').value,
-      type: document.getElementById('propType').value,
-      rooms: document.getElementById('propRooms').value
-    };
-    if(editId){
-      properties = properties.map(p=>p.id===editId ? newProp : p);
-    }else{
-      properties.push(newProp);
-    }
+addBtn.addEventListener('click',()=>{ openModal(); });
+closeModal.addEventListener('click', closeModalFunc);
+window.onclick = e => { if(e.target==modal) closeModalFunc(); }
+
+propertyForm.addEventListener('submit', e=>{
+  e.preventDefault();
+  const newProp = {
+    id: editId || Date.now(),
+    title: document.getElementById('propTitle').value,
+    area: document.getElementById('propArea').value,
+    type: document.getElementById('propType').value,
+    city: document.getElementById('propCity').value.trim(),
+    price: document.getElementById('propPrice').value,
+    img: document.getElementById('propImg').value,
+    desc: document.getElementById('propDesc').value,
+    slider: document.getElementById('propSlider').checked
+  };
+  if(editId){
+    properties = properties.map(p=>p.id===editId ? newProp : p);
+  }else{
+    properties.push(newProp);
+  }
+  localStorage.setItem('rs_local_props', JSON.stringify(properties));
+  renderProperties();
+  closeModalFunc();
+  alert('تم حفظ العقار ✅');
+});
+
+function editProperty(id){
+  const prop = properties.find(p=>p.id===id);
+  if(!prop) return;
+  editId=id;
+  modalTitleText.textContent='تعديل العقار';
+  document.getElementById('propTitle').value=prop.title;
+  document.getElementById('propArea').value=prop.area;
+  document.getElementById('propType').value=prop.type;
+  document.getElementById('propCity').value=prop.city;
+  document.getElementById('propPrice').value=prop.price;
+  document.getElementById('propImg').value=prop.img;
+  document.getElementById('propDesc').value=prop.desc || '';
+  document.getElementById('propSlider').checked=prop.slider || false;
+  openModal();
+}
+
+function deleteProperty(id){
+  if(confirm('هل تريد مسح هذا العقار؟')){
+    properties = properties.filter(p=>p.id!==id);
     localStorage.setItem('rs_local_props', JSON.stringify(properties));
     renderProperties();
-    closeModalFunc();
-    alert('تم حفظ العقار ✅');
-  });
-
-  function editProperty(id){
-    const prop = properties.find(p=>p.id===id);
-    if(!prop) return;
-    editId = id;
-    modalTitleText.textContent='تعديل العقار';
-    document.getElementById('propTitle').value=prop.title;
-    document.getElementById('propCity').value=prop.city;
-    document.getElementById('propPrice').value=prop.price;
-    document.getElementById('propImg').value=prop.img;
-    document.getElementById('propDesc').value=prop.desc || '';
-    document.getElementById('propType').value=prop.type || '';
-    document.getElementById('propRooms').value=prop.rooms || '';
-    openModal();
   }
+}
 
-  function deleteProperty(id){
-    if(confirm('هل تريد مسح هذا العقار؟')) {
-      properties = properties.filter(p=>p.id!==id);
-      localStorage.setItem('rs_local_props', JSON.stringify(properties));
-      renderProperties();
-    }
-  }
-
-  renderProperties();
+renderProperties();
 </script>
 
 </body>
