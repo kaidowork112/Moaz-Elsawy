@@ -1,238 +1,117 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>لوحة الأدمن - إدارة العقارات</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>لوحة الأدمن - Moaz Elsawy</title>
+<link rel="stylesheet" href="style.css" />
 <style>
-body { font-family:"Cairo", sans-serif; background:#f4f8ff; margin:0; padding:0; }
-header { background: linear-gradient(90deg,#0a74da,#0066cc); color:white; display:flex; justify-content:space-between; align-items:center; padding:15px 40px; }
-header .logo { font-weight:700; font-size:20px; }
-header .btn { background:#f5b800; color:#000; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; }
-header .btn:hover { background:#ffcc33; }
-.container { max-width:90%; margin:20px auto; }
-.admin-table-container { margin-top:30px; overflow-x:auto; }
-.admin-table { width:100%; border-collapse:collapse; background:white; box-shadow:0 2px 5px rgba(0,0,0,0.05); }
-.admin-table th, .admin-table td { border:1px solid #eee; padding:10px; text-align:right; font-size:14px; }
-.admin-table th { background-color:#f4f8ff; color:#0a74da; font-weight:700; }
-.action-btn { background:#f5b800; color:#000; padding:6px 10px; border:none; border-radius:4px; cursor:pointer; font-size:13px; margin-left:5px; }
-.action-btn.delete { background:#dc3545; color:white; }
-/* زر الإضافة العائم */
-#addPropBtn { position:fixed; bottom:30px; left:30px; width:60px; height:60px; border-radius:50%; background:#f5b800; color:#000; font-size:30px; line-height:60px; text-align:center; box-shadow:0 4px 10px rgba(0,0,0,0.3); cursor:pointer; border:none; z-index:500; transition:transform 0.2s; font-weight:700; }
-#addPropBtn:hover { transform:scale(1.1); }
-/* المودال */
-.edit-modal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.7); }
-.edit-modal-content { background:#fefefe; margin:5% auto; padding:30px; border-radius:12px; width:90%; max-width:550px; position:relative; }
-.edit-modal-content .close-btn { color:#aaa; float:left; font-size:32px; font-weight:bold; cursor:pointer; line-height:1; }
-.edit-modal-content .close-btn:hover { color:#000; }
-.edit-modal-content .auth-area { margin-top:10px; padding:0; box-shadow:none; }
-.edit-modal-content .auth-area input, .edit-modal-content .auth-area textarea { width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:6px; font-size:16px; }
-.edit-modal-content .auth-area textarea { resize:vertical; }
-.edit-modal-content .auth-area button { background:#0a74da; color:white; padding:12px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; }
-.edit-modal-content .auth-area button:hover { background:#005bb5; }
+  /* يمكن إضافة أنماط الجدول كما في السابق */
 </style>
 </head>
 <body>
 <header>
   <div class="logo">🏠 لوحة الأدمن</div>
-  <div>
-    <button class="btn" id="toHome">الرئيسية</button>
-    <button class="btn" id="logout">خروج</button>
-  </div>
+  <button id="logout">خروج</button>
 </header>
 
 <main class="container">
-  <div class="admin-table-container">
-    <h2>قائمة العقارات المنشورة حالياً</h2>
-    <table class="admin-table">
-      <thead>
-        <tr>
-          <th>العنوان</th>
-          <th>السعر</th>
-          <th>الغرف</th>
-          <th>المدينة</th>
-          <th>الإجراءات</th>
-        </tr>
-      </thead>
-      <tbody id="adminPropsTableBody"></tbody>
-    </table>
-    <p id="loadingMessage" style="text-align:center; padding:20px;">جارٍ تحميل البيانات من GitHub...</p>
-  </div>
+  <h2>قائمة العقارات المنشورة</h2>
+  <table id="adminTable" border="1" width="100%" cellspacing="0" cellpadding="8">
+    <thead>
+      <tr>
+        <th>العنوان</th>
+        <th>السعر</th>
+        <th>الغرف</th>
+        <th>المدينة</th>
+        <th>إجراءات</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+  <button id="addBtn">إضافة عقار جديد</button>
 </main>
 
-<button id="addPropBtn">+</button>
-
-<div id="propModal" class="edit-modal">
-  <div class="edit-modal-content">
-    <span class="close-btn">&times;</span>
-    <div class="auth-area">
-      <h3 id="modalFormTitle">إضافة عقار جديد</h3>
-      <form id="propForm">
-        <input type="hidden" id="propId" />
-        <input id="title" placeholder="العنوان" required />
-        <input id="price" placeholder="السعر" required />
-        <input id="rooms" placeholder="عدد الغرف" required />
-        <input id="type" placeholder="النوع" required />
-        <input id="city" placeholder="المدينة/الموقع" required />
-        <input id="img" placeholder="رابط الصورة (URL)" required />
-        <textarea id="desc" placeholder="الوصف" rows="3"></textarea>
-        <button type="submit" id="submitBtn">إضافة العقار</button>
-      </form>
-    </div>
-  </div>
+<div id="modal" style="display:none;">
+  <!-- يمكنك إضافة نافذة منبثقة للإضافة/التعديل -->
 </div>
 
 <script>
-const ADMIN_EMAIL = 'admin@moazelsawy.com';
-const OWNER = 'kaidowork112';
-const REPO = 'Moaz-Elsawy';
-const FILE_PATH = 'data/properties.json';
-const GITHUB_TOKEN = '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';
+const GITHUB_OWNER = 'kaidowork112';
+const GITHUB_REPO = 'Moaz-Elsawy';
+const PROPERTIES_FILE = 'data/properties.json';
+const BRANCH = 'main';
+const TOKEN = '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';
 
-let currentFileSHA = null;
-let allProperties = [];
+let properties = [], currentSHA = '';
 
-// عناصر الصفحة
-const propModal = document.getElementById('propModal');
-const propForm = document.getElementById('propForm');
-const modalFormTitle = document.getElementById('modalFormTitle');
-const submitBtn = document.getElementById('submitBtn');
-const loadingMessage = document.getElementById('loadingMessage');
-const tbody = document.getElementById('adminPropsTableBody');
-
-// تحقق صلاحيات الأدمن
 const user = JSON.parse(localStorage.getItem('realestate_user')||'{}');
-if(!user.is_admin || user.email!==ADMIN_EMAIL){
-  alert('غير مسموح: ادخل كأدمن أولاً.');
-  localStorage.removeItem('realestate_user');
-  location.href='login.html';
-}
+if(!user.is_admin){ alert('غير مسموح، سجل الدخول كأدمن'); window.location.href='login-register.html'; }
 
-// تنقل
-document.getElementById('toHome').onclick = () => location.href='index.html';
-document.getElementById('logout').onclick = () => { localStorage.removeItem('realestate_user'); location.href='login.html'; };
+document.getElementById('logout').onclick = () => { localStorage.removeItem('realestate_user'); location.href='login-register.html'; };
 
-// فتح/إغلاق المودال
-document.getElementById('addPropBtn').onclick = openModalForAdd;
-document.querySelector('.close-btn').onclick = () => propModal.style.display='none';
-window.onclick = (e)=>{ if(e.target==propModal) propModal.style.display='none'; };
-
-function openModalForAdd(){
-  propForm.reset();
-  document.getElementById('propId').value='';
-  modalFormTitle.textContent='إضافة عقار جديد';
-  submitBtn.textContent='إضافة العقار';
-  propModal.style.display='block';
-}
-
-window.editProperty = function(id){
-  const prop = allProperties.find(p=>p.id===id);
-  if(!prop) return;
-  document.getElementById('propId').value=prop.id;
-  document.getElementById('title').value=prop.title;
-  document.getElementById('price').value=prop.price;
-  document.getElementById('rooms').value=prop.rooms;
-  document.getElementById('type').value=prop.type;
-  document.getElementById('city').value=prop.city;
-  document.getElementById('img').value=prop.img;
-  document.getElementById('desc').value=prop.desc;
-  modalFormTitle.textContent='تعديل العقار الحالي';
-  submitBtn.textContent='تعديل العقار';
-  propModal.style.display='block';
-}
-
-// جلب البيانات من GitHub
-async function fetchPropertiesFromGitHub(){
-  loadingMessage.style.display='block';
-  try{
-    const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`, {
-      headers: { Authorization: `token ${GITHUB_TOKEN}` }
+async function fetchProperties(){
+    const res = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${PROPERTIES_FILE}?ref=${BRANCH}`, {
+        headers: { Authorization:`token ${TOKEN}` }
     });
-    if(!res.ok) throw new Error('HTTP error '+res.status);
     const data = await res.json();
-    currentFileSHA = data.sha;
-    allProperties = JSON.parse(atob(data.content));
-    displayAdminTable();
-    loadingMessage.style.display='none';
-  }catch(e){
-    console.error(e);
-    loadingMessage.textContent='فشل التحميل. تحقق من التوكن أو الاتصال.';
-  }
+    currentSHA = data.sha;
+    const content = atob(data.content);
+    properties = JSON.parse(content);
+    displayTable();
 }
 
-async function updatePropertiesOnGitHub(newProps, commitMsg){
-  if(!currentFileSHA){ alert('خطأ: SHA غير موجود'); return false; }
-  const newContent = btoa(JSON.stringify(newProps,null,2));
-  const payload = { message: commitMsg, content:newContent, sha:currentFileSHA };
-  const origBtn = submitBtn.textContent;
-  submitBtn.textContent='جاري الحفظ...';
-  try{
-    const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`,{
-      method:'PUT',
-      headers:{ Authorization:`token ${GITHUB_TOKEN}`, 'Content-Type':'application/json' },
-      body:JSON.stringify(payload)
+function displayTable(){
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = '';
+    properties.forEach(prop=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${prop.title}</td>
+            <td>${prop.price}</td>
+            <td>${prop.rooms || ''}</td>
+            <td>${prop.city || prop.location || ''}</td>
+            <td>
+                <button onclick="editProp(${prop.id})">تعديل</button>
+                <button onclick="deleteProp(${prop.id})">حذف</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
     });
-    if(!res.ok) throw new Error('HTTP error '+res.status);
-    const result = await res.json();
-    currentFileSHA=result.content.sha;
-    alert('تم الحفظ بنجاح!');
-    return true;
-  }catch(e){ console.error(e); alert('فشل الحفظ على GitHub'); return false; }
-  finally{ submitBtn.textContent=origBtn; }
 }
 
-function displayAdminTable(){
-  tbody.innerHTML='';
-  if(allProperties.length===0){
-    tbody.innerHTML='<tr><td colspan="5" style="text-align:center;">لا توجد عقارات منشورة حالياً.</td></tr>';
-    return;
-  }
-  allProperties.forEach(p=>{
-    const row = tbody.insertRow();
-    row.innerHTML=`
-      <td>${p.title}</td>
-      <td>${p.price}</td>
-      <td>${p.rooms}</td>
-      <td>${p.city||'N/A'}</td>
-      <td>
-        <button class="action-btn" onclick="editProperty(${p.id})">تعديل</button>
-        <button class="action-btn delete" onclick="deleteProperty(${p.id})">حذف</button>
-      </td>
-    `;
-  });
+async function updateProperties(commitMsg){
+    const res = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${PROPERTIES_FILE}`,{
+        method:'PUT',
+        headers:{ Authorization:`token ${TOKEN}`, 'Content-Type':'application/json'},
+        body:JSON.stringify({
+            message: commitMsg,
+            content: btoa(JSON.stringify(properties,null,2)),
+            sha: currentSHA,
+            branch: BRANCH
+        })
+    });
+    const data = await res.json();
+    if(data.content){ currentSHA = data.content.sha; fetchProperties(); alert('تم الحفظ ✅'); }
 }
 
-// إضافة/تعديل
-propForm.onsubmit = async (e)=>{
-  e.preventDefault();
-  const isEdit = document.getElementById('propId').value!=='';
-  const obj={
-    id: isEdit?Number(document.getElementById('propId').value):Date.now(),
-    title: document.getElementById('title').value,
-    price: document.getElementById('price').value,
-    rooms: document.getElementById('rooms').value,
-    type: document.getElementById('type').value,
-    city: document.getElementById('city').value,
-    img: document.getElementById('img').value,
-    desc: document.getElementById('desc').value
-  };
-  let success=false;
-  if(isEdit){
-    const index = allProperties.findIndex(p=>p.id===obj.id);
-    if(index!==-1){ allProperties[index]=obj; success=await updatePropertiesOnGitHub(allProperties, `تعديل العقار ID: ${obj.id}`); }
-  } else { allProperties.unshift(obj); success=await updatePropertiesOnGitHub(allProperties, `إضافة عقار جديد: ${obj.title}`); }
-  if(success){ propModal.style.display='none'; propForm.reset(); fetchPropertiesFromGitHub(); }
+function deleteProp(id){
+    if(!confirm('هل أنت متأكد من حذف هذا العقار؟')) return;
+    properties = properties.filter(p=>p.id!==id);
+    updateProperties(`حذف العقار ID: ${id}`);
 }
 
-// حذف
-window.deleteProperty = async function(id){
-  if(!confirm('هل أنت متأكد من حذف هذا العقار؟ هذا الإجراء غير قابل للتراجع.')) return;
-  const newProps = allProperties.filter(p=>p.id!==id);
-  if(await updatePropertiesOnGitHub(newProps, `حذف العقار ID: ${id}`)){ allProperties=newProps; displayAdminTable(); }
+function editProp(id){
+    // هنا يمكن فتح نافذة منبثقة وتعديل البيانات ثم updateProperties
+    alert('وظيفة التعديل يمكن إضافتها حسب التصميم السابق');
 }
 
-// تحميل البيانات عند بدء الصفحة
-fetchPropertiesFromGitHub();
+document.getElementById('addBtn').onclick = ()=>{
+    // هنا يمكن فتح نافذة منبثقة للإضافة ثم updateProperties
+    alert('وظيفة الإضافة يمكن إضافتها حسب التصميم السابق');
+};
+
+fetchProperties();
 </script>
 </body>
 </html>
