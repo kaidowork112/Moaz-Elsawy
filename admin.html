@@ -1,100 +1,154 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>لوحة الأدمن | Moaz Elsawy</title>
-<link rel="stylesheet" href="style.css">
-<style>
-.admin-container{padding:40px}
-.admin-container h2{color:#0a74da;text-align:center;margin-bottom:30px}
-.property-form input, .property-form textarea{width:100%;padding:10px;margin:5px 0;border:1px solid #ccc;border-radius:6px}
-.property-form button{background:#0a74da;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer}
-.property-form button:hover{background:#005bb5;color:white}
-.property-list-admin{margin-top:30px}
-.property-card-admin{background:white;padding:15px;border-radius:10px;margin-bottom:10px;box-shadow:0 3px 10px rgba(0,0,0,0.1);display:flex;justify-content:space-between;align-items:center}
-.property-card-admin button{margin-left:10px}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة الأدمن | Moaz Elsawy</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+    *{margin:0;padding:0;box-sizing:border-box;font-family:"Cairo",sans-serif;}
+    body{background:#f4f8ff;color:#222;padding:20px;}
+    h2{color:#0a74da;margin-bottom:20px;text-align:center;}
+    .btn{display:inline-block;text-align:center;text-decoration:none;border:none;cursor:pointer;padding:8px 14px;border-radius:8px;transition:0.3s;}
+    .btn:hover{opacity:0.85;}
+    .property-form, .property-list{background:white;padding:20px;border-radius:12px;box-shadow:0 4px 10px rgba(0,0,0,0.1);margin-bottom:30px;}
+    .property-form input, .property-form textarea{width:100%;padding:10px;margin:8px 0;border:1px solid #ccc;border-radius:6px;}
+    .property-form button{background:#0a74da;color:white;width:100%;padding:12px;font-weight:bold;border-radius:6px;}
+    .property-card{display:flex;align-items:center;justify-content:space-between;padding:10px;border-bottom:1px solid #eee;}
+    .property-card img{width:80px;height:50px;object-fit:cover;border-radius:6px;margin-left:10px;}
+    .property-actions button{margin-left:5px;padding:5px 8px;border-radius:6px;border:none;cursor:pointer;}
+    .edit-btn{background:#f5b800;color:#000;}
+    .delete-btn{background:#ff4d4d;color:white;}
+    .floating-btn{position:fixed;bottom:30px;left:30px;background:#0a74da;color:white;padding:15px 20px;border-radius:50px;font-size:18px;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,0.2);}
+    .modal{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background-color:rgba(0,0,0,0.7);justify-content:center;align-items:center;}
+    .modal-content{background:white;padding:20px;border-radius:12px;width:90%;max-width:400px;position:relative;}
+    .close-btn{position:absolute;top:10px;right:15px;font-size:24px;cursor:pointer;}
+  </style>
 </head>
 <body>
-<div class="admin-container">
-<h2>لوحة الأدمن</h2>
-<form id="addPropertyForm" class="property-form">
-<input type="text" id="propTitle" placeholder="عنوان العقار" required>
-<input type="text" id="propLocation" placeholder="الموقع" required>
-<input type="text" id="propPrice" placeholder="السعر" required>
-<input type="text" id="propType" placeholder="النوع">
-<input type="number" id="propRooms" placeholder="عدد الغرف">
-<textarea id="propDesc" placeholder="الوصف"></textarea>
-<input type="text" id="propImg" placeholder="رابط الصورة">
-<button type="submit">إضافة عقار</button>
-</form>
 
-<div id="propertyList" class="property-list-admin"></div>
+<h2>لوحة الأدمن لإدارة العقارات</h2>
+
+<div class="property-list" id="propertyList">
+  <!-- قائمة العقارات -->
 </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getFirestore, collection, doc, setDoc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+<div class="floating-btn" id="addPropertyBtn">إضافة عقار جديد +</div>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBxEWaPWqpUIgZtasxnE7-82SN6OEzSx7Q",
-  authDomain: "moaz-elsawy.firebaseapp.com",
-  projectId: "moaz-elsawy",
-  storageBucket: "moaz-elsawy.firebasestorage.app",
-  messagingSenderId: "859568017117",
-  appId: "1:859568017117:web:38a7d0c96532f0f7681534",
-  measurementId: "G-JY1XN1VRCP"
-};
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+<!-- مودال إضافة / تعديل -->
+<div class="modal" id="propertyModal">
+  <div class="modal-content">
+    <span class="close-btn" id="closeModal">&times;</span>
+    <h3 id="modalTitleText">إضافة عقار جديد</h3>
+    <form id="propertyForm" class="property-form">
+      <input type="text" id="propTitle" placeholder="عنوان العقار" required />
+      <input type="text" id="propCity" placeholder="الموقع" required />
+      <input type="text" id="propPrice" placeholder="السعر" required />
+      <input type="text" id="propImg" placeholder="رابط الصورة" required />
+      <textarea id="propDesc" placeholder="وصف العقار"></textarea>
+      <input type="text" id="propType" placeholder="النوع" />
+      <input type="number" id="propRooms" placeholder="عدد الغرف" />
+      <button type="submit">حفظ العقار</button>
+    </form>
+  </div>
+</div>
 
-function protectAdminPage(){
-  const user = JSON.parse(localStorage.getItem('realestate_user')||'{}');
-  if(!user.is_admin){ alert("يجب تسجيل الدخول كأدمن"); window.location.href="login.html"; }
-}
-protectAdminPage();
+<script>
+  const propertyList = document.getElementById('propertyList');
+  const addBtn = document.getElementById('addPropertyBtn');
+  const modal = document.getElementById('propertyModal');
+  const closeModal = document.getElementById('closeModal');
+  const modalTitleText = document.getElementById('modalTitleText');
+  const propertyForm = document.getElementById('propertyForm');
 
-const propertyListDiv = document.getElementById("propertyList");
-const addForm = document.getElementById("addPropertyForm");
+  let properties = JSON.parse(localStorage.getItem('rs_local_props') || '[]');
+  let editId = null;
 
-async function loadProperties(){
-  const querySnapshot = await getDocs(collection(db,"properties"));
-  propertyListDiv.innerHTML="";
-  querySnapshot.forEach(docSnap=>{
-    const data = docSnap.data();
-    const card = document.createElement("div");
-    card.className="property-card-admin";
-    card.innerHTML=`<span>${data.title} - ${data.city||data.location||''} - ${data.price}</span>
-    <div>
-    <button onclick='deleteProperty("${docSnap.id}")'>مسح</button>
-    </div>`;
-    propertyListDiv.appendChild(card);
+  function renderProperties() {
+    propertyList.innerHTML = '';
+    if(properties.length===0) propertyList.innerHTML='<p style="text-align:center;padding:20px;color:#666;">لا توجد عقارات حالياً.</p>';
+    properties.forEach(prop=>{
+      const card = document.createElement('div');
+      card.className = 'property-card';
+      card.innerHTML = `<div>
+        <h4>${prop.title}</h4>
+        <p>${prop.city} - ${prop.price}</p>
+      </div>
+      <img src="${prop.img}" alt="${prop.title}">
+      <div class="property-actions">
+        <button class="edit-btn" onclick="editProperty(${prop.id})">تعديل</button>
+        <button class="delete-btn" onclick="deleteProperty(${prop.id})">مسح</button>
+      </div>`;
+      propertyList.appendChild(card);
+    });
+  }
+
+  function openModal() {
+    modal.style.display = 'flex';
+  }
+
+  function closeModalFunc() {
+    modal.style.display = 'none';
+    propertyForm.reset();
+    editId = null;
+    modalTitleText.textContent = 'إضافة عقار جديد';
+  }
+
+  addBtn.addEventListener('click',()=>{
+    openModal();
   });
-}
-window.deleteProperty = async function(id){
-  await deleteDoc(doc(db,"properties",id));
-  loadProperties();
-}
 
-addForm.addEventListener("submit", async e=>{
-  e.preventDefault();
-  const id = Date.now().toString();
-  const newProp = {
-    title: document.getElementById("propTitle").value,
-    location: document.getElementById("propLocation").value,
-    price: document.getElementById("propPrice").value,
-    type: document.getElementById("propType").value,
-    rooms: document.getElementById("propRooms").value,
-    desc: document.getElementById("propDesc").value,
-    img: document.getElementById("propImg").value
-  };
-  await setDoc(doc(db,"properties",id),newProp);
-  addForm.reset();
-  loadProperties();
-});
+  closeModal.addEventListener('click', closeModalFunc);
+  window.onclick = e => { if(e.target==modal) closeModalFunc(); }
 
-loadProperties();
+  propertyForm.addEventListener('submit', e=>{
+    e.preventDefault();
+    const newProp = {
+      id: editId || Date.now(),
+      title: document.getElementById('propTitle').value,
+      city: document.getElementById('propCity').value,
+      price: document.getElementById('propPrice').value,
+      img: document.getElementById('propImg').value,
+      desc: document.getElementById('propDesc').value,
+      type: document.getElementById('propType').value,
+      rooms: document.getElementById('propRooms').value
+    };
+    if(editId){
+      properties = properties.map(p=>p.id===editId ? newProp : p);
+    }else{
+      properties.push(newProp);
+    }
+    localStorage.setItem('rs_local_props', JSON.stringify(properties));
+    renderProperties();
+    closeModalFunc();
+    alert('تم حفظ العقار ✅');
+  });
+
+  function editProperty(id){
+    const prop = properties.find(p=>p.id===id);
+    if(!prop) return;
+    editId = id;
+    modalTitleText.textContent='تعديل العقار';
+    document.getElementById('propTitle').value=prop.title;
+    document.getElementById('propCity').value=prop.city;
+    document.getElementById('propPrice').value=prop.price;
+    document.getElementById('propImg').value=prop.img;
+    document.getElementById('propDesc').value=prop.desc || '';
+    document.getElementById('propType').value=prop.type || '';
+    document.getElementById('propRooms').value=prop.rooms || '';
+    openModal();
+  }
+
+  function deleteProperty(id){
+    if(confirm('هل تريد مسح هذا العقار؟')) {
+      properties = properties.filter(p=>p.id!==id);
+      localStorage.setItem('rs_local_props', JSON.stringify(properties));
+      renderProperties();
+    }
+  }
+
+  renderProperties();
 </script>
+
 </body>
 </html>
