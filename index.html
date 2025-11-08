@@ -1,46 +1,49 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Moaz Elsawy | تسويق عقاري</title>
-  <style>
-    body { margin:0; font-family:"Cairo", sans-serif; background:#f4f8ff; }
-    .header { background:#0a74da; color:white; display:flex; justify-content:space-between; align-items:center; padding:15px 20px; position:sticky; top:0; z-index:100; }
-    .header .logo { font-weight:700; font-size:20px; }
-    .header nav a { color:white; text-decoration:none; margin-left:15px; }
-    .header nav a.btn { background:#f5b800; color:#000; padding:6px 12px; border-radius:6px; cursor:pointer; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moaz Elsawy | تسويق عقاري</title>
+<style>
+  body { margin:0; font-family:"Cairo", sans-serif; background:#f4f8ff; display:flex; flex-direction:column; min-height:100vh; }
+  .header { background:#0a74da; color:white; display:flex; justify-content:space-between; align-items:center; padding:15px 20px; position:sticky; top:0; z-index:100; }
+  .header .logo { font-weight:700; font-size:20px; }
+  .header nav a { color:white; text-decoration:none; margin-left:15px; }
+  .header nav a.btn { background:#f5b800; color:#000; padding:6px 12px; border-radius:6px; cursor:pointer; }
 
-    /* السلايدر */
-    .slider { overflow:hidden; padding:20px 0; }
-    .slides-container { display:flex; gap:15px; scroll-behavior:smooth; cursor:grab; overflow-x:auto; padding-bottom:10px; }
-    .slide { flex:0 0 calc(50% - 15px); height:220px; background-size:cover; background-position:center; border-radius:12px; position:relative; }
-    .caption { position:absolute; bottom:10px; right:10px; background:rgba(0,0,0,0.5); color:#fff; padding:6px 10px; border-radius:6px; font-size:14px; }
+  .slider { overflow:hidden; padding:20px 0; }
+  .slides-container { display:flex; gap:15px; scroll-behavior:smooth; cursor:grab; overflow-x:auto; padding-bottom:10px; }
+  .slide { flex:0 0 calc(50% - 15px); height:220px; background-size:cover; background-position:center; border-radius:12px; position:relative; }
+  .caption { position:absolute; bottom:10px; right:10px; background:rgba(0,0,0,0.5); color:#fff; padding:6px 10px; border-radius:6px; font-size:14px; }
 
-    /* العقارات */
-    .properties { padding:20px; text-align:center; }
-    .property-list { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; }
-    .property-card { background:#fff; border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,0.1); width:calc(50% - 20px); cursor:pointer; transition:0.3s; }
-    .property-card:hover { transform:translateY(-5px); }
-    .property-card img { width:100%; height:180px; border-top-left-radius:12px; border-top-right-radius:12px; object-fit:cover; }
-    .property-info { padding:10px; text-align:right; }
-    .property-info h3 { margin:0 0 5px 0; }
-    .property-info p { font-size:14px; color:#666; margin:3px 0; }
-    .property-info span { color:#f5b800; font-weight:bold; display:block; margin-top:5px; }
+  /* البحث */
+  .search-bar { display:flex; justify-content:center; gap:10px; margin:15px 20px; flex-wrap:wrap; }
+  .search-bar select, .search-bar input { padding:6px 10px; border-radius:6px; border:1px solid #ccc; font-size:14px; }
+  .search-bar button { background:#0a74da; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; }
 
-    /* مودال */
-    .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:1000; }
-    .modal-content { background:#fff; max-width:700px; margin:50px auto; border-radius:12px; padding:20px; position:relative; }
-    .close-button { position:absolute; left:20px; top:10px; font-size:28px; cursor:pointer; color:#aaa; }
-    .close-button:hover { color:#000; }
-    #modalDetails img { width:100%; max-height:400px; object-fit:cover; border-radius:8px; margin-bottom:15px; }
-    #modalDetails h2 { color:#0a74da; margin-bottom:10px; }
-    #modalDetails p { margin:8px 0; font-size:15px; }
-    .whatsapp-btn { display:block; width:100%; text-align:center; background:#25d366; color:#fff; padding:12px 0; font-weight:bold; border-radius:8px; text-decoration:none; margin-top:15px; }
+  .properties { padding:20px; text-align:center; flex:1; }
+  .property-list { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; }
+  .property-card { background:#fff; border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,0.1); width:calc(50% - 20px); cursor:pointer; transition:0.3s; }
+  .property-card:hover { transform:translateY(-5px); }
+  .property-card img { width:100%; height:180px; border-top-left-radius:12px; border-top-right-radius:12px; object-fit:cover; }
+  .property-info { padding:10px; text-align:right; }
+  .property-info h3 { margin:0 0 5px 0; }
+  .property-info p { font-size:14px; color:#666; margin:3px 0; }
+  .property-info span { color:#f5b800; font-weight:bold; display:block; margin-top:5px; }
 
-    footer { text-align:center; padding:12px 0; color:#f5b800; background:#0a74da; margin-top:20px; border-radius:8px; }
-    @media(max-width:700px){ .slide, .property-card { flex:0 0 100%; } }
-  </style>
+  /* مودال */
+  .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:1000; }
+  .modal-content { background:#fff; max-width:700px; margin:50px auto; border-radius:12px; padding:20px; position:relative; }
+  .close-button { position:absolute; left:20px; top:10px; font-size:28px; cursor:pointer; color:#aaa; }
+  .close-button:hover { color:#000; }
+  #modalDetails img { width:100%; max-height:400px; object-fit:cover; border-radius:8px; margin-bottom:15px; }
+  #modalDetails h2 { color:#0a74da; margin-bottom:10px; }
+  #modalDetails p { margin:8px 0; font-size:15px; }
+  .whatsapp-btn { display:block; width:100%; text-align:center; background:#25d366; color:#fff; padding:12px 0; font-weight:bold; border-radius:8px; text-decoration:none; margin-top:15px; }
+
+  footer { text-align:center; padding:12px 0; color:#f5b800; background:#0a74da; border-radius:8px; }
+  @media(max-width:700px){ .slide, .property-card { flex:0 0 100%; } }
+</style>
 </head>
 <body>
 
@@ -48,7 +51,6 @@
     <div class="logo">🏠 Moaz Elsawy</div>
     <nav>
       <a href="#properties">العقارات</a>
-      <a href="#contact">تواصل معنا</a>
       <a href="#" id="loginBtn" class="btn">تسجيل الدخول</a>
     </nav>
   </header>
@@ -58,10 +60,22 @@
     <div class="slides-container" id="slidesContainer"></div>
   </section>
 
+  <!-- البحث -->
+  <div class="search-bar">
+    <select id="typeSelect">
+      <option value="">النوع</option>
+      <option value="شقة">شقة</option>
+      <option value="فيلا">فيلا</option>
+    </select>
+    <input type="text" id="cityInput" placeholder="المكان">
+    <button id="searchBtn">🔍</button>
+  </div>
+
   <!-- العقارات -->
   <section id="properties" class="properties">
     <h2>العقارات المتاحة</h2>
     <div id="property-list" class="property-list"></div>
+    <p id="noResults" style="display:none;color:red; font-weight:bold;">لا يوجد</p>
   </section>
 
   <!-- المودال -->
@@ -109,6 +123,10 @@
     const modal = document.getElementById("propertyModal");
     const closeBtn = document.querySelector(".close-button");
     const loginBtn = document.getElementById("loginBtn");
+    const searchBtn = document.getElementById("searchBtn");
+    const typeSelect = document.getElementById("typeSelect");
+    const cityInput = document.getElementById("cityInput");
+    const noResults = document.getElementById("noResults");
 
     let ALL_PROPERTIES = [];
 
@@ -136,24 +154,28 @@
           slidesContainer.appendChild(slide);
         }
 
-        // العقارات
-        const card = document.createElement("div");
-        card.className = "property-card";
-        card.addEventListener("click", ()=>openModal(prop.id));
-        card.innerHTML = `
-          <img src="${prop.img}" alt="${prop.title}">
-          <div class="property-info">
-            <h3>${prop.title}</h3>
-            <p><strong>الموقع:</strong> ${prop.city || "-"}</p>
-            <p><strong>الغرف:</strong> ${prop.rooms || "-"}</p>
-            <p><strong>المساحة:</strong> ${prop.area || "-"}</p>
-            <span>${prop.price}</span>
-          </div>
-        `;
+        // الكروت
+        const card = createCard(prop);
         propertyList.appendChild(card);
       });
 
       initSliderDrag();
+    }
+
+    function createCard(prop){
+      const card = document.createElement("div");
+      card.className="property-card";
+      card.addEventListener("click", ()=>openModal(prop.id));
+      card.innerHTML = `
+        <img src="${prop.img}" alt="${prop.title}">
+        <div class="property-info">
+          <h3>${prop.title}</h3>
+          <p><strong>الموقع:</strong> ${prop.city || "-"}</p>
+          <p><strong>الغرف:</strong> ${prop.rooms || "-"}</p>
+          <p><strong>المساحة:</strong> ${prop.area || "-"}</p>
+          <span>${prop.price}</span>
+        </div>`;
+      return card;
     }
 
     function openModal(id){
@@ -179,15 +201,22 @@
 
     loginBtn.addEventListener("click", ()=>{
       const user = JSON.parse(localStorage.getItem("realestate_user")||"{}");
-      if(user.email){
-        localStorage.removeItem("realestate_user");
-        location.reload();
-      } else {
-        window.location.href = "login.html";
-      }
+      if(user.email){ localStorage.removeItem("realestate_user"); location.reload(); }
+      else { window.location.href="login.html"; }
     });
 
-    // السلايدر بالسحب باليد
+    searchBtn.addEventListener("click", ()=>{
+      const type = typeSelect.value;
+      const city = cityInput.value.trim();
+      propertyList.innerHTML = "";
+      let results = ALL_PROPERTIES.filter(p=>{
+        return (!type || p.type===type) && (!city || (p.city && p.city.includes(city)));
+      });
+      if(results.length===0){ noResults.style.display="block"; }
+      else{ noResults.style.display="none"; results.forEach(p=>propertyList.appendChild(createCard(p))); }
+    });
+
+    // سحب السلايدر باليد
     function initSliderDrag(){
       let isDown=false, startX, scrollLeft;
       slidesContainer.addEventListener('mousedown', e=>{
@@ -203,15 +232,8 @@
         slidesContainer.scrollLeft = scrollLeft - walk;
       });
       // للموبايل
-      slidesContainer.addEventListener('touchstart', e=>{
-        startX = e.touches[0].pageX - slidesContainer.offsetLeft;
-        scrollLeft = slidesContainer.scrollLeft;
-      });
-      slidesContainer.addEventListener('touchmove', e=>{
-        const x = e.touches[0].pageX - slidesContainer.offsetLeft;
-        const walk = (x - startX)*2;
-        slidesContainer.scrollLeft = scrollLeft - walk;
-      });
+      slidesContainer.addEventListener('touchstart', e=>{ startX=e.touches[0].pageX-slidesContainer.offsetLeft; scrollLeft=slidesContainer.scrollLeft; });
+      slidesContainer.addEventListener('touchmove', e=>{ const x=e.touches[0].pageX-slidesContainer.offsetLeft; const walk=(x-startX)*2; slidesContainer.scrollLeft=scrollLeft-walk; });
     }
 
     document.addEventListener("DOMContentLoaded", ()=>{
@@ -219,7 +241,7 @@
       if(user.email) loginBtn.textContent="تسجيل خروج";
       loadProperties();
     });
-  </script>
 
+  </script>
 </body>
 </html>
