@@ -1,176 +1,182 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>لوحة الأدمن | Moaz Elsawy</title>
-<link rel="stylesheet" href="style.css">
-<style>
-  .admin-container {
-    max-width: 800px;
-    margin: 50px auto;
-    background: #fff;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-  }
-  .admin-container h2 {
-    color: #0a74da;
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  .admin-container form input,
-  .admin-container form select,
-  .admin-container form textarea {
-    width: 100%;
-    padding: 10px;
-    margin: 8px 0;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
-  }
-  .admin-container form label {
-    font-weight: bold;
-    margin-top: 10px;
-    display: block;
-  }
-  .admin-container form button {
-    margin-top: 15px;
-    padding: 12px;
-    width: 100%;
-    background: #0a74da;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
-  }
-  .admin-container form button:hover {
-    background: #005bb5;
-  }
-  .property-list-admin {
-    margin-top: 30px;
-  }
-  .property-card-admin {
-    background: #f9f9f9;
-    padding: 15px;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .property-card-admin span {
-    font-weight: bold;
-    color: #0a74da;
-  }
-  .property-card-admin button {
-    background: red;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>صفحة الأدمن</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: "Cairo", sans-serif;
+      background: #f4f4f4;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #222;
+    }
+    form {
+      background: #fff;
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 25px;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+    label { font-size: 14px; color: #333; }
+    button {
+      background-color: #0078d4;
+      color: #fff;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover { background-color: #005ea3; }
+    .post {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 15px;
+      margin-bottom: 10px;
+    }
+    .post img {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+    .controls button {
+      margin-left: 5px;
+      background: #e33;
+    }
+    .controls button:first-child {
+      background: #28a745;
+    }
+  </style>
 </head>
 <body>
-<div class="admin-container">
-  <h2>لوحة الأدمن - إدارة العقارات</h2>
-  <form id="addPropertyForm">
-    <label>العنوان</label>
-    <input type="text" id="title" required>
 
-    <label>النوع</label>
-    <select id="type" required>
-      <option value="">اختر النوع</option>
-      <option value="شقة">شقة</option>
-      <option value="فيلا">فيلا</option>
-    </select>
+<h1>لوحة تحكم الأدمن</h1>
 
-    <label>المساحة (م²)</label>
-    <input type="number" id="size" required>
+<form id="postForm">
+  <label>اسم العقار</label>
+  <input type="text" id="title" required>
 
-    <label>الموقع (اختياري)</label>
-    <input type="text" id="city">
+  <label>الوصف</label>
+  <textarea id="description" required></textarea>
 
-    <label>عدد الغرف</label>
-    <input type="number" id="rooms" required>
+  <label>النوع</label>
+  <select id="type">
+    <option value="شقة">شقة</option>
+    <option value="فيلا">فيلا</option>
+  </select>
 
-    <label>السعر</label>
-    <input type="text" id="price" required>
+  <label>المساحة (م²)</label>
+  <input type="number" id="area" required>
 
-    <label>الصورة (رابط URL)</label>
-    <input type="url" id="img" required>
+  <label>الموقع (اختياري)</label>
+  <input type="text" id="location">
 
-    <label>الوصف</label>
-    <textarea id="desc" rows="3"></textarea>
+  <label>رابط الصورة</label>
+  <input type="url" id="image" required>
 
-    <label>
-      <input type="checkbox" id="inSlider"> إظهار في السلايدر
-    </label>
+  <label>
+    <input type="checkbox" id="slider"> إضافة للسلايدر
+  </label>
 
-    <button type="submit">إضافة العقار</button>
-  </form>
+  <button type="submit">إضافة العقار</button>
+</form>
 
-  <div class="property-list-admin" id="adminPropertyList">
-    <!-- قائمة العقارات الحالية -->
-  </div>
-</div>
+<div id="postsContainer"></div>
 
-<script>
-const form = document.getElementById( addPropertyForm );
-const adminList = document.getElementById( adminPropertyList );
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+  import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-// تحميل العقارات من LocalStorage
-let properties = JSON.parse(localStorage.getItem( rs_local_props ) ||  [] );
-
-function displayAdminProperties() {
-  adminList.innerHTML =   ;
-  properties.forEach((p, idx) => {
-    const div = document.createElement( div );
-    div.className =  property-card-admin ;
-    div.innerHTML = `
-      <div>
-        <span>${p.title}</span> - ${p.type} - ${p.size}م² - ${p.city ||  لا يوجد موقع } - ${p.rooms} غرف - ${p.price}
-      </div>
-      <button onclick="deleteProperty(${idx})">حذف</button>
-    `;
-    adminList.appendChild(div);
-  });
-}
-
-function deleteProperty(idx) {
-  if(!confirm( هل تريد حذف هذا العقار؟ )) return;
-  properties.splice(idx,1);
-  localStorage.setItem( rs_local_props , JSON.stringify(properties));
-  displayAdminProperties();
-}
-
-form.addEventListener( submit , e => {
-  e.preventDefault();
-  const newProp = {
-    id: Date.now(),
-    title: document.getElementById( title ).value.trim(),
-    type: document.getElementById( type ).value,
-    size: document.getElementById( size ).value,
-    city: document.getElementById( city ).value.trim(),
-    rooms: document.getElementById( rooms ).value,
-    price: document.getElementById( price ).value.trim(),
-    img: document.getElementById( img ).value.trim(),
-    desc: document.getElementById( desc ).value.trim(),
-    inSlider: document.getElementById( inSlider ).checked
+  const firebaseConfig = {
+    apiKey: "AIzaSyBxEWaPWqpUIgZtasxnE7-82SN6OEzSx7Q",
+    authDomain: "moaz-elsawy.firebaseapp.com",
+    projectId: "moaz-elsawy",
+    storageBucket: "moaz-elsawy.firebasestorage.app",
+    messagingSenderId: "859568017117",
+    appId: "1:859568017117:web:38a7d0c96532f0f7681534",
+    measurementId: "G-JY1XN1VRCP"
   };
 
-  properties.unshift(newProp); // يضيف في البداية
-  localStorage.setItem( rs_local_props , JSON.stringify(properties));
-  displayAdminProperties();
-  form.reset();
-  alert( تم إضافة العقار بنجاح ✅ );
-});
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-// عرض العقارات عند تحميل الصفحة
-displayAdminProperties();
+  const postForm = document.getElementById("postForm");
+  const postsContainer = document.getElementById("postsContainer");
+
+  // إضافة منشور جديد
+  postForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const newPost = {
+      title: title.value,
+      description: description.value,
+      type: type.value,
+      area: area.value,
+      location: location.value || "",
+      image: image.value,
+      inSlider: slider.checked,
+      createdAt: new Date().toISOString()
+    };
+    await addDoc(collection(db, "posts"), newPost);
+    alert("تم إضافة العقار بنجاح ✅");
+    postForm.reset();
+    loadPosts();
+  });
+
+  // عرض المنشورات
+  async function loadPosts() {
+    postsContainer.innerHTML = "";
+    const querySnapshot = await getDocs(collection(db, "posts"));
+    querySnapshot.forEach((docu) => {
+      const p = docu.data();
+      const div = document.createElement("div");
+      div.className = "post";
+      div.innerHTML = `
+        <img src="${p.image}" alt="${p.title}">
+        <h3>${p.title}</h3>
+        <p>${p.description}</p>
+        <p>النوع: ${p.type} - المساحة: ${p.area} م²</p>
+        ${p.location ? `<p>📍 الموقع: ${p.location}</p>` : ""}
+        <p>${p.inSlider ? "⭐ في السلايدر" : ""}</p>
+        <div class="controls">
+          <button onclick="editPost('${docu.id}')">تعديل</button>
+          <button onclick="deletePost('${docu.id}')">حذف</button>
+        </div>
+      `;
+      postsContainer.appendChild(div);
+    });
+  }
+
+  // تعديل منشور
+  window.editPost = async (id) => {
+    const newTitle = prompt("اكتب العنوان الجديد:");
+    if (!newTitle) return;
+    await updateDoc(doc(db, "posts", id), { title: newTitle });
+    alert("تم تعديل المنشور ✅");
+    loadPosts();
+  };
+
+  // حذف منشور
+  window.deletePost = async (id) => {
+    if (!confirm("هل أنت متأكد من حذف المنشور؟")) return;
+    await deleteDoc(doc(db, "posts", id));
+    alert("تم حذف المنشور ❌");
+    loadPosts();
+  };
+
+  loadPosts();
 </script>
 </body>
 </html>
