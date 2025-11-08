@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>لوحة الأدمن — Moaz Elsawy Real Estate</title>
+  <title>لوحة الأدمن — Moaz Elsawy</title>
+  <meta name="robots" content="noindex">
   <style>
     /* ===== Theme (فاتح: دهبي × أزرق فاتح) ===== */
     :root{
@@ -11,173 +12,152 @@
       --lightblue:#9fd7ff;
       --bg:#f7f9fb;
       --card:#ffffff;
-      --muted:#666;
+      --muted:#667;
       --accent:#0a74da;
-      --maxw:1000px;
-      --glass: rgba(255,255,255,0.85);
+      --maxw:1100px;
+      --glass: rgba(255,255,255,0.9);
     }
     *{box-sizing:border-box}
+    html,body{height:100%}
     body{
-      margin:0; padding:24px; font-family:  Cairo ,  Arial , sans-serif;
-      background: linear-gradient(180deg, #ffffff 0%, var(--bg) 100%);
-      color:#222;
-      -webkit-font-smoothing:antialiased;
+      margin:0;padding:18px;font-family: 'Cairo', 'Helvetica Neue', Arial, sans-serif;
+      background:linear-gradient(180deg,#fff 0%,var(--bg) 100%);
+      color:#222;-webkit-font-smoothing:antialiased;
     }
 
-    .wrap{max-width:var(--maxw);margin:0 auto}
-    .top{
-      display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;
-    }
-    .brand{
-      display:flex;align-items:center;gap:12px;
-    }
-    .logo{
-      width:56px;height:56px;border-radius:12px;background:var(--lightblue);display:flex;align-items:center;justify-content:center;font-weight:800;color:#033;
-      box-shadow:0 6px 18px rgba(15,47,85,0.08)
-    }
-    h1{font-size:20px;margin:0}
-    p.lead{margin:0;color:var(--muted);font-size:14px}
+    .container{max-width:var(--maxw);margin:0 auto}
 
-    /* token area */
-    .token-area{
-      display:flex;gap:8px;align-items:center;
-    }
-    .token-area input{
-      padding:10px 12px;border-radius:8px;border:1px solid #e6eef8;width:360px;
-      background:white;
-    }
-    .btn{
-      background:var(--gold);color:#111;padding:9px 12px;border-radius:8px;border:none;cursor:pointer;font-weight:700;
-      box-shadow:0 6px 18px rgba(196,154,58,0.15)
-    }
+    /* header */
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:52px;height:52px;border-radius:10px;background:var(--lightblue);display:flex;align-items:center;justify-content:center;font-weight:800;color:#033;box-shadow:0 6px 18px rgba(15,47,85,0.06)}
+    h1{font-size:18px;margin:0}
+    .lead{color:var(--muted);font-size:13px;margin-top:4px}
+
+    /* token bar */
+    .token-bar{display:flex;gap:8px;align-items:center}
+    .token-bar input{padding:10px;border-radius:8px;border:1px solid #e6eef8;width:320px;background:white}
+    .btn{background:var(--gold);color:#111;padding:9px 12px;border-radius:8px;border:none;cursor:pointer;font-weight:700;box-shadow:0 8px 22px rgba(196,154,58,0.12)}
     .btn.secondary{background:var(--accent);color:#fff}
+    .btn.ghost{background:#fff;border:1px solid #e6eef8;color:#222;box-shadow:none}
 
-    /* admin container */
-    .admin{
-      background:var(--card);border-radius:14px;padding:18px;box-shadow:0 12px 30px rgba(19,43,66,0.05);
-    }
+    /* admin card */
+    .card{background:var(--card);border-radius:12px;padding:14px;box-shadow:0 10px 30px rgba(12,35,60,0.04)}
+    .layout{display:grid;grid-template-columns:1fr 360px;gap:16px;align-items:start}
 
-    .grid{
-      display:grid;grid-template-columns:1fr 360px;gap:18px;
-    }
-
-    /* form */
-    .form{
-      display:flex;flex-direction:column;gap:10px;padding:12px;background:linear-gradient(180deg,var(--glass),#fff);border-radius:12px;border:1px solid #f0f4fb;
-    }
-    .form input,.form textarea{
-      padding:10px;border-radius:8px;border:1px solid #e6eef8;background:white;
-    }
+    /* form (left) */
+    .form{display:flex;flex-direction:column;gap:10px}
+    .form input,.form textarea{padding:10px;border-radius:8px;border:1px solid #e6eef8;background:white}
     .form label{font-size:13px;color:var(--muted)}
+    .actions-row{display:flex;gap:8px;align-items:center}
 
-    /* list */
-    .list{
-      margin-top:14px;display:flex;flex-direction:column;gap:10px;
-      max-height:560px;overflow:auto;padding-right:6px;
-    }
-    .item{
-      display:flex;gap:12px;align-items:center;padding:10px;border-radius:10px;border:1px solid #eef6ff;background:white;
-    }
-    .thumb{width:96px;height:64px;border-radius:8px;background:#ddd;overflow:hidden;flex-shrink:0}
-    .thumb img{width:100%;height:100%;object-fit:cover;display:block}
-    .meta{flex:1;text-align:right}
-    .meta h4{margin:0;font-size:15px}
-    .meta p{margin:4px 0;color:var(--muted);font-size:13px}
-    .actions{display:flex;gap:8px;align-items:center}
-    .actions button{padding:8px 10px;border-radius:8px;border:none;cursor:pointer}
+    /* grid list */
+    .grid-list{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+    .card-item{background:#fff;border-radius:10px;overflow:hidden;border:1px solid #f1f6ff;display:flex;flex-direction:column}
+    .card-thumb{height:140px;background:#eee;overflow:hidden}
+    .card-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+    .card-body{padding:10px;text-align:right}
+    .card-body h3{margin:0;font-size:15px}
+    .meta{color:var(--muted);font-size:13px;margin-top:6px}
+    .card-foot{display:flex;gap:8px;padding:10px;border-top:1px solid #f5f9ff;justify-content:flex-end}
 
-    .actions .edit{background:#0a74da;color:#fff}
-    .actions .del{background:#ff5c5c;color:#fff}
-    .actions .preview{background:#eee;color:#222}
+    .small{font-size:13px;color:var(--muted)}
 
-    /* popup (overlay) */
-    .overlay{
-      position:fixed;inset:0;background:rgba(8,20,40,0.45);display:none;align-items:center;justify-content:center;z-index:1200;
-    }
-    .modal{
-      width:92%;max-width:820px;background:white;border-radius:12px;padding:18px;box-shadow:0 20px 60px rgba(2,6,23,0.3);
-      transform:translateY(20px);opacity:0;transition:all .28s ease-in-out;
-    }
+    /* overlay modal */
+    .overlay{position:fixed;inset:0;background:rgba(8,20,40,0.45);display:none;align-items:center;justify-content:center;z-index:9999;padding:16px}
     .overlay.show{display:flex}
+    .modal{width:100%;max-width:900px;background:white;border-radius:12px;padding:14px;box-shadow:0 30px 80px rgba(12,30,60,0.18);transform:translateY(12px);opacity:0;transition:all .22s ease-in-out}
     .overlay.show .modal{transform:translateY(0);opacity:1}
 
-    .modal .m-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
-    .modal .m-body{display:flex;gap:12px}
-    .modal .m-left{width:48%}
-    .modal .m-left img{width:100%;height:260px;object-fit:cover;border-radius:8px}
-    .modal .m-right{flex:1;display:flex;flex-direction:column;gap:8px}
-    .modal .m-right input,.modal .m-right textarea{padding:8px;border-radius:8px;border:1px solid #e9f1ff}
-    .m-foot{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+    .modal .m-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+    .modal .m-body{display:flex;gap:14px}
+    .m-left{flex:1;min-width:40%}
+    .m-left img{width:100%;height:320px;object-fit:cover;border-radius:8px}
+    .m-right{flex:1;display:flex;flex-direction:column;gap:8px}
+    .m-right input,.m-right textarea{padding:8px;border-radius:8px;border:1px solid #eef6ff}
+    .m-foot{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
 
-    /* preview style */
-    .preview-card{display:flex;gap:12px;align-items:flex-start}
-    .preview-card .p-thumb{width:42%;border-radius:10px;overflow:hidden}
-    .preview-card .p-thumb img{width:100%;height:100%;object-fit:cover}
-    .preview-card .p-info{flex:1;text-align:right}
+    /* preview inside modal */
+    .preview{display:flex;gap:12px;align-items:flex-start}
+    .p-thumb{width:44%;border-radius:10px;overflow:hidden}
+    .p-thumb img{width:100%;height:100%;object-fit:cover}
+    .p-info{flex:1;text-align:right}
 
     /* responsive */
-    @media (max-width:900px){
-      .grid{grid-template-columns:1fr; }
-      .modal .m-body{flex-direction:column}
-      .modal .m-left{width:100%}
+    @media (max-width:1000px){
+      .layout{grid-template-columns:1fr 300px}
+      .grid-list{grid-template-columns:repeat(2,1fr)}
+    }
+    @media (max-width:700px){
+      header{flex-direction:column;align-items:flex-start;gap:10px}
+      .token-bar input{width:100%}
+      .layout{grid-template-columns:1fr}
+      .grid-list{grid-template-columns:1fr}
+      .m-left img{height:220px}
     }
 
-    /* small helper */
-    .muted{color:var(--muted);font-size:13px}
-    .sep{height:1px;background:#f1f6ff;margin:12px 0;border-radius:2px}
+    /* small helpers */
+    .muted{color:var(--muted)}
+    .sep{height:1px;background:#f1f6ff;margin:10px 0;border-radius:2px}
+    .right{justify-content:flex-end;display:flex}
+    .danger{background:#ff5c5c;color:#fff}
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="top">
+  <div class="container">
+    <header>
       <div class="brand">
         <div class="logo">عق</div>
         <div>
-          <h1>لوحة تحكم الأدمن — Moaz Elsawy Real Estate</h1>
-          <p class="lead">أضف، عدّل، احذف، وعرض معاينة للعقارات — التغييرات تُحفظ مباشرة في ملف <code>data/properties.json</code></p>
+          <h1>Moaz Elsawy — لوحة الأدمن</h1>
+          <div class="lead">تحكم كامل في منشورات العقارات — إضافة، تعديل، حذف، معاينة و إرسال واتساب ذكي</div>
         </div>
       </div>
 
-      <div class="token-area">
-        <input id="tokenInput" type="password" placeholder="أدخل GitHub Personal Access Token هنا" />
-        <button id="saveTokenBtn" class="btn">حفظ التوكين</button>
-        <button id="clearTokenBtn" class="btn" style="background:#efefef;color:#111">مسح</button>
+      <div class="token-bar">
+        <input id="tokenInput" type="password" placeholder="ألصق GitHub Personal Access Token هنا (يُخزن محلياً)" />
+        <button id="saveToken" class="btn">حفظ التوكين</button>
+        <button id="clearToken" class="btn ghost">مسح</button>
       </div>
-    </div>
+    </header>
 
-    <div class="admin">
-      <div class="grid">
+    <div class="card">
+      <div class="layout">
+        <!-- left: form + list -->
         <div>
-          <div class="form" id="addFormWrap">
-            <label class="muted">أضف عقار جديد سريعًا</label>
-            <input id="f_name" placeholder="اسم العقار (مثال: شقة 2 بيد - الزمالك)" />
-            <input id="f_location" placeholder="المكان (مثال: القاهرة - الزمالك)" />
-            <input id="f_price" placeholder="السعر (مثال: 2,000,000 ج.م)" />
-            <input id="f_rooms" placeholder="عدد الغرف (رقم)" />
-            <input id="f_area" placeholder="المساحة (متر²)" />
-            <input id="f_image" placeholder="رابط الصورة الرئيسية" />
+          <div class="form">
+            <label class="small">أضف عقار جديد</label>
+            <input id="f_name" placeholder="اسم العقار" />
+            <input id="f_location" placeholder="الموقع" />
+            <input id="f_price" placeholder="السعر" />
+            <input id="f_rooms" placeholder="عدد الغرف" />
+            <input id="f_area" placeholder="المساحة (م²)" />
+            <input id="f_image" placeholder="رابط صورة" />
             <textarea id="f_desc" rows="3" placeholder="وصف مختصر"></textarea>
-            <div style="display:flex;gap:8px;justify-content:flex-start">
+            <div class="actions-row">
               <button id="addBtn" class="btn secondary">➕ إضافة</button>
-              <button id="refreshBtn" class="btn" style="background:#e7f3ff;color:#0a74da">تحديث القائمة</button>
+              <button id="refreshBtn" class="btn">تحديث</button>
+              <div style="flex:1"></div>
+              <span class="small muted">العقارات تُخزن في: <strong>data/properties.json</strong></span>
             </div>
           </div>
 
           <div class="sep"></div>
 
-          <label class="muted">قائمة العقارات الموجودة</label>
-          <div class="list" id="propList"></div>
+          <div id="listWrap">
+            <div class="grid-list" id="gridList"></div>
+          </div>
         </div>
 
+        <!-- right: info -->
         <aside>
-          <div style="padding:12px;background:linear-gradient(90deg,var(--lightblue),#e6f8ff);border-radius:10px;">
-            <h3 style="margin:0 0 8px 0">معلومات الحساب</h3>
-            <p class="muted">التوكين مخزن بأمان في localStorage في هذا المتصفح فقط. لا تشاركه مع أحد.</p>
-            <p style="margin-top:10px"><strong>المستودع:</strong> <span id="repoLabel">kaidowork112 / Moaz-Elsawy</span></p>
-            <p style="margin-top:6px"><strong>الملف:</strong> data/properties.json</p>
-            <p style="margin-top:10px"><strong>واتساب تلقائي:</strong> <span class="muted">+20 10 23871213</span></p>
-            <div style="margin-top:10px">
-              <button id="openPreviewAll" class="btn">معاينة سريعة (عرض أول 3)</button>
+          <div class="card" style="padding:12px;background:linear-gradient(90deg,var(--lightblue),#e6f8ff);border-radius:10px">
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div><strong>المستودع:</strong> <span id="repoLabel">kaidowork112 / Moaz-Elsawy</span></div>
+              <div class="small muted">الملف: data/properties.json</div>
+              <div class="small muted">واتساب تلقائي: <strong>+20 10 23871213</strong></div>
+              <div style="margin-top:8px"><button id="openPreviewAll" class="btn">معاينة أول 3</button></div>
+              <div style="margin-top:12px"><button id="downloadJSON" class="btn ghost">تحميل JSON</button></div>
             </div>
           </div>
         </aside>
@@ -185,229 +165,215 @@
     </div>
   </div>
 
-  <!-- Overlay modal: edit / preview -->
-  <div id="overlay" class="overlay" role="dialog" aria-hidden="true">
-    <div class="modal" role="document">
+  <!-- Edit / Preview Modal -->
+  <div id="overlay" class="overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true">
       <div class="m-head">
         <strong id="modalTitle">تفاصيل العقار</strong>
-        <div><button id="closeModal" class="btn" style="background:#efefef;color:#111">إغلاق</button></div>
+        <div><button id="closeModal" class="btn ghost">إغلاق</button></div>
       </div>
+
       <div class="m-body">
         <div class="m-left">
-          <img id="modalImage" src="" alt="صورة العقار">
+          <img id="modalImg" src="" alt="صورة العقار">
         </div>
         <div class="m-right">
           <input id="m_name" placeholder="اسم العقار" />
           <input id="m_location" placeholder="الموقع" />
           <input id="m_price" placeholder="السعر" />
           <input id="m_rooms" placeholder="عدد الغرف" />
-          <input id="m_area" placeholder="المساحة" />
+          <input id="m_area" placeholder="المساحة (م²)" />
           <input id="m_image" placeholder="رابط الصورة" />
           <textarea id="m_desc" rows="5" placeholder="الوصف"></textarea>
 
-          <div style="display:flex;gap:8px" class="m-foot">
-            <button id="saveEdit" class="btn secondary">حفظ التعديل</button>
-            <button id="previewBtn" class="btn" style="background:#fff;border:1px solid #e6eef8;color:#0a74da">عرض معاينة</button>
-            <button id="deleteBtn" class="btn" style="background:#ff5c5c">حذف العقار</button>
+          <div class="m-foot">
+            <button id="previewBtn" class="btn">معاينة</button>
+            <button id="saveBtn" class="btn secondary">حفظ</button>
+            <button id="delBtn" class="btn danger">حذف</button>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Overlay preview -->
-  <div id="overlayPreview" class="overlay" role="dialog" aria-hidden="true">
-    <div class="modal" role="document">
+  <!-- Preview modal -->
+  <div id="overlayPreview" class="overlay" aria-hidden="true">
+    <div class="modal" role="dialog">
       <div class="m-head">
         <strong>معاينة العقار</strong>
-        <div><button id="closePreview" class="btn" style="background:#efefef;color:#111">إغلاق</button></div>
+        <div><button id="closePreview" class="btn ghost">إغلاق</button></div>
       </div>
-      <div class="m-body">
-        <div class="preview-card" id="previewContent">
-          <!-- injected -->
-        </div>
+      <div class="m-body" style="padding:6px">
+        <div id="previewContent"></div>
       </div>
     </div>
   </div>
 
   <script>
-    /***** CONFIG - عدّل هنا لو احتجت *****/
-    const repoOwner =  kaidowork112 ;
-    const repoName =  Moaz-Elsawy ;
-    const filePath =  data/properties.json ;
-    const whatsappNumber =  201023871213 ; // بدون + (لرابط wa.me)
-    /***************************************/
+    /* CONFIG */
+    const repoOwner = 'kaidowork112';
+    const repoName = 'Moaz-Elsawy';
+    const filePath = 'data/properties.json';
+    const whatsappNumber = '201023871213'; // بدون +
+    /* /CONFIG */
 
-    // Helpers for UTF8-safe base64
-    function b64EncodeUnicode(str){
-      return btoa(unescape(encodeURIComponent(str)));
-    }
-    function b64DecodeUnicode(str){
-      return decodeURIComponent(escape(atob(str)));
-    }
+    // base64 helpers (UTF-8 safe)
+    function b64EncodeUnicode(str){ return btoa(unescape(encodeURIComponent(str))); }
+    function b64DecodeUnicode(str){ return decodeURIComponent(escape(atob(str))); }
 
-    // State
-    let githubToken = localStorage.getItem( github_token ) ||   ;
-    let currentProps = [];
+    // state
+    let githubToken = localStorage.getItem('github_token') || '';
+    let currentList = [];
     let currentSha = null;
     let editingIndex = null;
 
-    // DOM
-    const tokenInput = document.getElementById( tokenInput );
-    const saveTokenBtn = document.getElementById( saveTokenBtn );
-    const clearTokenBtn = document.getElementById( clearTokenBtn );
-    const propList = document.getElementById( propList );
-    const addBtn = document.getElementById( addBtn );
-    const refreshBtn = document.getElementById( refreshBtn );
+    // DOM refs
+    const tokenInput = document.getElementById('tokenInput');
+    const saveToken = document.getElementById('saveToken');
+    const clearToken = document.querySelector('.btn.ghost');
+    const gridList = document.getElementById('gridList');
+    const addBtn = document.getElementById('addBtn');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const overlay = document.getElementById('overlay');
+    const closeModal = document.getElementById('closeModal');
+    const overlayPreview = document.getElementById('overlayPreview');
+    const closePreview = document.getElementById('closePreview');
+    const previewContent = document.getElementById('previewContent');
 
-    // modal / preview
-    const overlay = document.getElementById( overlay );
-    const overlayPreview = document.getElementById( overlayPreview );
-    const closeModal = document.getElementById( closeModal );
-    const closePreview = document.getElementById( closePreview );
+    // add form refs
+    const f_name = document.getElementById('f_name');
+    const f_location = document.getElementById('f_location');
+    const f_price = document.getElementById('f_price');
+    const f_rooms = document.getElementById('f_rooms');
+    const f_area = document.getElementById('f_area');
+    const f_image = document.getElementById('f_image');
+    const f_desc = document.getElementById('f_desc');
 
-    // add form fields
-    const f_name = document.getElementById( f_name );
-    const f_location = document.getElementById( f_location );
-    const f_price = document.getElementById( f_price );
-    const f_rooms = document.getElementById( f_rooms );
-    const f_area = document.getElementById( f_area );
-    const f_image = document.getElementById( f_image );
-    const f_desc = document.getElementById( f_desc );
+    // modal refs
+    const modalImg = document.getElementById('modalImg');
+    const m_name = document.getElementById('m_name');
+    const m_location = document.getElementById('m_location');
+    const m_price = document.getElementById('m_price');
+    const m_rooms = document.getElementById('m_rooms');
+    const m_area = document.getElementById('m_area');
+    const m_image = document.getElementById('m_image');
+    const m_desc = document.getElementById('m_desc');
+    const saveBtn = document.getElementById('saveBtn');
+    const delBtn = document.getElementById('delBtn');
+    const previewBtn = document.getElementById('previewBtn');
+    const openPreviewAll = document.getElementById('openPreviewAll');
+    const downloadJSON = document.getElementById('downloadJSON');
 
-    // modal fields
-    const modalTitle = document.getElementById( modalTitle );
-    const modalImage = document.getElementById( modalImage );
-    const m_name = document.getElementById( m_name );
-    const m_location = document.getElementById( m_location );
-    const m_price = document.getElementById( m_price );
-    const m_rooms = document.getElementById( m_rooms );
-    const m_area = document.getElementById( m_area );
-    const m_image = document.getElementById( m_image );
-    const m_desc = document.getElementById( m_desc );
-    const saveEdit = document.getElementById( saveEdit );
-    const deleteBtn = document.getElementById( deleteBtn );
-    const previewBtn = document.getElementById( previewBtn );
-
-    // init
-    tokenInput.value = githubToken ||   ;
+    // init UI
+    tokenInput.value = githubToken || '';
     if(githubToken) loadFromGitHub();
 
-    // token handlers
-    saveTokenBtn.addEventListener( click , () => {
-      const v = tokenInput.value.trim();
-      if(!v) return alert( أدخل التوكين أولا );
-      githubToken = v;
-      localStorage.setItem( github_token , v);
-      alert( تم حفظ التوكين في هذا المتصفح ✅ );
+    // listeners
+    saveToken.addEventListener('click', ()=> {
+      const t = tokenInput.value.trim();
+      if(!t) return alert('أدخل التوكين أولا');
+      githubToken = t;
+      localStorage.setItem('github_token', t);
+      alert('تم حفظ التوكين في هذا المتصفح ✅');
       loadFromGitHub();
     });
-    clearTokenBtn.addEventListener( click , () => {
-      if(confirm( هل تريد مسح التوكين من هذا المتصفح؟ )) {
-        localStorage.removeItem( github_token );
-        githubToken =   ;
-        tokenInput.value =   ;
-        alert( تم المسح );
-      }
+    clearToken.addEventListener('click', ()=> {
+      if(confirm('مسح التوكين من المتصفح؟')){ localStorage.removeItem('github_token'); githubToken=''; tokenInput.value=''; alert('تم المسح'); }
     });
 
-    // fetch file from GitHub
+    refreshBtn.addEventListener('click', loadFromGitHub);
+
+    // load file from GitHub
     async function loadFromGitHub(){
-      if(!githubToken) return alert( ادخل التوكين ثم اضغط حفظ );
+      if(!githubToken) { alert('ألصق التوكين ثم اضغط حفظ'); return; }
       try{
         const res = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`,{
-          headers:{ Authorization: `token ${githubToken}` }
+          headers: { Authorization: `token ${githubToken}` }
         });
-        if(res.status === 404) {
-          // file not found -> create empty array file
-          currentProps = [];
+        if(res.status === 404){
+          // create empty file automatically
+          currentList = [];
           currentSha = null;
-          renderList();
+          renderGrid();
           return;
         }
-        if(!res.ok) throw new Error( فشل جلب الملف:   + res.status);
+        if(!res.ok) throw new Error('fetch failed: ' + res.status);
         const data = await res.json();
-        const decoded = b64DecodeUnicode(data.content);
-        currentProps = JSON.parse(decoded);
         currentSha = data.sha;
-        renderList();
+        const raw = b64DecodeUnicode(data.content);
+        currentList = JSON.parse(raw || '[]');
+        renderGrid();
       }catch(err){
         console.error(err);
-        alert( خطأ أثناء تحميل الملف. تأكد أن التوكين والصلاحيات صحيحة (repo access). );
+        alert('خطأ أثناء تحميل الملف. تأكد من صلاحيات التوكين (repo contents) وأن المسار صحيح.');
       }
     }
 
-    // render list
-    function renderList(){
-      propList.innerHTML =   ;
-      if(!Array.isArray(currentProps) || currentProps.length === 0){
-        propList.innerHTML =  <div class="muted">لا توجد عقارات حاليا.</div> ;
+    // render grid
+    function renderGrid(){
+      gridList.innerHTML = '';
+      if(!Array.isArray(currentList) || currentList.length===0){
+        gridList.innerHTML = '<div class="small muted">لا توجد عقارات حاليا.</div>';
         return;
       }
-      currentProps.forEach((p, i) => {
-        const div = document.createElement( div );
-        div.className =  item ;
-        div.innerHTML = `
-          <div class="thumb"><img src="${escapeHtml(p.image ||   )}" alt=""></div>
-          <div class="meta">
-            <h4>${escapeHtml(p.name ||  بدون عنوان )}</h4>
-            <p class="muted">${escapeHtml(p.location ||   )} — ${escapeHtml(p.price ||   )}</p>
-            <p class="muted">غرف: ${escapeHtml(String(p.rooms||  ))} · مساحة: ${escapeHtml(String(p.area||  ))} م²</p>
+      currentList.forEach((p,i)=>{
+        const card = document.createElement('div');
+        card.className = 'card-item';
+        card.innerHTML = `
+          <div class="card-thumb"><img src="${escapeHtml(p.image||'')}" alt=""></div>
+          <div class="card-body">
+            <h3>${escapeHtml(p.name||'بدون عنوان')}</h3>
+            <div class="meta">${escapeHtml(p.location||'')} — <strong style="color:var(--gold)">${escapeHtml(p.price||'')}</strong></div>
+            <div class="meta small">غرف: ${escapeHtml(String(p.rooms||''))} · مساحة: ${escapeHtml(String(p.area||''))} م²</div>
           </div>
-          <div class="actions">
-            <button class="preview" title="معاينة" onclick="openPreview(${i})">عرض</button>
-            <button class="edit" title="تعديل" onclick="openEdit(${i})">تعديل</button>
-            <button class="del" title="حذف" onclick="confirmDelete(${i})">حذف</button>
+          <div class="card-foot">
+            <button class="btn ghost" onclick="openPreview(${i})">عرض</button>
+            <button class="btn secondary" onclick="openEdit(${i})">تعديل</button>
+            <button class="btn danger" onclick="confirmDelete(${i})">حذف</button>
           </div>
         `;
-        propList.appendChild(div);
+        gridList.appendChild(card);
       });
     }
 
-    // escape helper
-    function escapeHtml(s){ if(!s) return   ; return String(s).replace(/[&<>" ]/g, function(m){return { & : &amp; , < : &lt; , > : &gt; , " : &quot; ,\" \": &#39; }[m]; }); }
+    // helpers
+    function escapeHtml(s){ if(!s && s!=='0') return ''; return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 
     // add new
-    addBtn.addEventListener( click , async (e) => {
+    addBtn.addEventListener('click', async (e)=>{
       e.preventDefault();
       const newP = {
-        name: f_name.value.trim() ||  بدون عنوان ,
-        location: f_location.value.trim() ||   ,
-        price: f_price.value.trim() ||   ,
+        name: f_name.value.trim() || 'بدون عنوان',
+        location: f_location.value.trim() || '',
+        price: f_price.value.trim() || '',
         rooms: Number(f_rooms.value.trim()||0),
-        area: f_area.value.trim() ||   ,
-        image: f_image.value.trim() ||   ,
-        description: f_desc.value.trim() ||   
+        area: f_area.value.trim() || '',
+        image: f_image.value.trim() || '',
+        description: f_desc.value.trim() || ''
       };
-      // push to top
-      currentProps.unshift(newP);
-      await saveToGitHub( Add property );
-      // reset
-      f_name.value=  ; f_location.value=  ; f_price.value=  ; f_rooms.value=  ; f_area.value=  ; f_image.value=  ; f_desc.value=  ;
+      // unshift to show on top
+      currentList.unshift(newP);
+      await saveToGitHub('Add property: ' + newP.name);
+      // reset fields
+      f_name.value=''; f_location.value=''; f_price.value=''; f_rooms.value=''; f_area.value=''; f_image.value=''; f_desc.value='';
     });
 
-    // save to GitHub (PUT)
-    async function saveToGitHub(commitMessage){
-      if(!githubToken) return alert( ادخل التوكين احفظه أولًا );
+    // save (PUT to GitHub)
+    async function saveToGitHub(commitMsg){
+      if(!githubToken) return alert('أدخل التوكين ثم حفظ');
       try{
-        const body = b64EncodeUnicode(JSON.stringify(currentProps, null, 2));
-        const payload = {
-          message: commitMessage ||  Update properties ,
-          content: body,
-          sha: currentSha || undefined
-        };
+        const content = b64EncodeUnicode(JSON.stringify(currentList, null, 2));
+        const body = { message: commitMsg||'Update properties', content: content };
+        if(currentSha) body.sha = currentSha;
         const res = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`,{
-          method:  PUT ,
-          headers: {
-            Authorization: `token ${githubToken}`,
-             Content-Type :  application/json 
-          },
-          body: JSON.stringify(payload)
+          method: 'PUT',
+          headers: { Authorization: `token ${githubToken}`, 'Content-Type':'application/json' },
+          body: JSON.stringify(body)
         });
         if(!res.ok){
-          const err = await res.json().catch(()=>({message: failed }));
-          console.error( save error , err);
-          alert( فشل الحفظ. تأكد من صلاحيات التوكين (repo) وأن المسار صحيح. );
+          const err = await res.json().catch(()=>({message:'error'}));
+          console.error('save error', err);
+          alert('فشل الحفظ: تأكد من صلاحيات التوكين (repo) ووجود الملف والمسار.');
           return;
         }
         const data = await res.json();
@@ -415,159 +381,167 @@
         await loadFromGitHub();
       }catch(err){
         console.error(err);
-        alert( حدث خطأ أثناء الحفظ );
+        alert('حدث خطأ أثناء الحفظ');
       }
     }
 
-    // open edit modal
+    // edit flow
     window.openEdit = function(index){
       editingIndex = index;
-      const p = currentProps[index];
-      if(!p) return alert( العقار غير موجود );
-      modalTitle.textContent =  تعديل العقار ;
-      modalImage.src = p.image ||   ;
-      m_name.value = p.name ||   ;
-      m_location.value = p.location ||   ;
-      m_price.value = p.price ||   ;
-      m_rooms.value = p.rooms ||   ;
-      m_area.value = p.area ||   ;
-      m_image.value = p.image ||   ;
-      m_desc.value = p.description ||   ;
-      overlay.classList.add( show );
-      overlay.setAttribute( aria-hidden , false );
+      const p = currentList[index];
+      if(!p) return alert('العقار غير موجود');
+      document.getElementById('modalTitle').textContent = 'تعديل العقار';
+      modalImg.src = p.image || '';
+      m_name.value = p.name || '';
+      m_location.value = p.location || '';
+      m_price.value = p.price || '';
+      m_rooms.value = p.rooms || '';
+      m_area.value = p.area || '';
+      m_image.value = p.image || '';
+      m_desc.value = p.description || '';
+      overlay.classList.add('show'); overlay.setAttribute('aria-hidden','false');
     };
 
-    // save edit
-    saveEdit.addEventListener( click , async ()=>{
-      if(editingIndex === null) return;
-      const p = currentProps[editingIndex];
+    saveBtn.addEventListener('click', async ()=>{
+      if(editingIndex===null) return;
+      const p = currentList[editingIndex];
       p.name = m_name.value.trim();
       p.location = m_location.value.trim();
       p.price = m_price.value.trim();
-      p.rooms = Number(m_rooms.value.trim() || 0);
+      p.rooms = Number(m_rooms.value.trim()||0);
       p.area = m_area.value.trim();
       p.image = m_image.value.trim();
       p.description = m_desc.value.trim();
-      await saveToGitHub( Edit property:   + p.name);
-      closeModalFunc();
+      await saveToGitHub('Edit property: ' + p.name);
+      closeModal();
     });
 
     // delete
     window.confirmDelete = function(index){
-      if(!confirm( هل أنت متأكد من حذف هذا العقار؟ )) return;
-      currentProps.splice(index,1);
-      saveToGitHub( Delete property );
+      if(!confirm('هل تريد حذف هذا العقار؟')) return;
+      currentList.splice(index,1);
+      saveToGitHub('Delete property');
     };
-
-    deleteBtn.addEventListener( click , async ()=>{
-      if(editingIndex === null) return;
-      if(!confirm( هل تريد حذف هذا العقار فعلاً؟ )) return;
-      currentProps.splice(editingIndex,1);
-      await saveToGitHub( Delete property );
-      closeModalFunc();
+    delBtn.addEventListener('click', async ()=>{
+      if(editingIndex===null) return;
+      if(!confirm('تأكيد حذف هذا العقار؟')) return;
+      currentList.splice(editingIndex,1);
+      await saveToGitHub('Delete property');
+      closeModal();
     });
-
-    // modal controls
-    function closeModalFunc(){
-      overlay.classList.remove( show );
-      overlay.setAttribute( aria-hidden , true );
-      editingIndex = null;
-    }
-    closeModal.addEventListener( click , closeModalFunc);
-    overlay.addEventListener( click , (ev)=>{ if(ev.target === overlay) closeModalFunc(); });
 
     // preview
     window.openPreview = function(index){
-      const p = currentProps[index];
-      if(!p) return alert( العقار غير موجود );
-      showPreviewContent(p);
-      overlayPreview.classList.add( show );
-      overlayPreview.setAttribute( aria-hidden , false );
+      const p = currentList[index];
+      if(!p) return alert('العقار غير موجود');
+      showPreview(p);
+      overlayPreview.classList.add('show'); overlayPreview.setAttribute('aria-hidden','false');
     };
-    document.getElementById( openPreviewAll ).addEventListener( click , async ()=>{
-      // show first 3
-      const sample = currentProps.slice(0,3);
-      if(sample.length === 0) return alert( لا توجد عقارات للمعاينة );
-      let html =   ;
-      sample.forEach(p => {
-        html += previewCardHtml(p);
-      });
-      document.getElementById( previewContent ).innerHTML = html;
-      overlayPreview.classList.add( show );
-      overlayPreview.setAttribute( aria-hidden , false );
+    previewBtn.addEventListener('click', ()=>{
+      const p = {
+        name: m_name.value, location: m_location.value, price: m_price.value,
+        rooms: m_rooms.value, area: m_area.value, image: m_image.value, description: m_desc.value
+      };
+      showPreview(p); overlayPreview.classList.add('show'); overlayPreview.setAttribute('aria-hidden','false');
     });
-    closePreview.addEventListener( click , ()=>{
-      overlayPreview.classList.remove( show );
-      overlayPreview.setAttribute( aria-hidden , true );
-    });
-    overlayPreview.addEventListener( click , (ev)=>{ if(ev.target === overlayPreview) { overlayPreview.classList.remove( show ); overlayPreview.setAttribute( aria-hidden , true ); } });
 
-    function previewCardHtml(p){
-      const lang = navigator.language && navigator.language.startsWith( ar ) ?  ar  :  en ;
-      const whatsappText = makeWhatsappText(p, lang);
-      return `
-        <div style="width:100%;display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;">
-          <div class="p-thumb" style="width:42%"><img src="${escapeHtml(p.image||  )}" alt=""></div>
-          <div class="p-info" style="text-align:right">
-            <h3 style="margin:0">${escapeHtml(p.name||  )}</h3>
-            <p class="muted">${escapeHtml(p.location||  )}</p>
-            <p style="margin:8px 0;color:#333">${escapeHtml(p.description||  )}</p>
-            <p style="font-weight:800;color:var(--gold)">${escapeHtml(p.price||  )}</p>
-            <div style="margin-top:8px;display:flex;gap:8px;justify-content:flex-end">
-              <a class="btn" href="https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappText)}" target="_blank">كلمني واتساب</a>
+    function showPreview(p){
+      const lang = (navigator.language && navigator.language.startsWith('ar')) ? 'ar' : 'en';
+      const waText = makeWhatsappText(p, lang);
+      previewContent.innerHTML = `
+        <div class="preview" style="width:100%">
+          <div class="p-thumb"><img src="${escapeHtml(p.image||'')}" alt=""></div>
+          <div class="p-info">
+            <h3 style="margin:0">${escapeHtml(p.name||'')}</h3>
+            <div class="small muted">${escapeHtml(p.location||'')}</div>
+            <p style="margin:10px 0;color:#333">${escapeHtml(p.description||'')}</p>
+            <div style="font-weight:800;color:var(--gold);margin-bottom:8px">${escapeHtml(p.price||'')}</div>
+            <div style="display:flex;gap:8px;justify-content:flex-end">
+              <a class="btn" target="_blank" href="https://wa.me/${whatsappNumber}?text=${encodeURIComponent(waText)}">كلمني واتساب</a>
             </div>
           </div>
         </div>
       `;
     }
 
-    function showPreviewContent(p){
-      document.getElementById( previewContent ).innerHTML = previewCardHtml(p);
-    }
+    // close modal
+    function closeModal(){ overlay.classList.remove('show'); overlay.setAttribute('aria-hidden','true'); editingIndex = null; }
+    closeModal.addEventListener('click', closeModal);
+    overlay.addEventListener('click', (ev)=>{ if(ev.target === overlay) closeModal(); });
+    closePreview.addEventListener('click', ()=>{ overlayPreview.classList.remove('show'); overlayPreview.setAttribute('aria-hidden','true'); });
+    overlayPreview.addEventListener('click', (ev)=>{ if(ev.target === overlayPreview) { overlayPreview.classList.remove('show'); overlayPreview.setAttribute('aria-hidden','true'); } });
 
-    // preview button in modal
-    previewBtn.addEventListener( click , ()=>{
-      if(editingIndex === null) return;
-      const p = {
-        name: m_name.value,
-        location: m_location.value,
-        price: m_price.value,
-        rooms: m_rooms.value,
-        area: m_area.value,
-        image: m_image.value,
-        description: m_desc.value
-      };
-      showPreviewContent(p);
-      overlayPreview.classList.add( show );
-      overlayPreview.setAttribute( aria-hidden , false );
+    // open preview all
+    openPreviewAll.addEventListener('click', ()=>{
+      const sample = currentList.slice(0,3);
+      if(sample.length===0) return alert('لا توجد عقارات للمعاينة');
+      let html = '';
+      sample.forEach(p=>{ html += `
+        <div style="margin-bottom:12px">${createPreviewHtml(p)}</div>
+      `});
+      previewContent.innerHTML = html;
+      overlayPreview.classList.add('show'); overlayPreview.setAttribute('aria-hidden','false');
     });
 
-    // refresh
-    refreshBtn.addEventListener( click , ()=>{ loadFromGitHub(); });
+    function createPreviewHtml(p){
+      const lang = (navigator.language && navigator.language.startsWith('ar')) ? 'ar' : 'en';
+      const waText = makeWhatsappText(p, lang);
+      return `
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <div class="p-thumb" style="width:40%"><img src="${escapeHtml(p.image||'')}" alt=""></div>
+          <div style="flex:1">
+            <h3 style="margin:0">${escapeHtml(p.name||'')}</h3>
+            <div class="small muted">${escapeHtml(p.location||'')}</div>
+            <p style="margin:8px 0">${escapeHtml(p.description||'')}</p>
+            <div style="font-weight:800;color:var(--gold)">${escapeHtml(p.price||'')}</div>
+            <div style="display:flex;justify-content:flex-end;margin-top:8px">
+              <a class="btn" target="_blank" href="https://wa.me/${whatsappNumber}?text=${encodeURIComponent(waText)}">كلمني واتساب</a>
+            </div>
+          </div>
+        </div>
+      `;
+    }
 
-    // helper: make whatsapp text by language
+    // whatsapp message builder by language
     function makeWhatsappText(p, lang){
-      if(!lang) lang = navigator.language && navigator.language.startsWith( ar ) ?  ar  :  en ;
-      if(lang ===  ar ){
+      if(!lang) lang = (navigator.language && navigator.language.startsWith('ar')) ? 'ar' : 'en';
+      if(lang === 'ar'){
         return `أهلاً، أنا مهتم بالعقار "${p.name}" في ${p.location}. السعر: ${p.price}. عدد الغرف: ${p.rooms}. المساحة: ${p.area} م². ممكن تبعتلي تفاصيل أكتر؟`;
       } else {
-        return `Hello, I m interested in the property "${p.name}" located in ${p.location}. Price: ${p.price}. Rooms: ${p.rooms}. Area: ${p.area} sqm. Can you share more details?`;
+        return `Hello, I'm interested in the property "${p.name}" located in ${p.location}. Price: ${p.price}. Rooms: ${p.rooms}. Area: ${p.area} sqm. Can you share more details?`;
       }
     }
 
-    // utility: escape for image, etc.
-    // (already defined escapeHtml)
+    // download JSON
+    downloadJSON.addEventListener('click', ()=>{
+      const blob = new Blob([JSON.stringify(currentList, null, 2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'properties.json'; a.click(); URL.revokeObjectURL(url);
+    });
 
-    // initial keyboard accessibility: Esc to close overlays
-    document.addEventListener( keydown , (e)=>{
-      if(e.key ===  Escape ){ 
-        if(overlay.classList.contains( show )) closeModalFunc();
-        if(overlayPreview.classList.contains( show )) { overlayPreview.classList.remove( show ); overlayPreview.setAttribute( aria-hidden , true ); }
+    // keyboard ESC
+    document.addEventListener('keydown', (e)=>{
+      if(e.key === 'Escape'){
+        if(overlay.classList.contains('show')) closeModal();
+        if(overlayPreview.classList.contains('show')) { overlayPreview.classList.remove('show'); overlayPreview.setAttribute('aria-hidden','true'); }
       }
     });
 
-    // small note: if file not existed, you can create it by saving once (it will create file)
-    // done
+    // initial fetch helper: try to load raw JSON if token not provided (public)
+    (async function tryLoadPublic(){
+      if(!githubToken){
+        // attempt to fetch raw public file (no auth)
+        try{
+          const rawUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/${filePath}`;
+          const r = await fetch(rawUrl, {cache:'no-store'});
+          if(r.ok){
+            const arr = await r.json();
+            if(Array.isArray(arr)){ currentList = arr; renderGrid(); }
+          }
+        }catch(e){}
+      }
+    })();
+
   </script>
 </body>
-  </html>
+</html>
