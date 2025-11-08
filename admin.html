@@ -1,155 +1,176 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لوحة الأدمن | Moaz Elsawy</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
-    *{margin:0;padding:0;box-sizing:border-box;font-family:"Cairo",sans-serif;}
-    body{background:#f4f8ff;color:#222;padding:20px;}
-    h2{color:#0a74da;margin-bottom:20px;text-align:center;}
-    .btn{display:inline-block;text-align:center;text-decoration:none;border:none;cursor:pointer;padding:8px 14px;border-radius:8px;transition:0.3s;}
-    .btn:hover{opacity:0.85;}
-    .property-form, .property-list{background:white;padding:20px;border-radius:12px;box-shadow:0 4px 10px rgba(0,0,0,0.1);margin-bottom:30px;}
-    .property-form input, .property-form textarea, .property-form select{width:100%;padding:10px;margin:8px 0;border:1px solid #ccc;border-radius:6px;}
-    .property-form button{background:#0a74da;color:white;width:100%;padding:12px;font-weight:bold;border-radius:6px;}
-    .property-card{display:flex;align-items:center;justify-content:space-between;padding:10px;border-bottom:1px solid #eee;}
-    .property-card img{width:80px;height:50px;object-fit:cover;border-radius:6px;margin-left:10px;}
-    .property-actions button{margin-left:5px;padding:5px 8px;border-radius:6px;border:none;cursor:pointer;}
-    .edit-btn{background:#f5b800;color:#000;}
-    .delete-btn{background:#ff4d4d;color:white;}
-    .floating-btn{position:fixed;bottom:30px;left:30px;background:#0a74da;color:white;padding:15px 20px;border-radius:50px;font-size:18px;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,0.2);}
-    .modal{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background-color:rgba(0,0,0,0.7);justify-content:center;align-items:center;}
-    .modal-content{background:white;padding:20px;border-radius:12px;width:90%;max-width:400px;position:relative;}
-    .close-btn{position:absolute;top:10px;right:15px;font-size:24px;cursor:pointer;}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة الأدمن | Moaz Elsawy</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .admin-container {
+    max-width: 800px;
+    margin: 50px auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+  .admin-container h2 {
+    color: #0a74da;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .admin-container form input,
+  .admin-container form select,
+  .admin-container form textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+  }
+  .admin-container form label {
+    font-weight: bold;
+    margin-top: 10px;
+    display: block;
+  }
+  .admin-container form button {
+    margin-top: 15px;
+    padding: 12px;
+    width: 100%;
+    background: #0a74da;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  .admin-container form button:hover {
+    background: #005bb5;
+  }
+  .property-list-admin {
+    margin-top: 30px;
+  }
+  .property-card-admin {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .property-card-admin span {
+    font-weight: bold;
+    color: #0a74da;
+  }
+  .property-card-admin button {
+    background: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+</style>
 </head>
 <body>
+<div class="admin-container">
+  <h2>لوحة الأدمن - إدارة العقارات</h2>
+  <form id="addPropertyForm">
+    <label>العنوان</label>
+    <input type="text" id="title" required>
 
-<h2>لوحة الأدمن لإدارة العقارات</h2>
+    <label>النوع</label>
+    <select id="type" required>
+      <option value="">اختر النوع</option>
+      <option value="شقة">شقة</option>
+      <option value="فيلا">فيلا</option>
+    </select>
 
-<div class="property-list" id="propertyList"></div>
+    <label>المساحة (م²)</label>
+    <input type="number" id="size" required>
 
-<div class="floating-btn" id="addPropertyBtn">إضافة عقار جديد +</div>
+    <label>الموقع (اختياري)</label>
+    <input type="text" id="city">
 
-<!-- مودال إضافة / تعديل -->
-<div class="modal" id="propertyModal">
-  <div class="modal-content">
-    <span class="close-btn" id="closeModal">&times;</span>
-    <h3 id="modalTitleText">إضافة عقار جديد</h3>
-    <form id="propertyForm" class="property-form">
-      <input type="text" id="propTitle" placeholder="عنوان العقار" required />
-      <input type="number" id="propArea" placeholder="مساحة العقار (م²)" required />
-      <select id="propType" required>
-        <option value="">اختر نوع العقار</option>
-        <option value="شقة">شقة</option>
-        <option value="فيلا">فيلا</option>
-      </select>
-      <input type="text" id="propCity" placeholder="الموقع (اختياري)" />
-      <input type="text" id="propPrice" placeholder="السعر" required />
-      <input type="text" id="propImg" placeholder="رابط الصورة" required />
-      <textarea id="propDesc" placeholder="وصف العقار"></textarea>
-      <label>
-        <input type="checkbox" id="propSlider" /> إظهار في السلايدر
-      </label>
-      <button type="submit">حفظ العقار</button>
-    </form>
+    <label>عدد الغرف</label>
+    <input type="number" id="rooms" required>
+
+    <label>السعر</label>
+    <input type="text" id="price" required>
+
+    <label>الصورة (رابط URL)</label>
+    <input type="url" id="img" required>
+
+    <label>الوصف</label>
+    <textarea id="desc" rows="3"></textarea>
+
+    <label>
+      <input type="checkbox" id="inSlider"> إظهار في السلايدر
+    </label>
+
+    <button type="submit">إضافة العقار</button>
+  </form>
+
+  <div class="property-list-admin" id="adminPropertyList">
+    <!-- قائمة العقارات الحالية -->
   </div>
 </div>
 
 <script>
-const propertyList = document.getElementById('propertyList');
-const addBtn = document.getElementById('addPropertyBtn');
-const modal = document.getElementById('propertyModal');
-const closeModal = document.getElementById('closeModal');
-const modalTitleText = document.getElementById('modalTitleText');
-const propertyForm = document.getElementById('propertyForm');
+const form = document.getElementById('addPropertyForm');
+const adminList = document.getElementById('adminPropertyList');
 
+// تحميل العقارات من LocalStorage
 let properties = JSON.parse(localStorage.getItem('rs_local_props') || '[]');
-let editId = null;
 
-function renderProperties() {
-  propertyList.innerHTML = '';
-  if(properties.length===0) propertyList.innerHTML='<p style="text-align:center;padding:20px;color:#666;">لا توجد عقارات حالياً.</p>';
-  properties.forEach(prop=>{
-    const card = document.createElement('div');
-    card.className = 'property-card';
-    card.innerHTML = `<div>
-      <h4>${prop.title} (${prop.area} م²)</h4>
-      <p>${prop.type}${prop.city ? ' - ' + prop.city : ''} - ${prop.price}${prop.slider ? ' 🌟' : ''}</p>
-    </div>
-    <img src="${prop.img}" alt="${prop.title}">
-    <div class="property-actions">
-      <button class="edit-btn" onclick="editProperty(${prop.id})">تعديل</button>
-      <button class="delete-btn" onclick="deleteProperty(${prop.id})">مسح</button>
-    </div>`;
-    propertyList.appendChild(card);
+function displayAdminProperties() {
+  adminList.innerHTML = '';
+  properties.forEach((p, idx) => {
+    const div = document.createElement('div');
+    div.className = 'property-card-admin';
+    div.innerHTML = `
+      <div>
+        <span>${p.title}</span> - ${p.type} - ${p.size}م² - ${p.city || 'لا يوجد موقع'} - ${p.rooms} غرف - ${p.price}
+      </div>
+      <button onclick="deleteProperty(${idx})">حذف</button>
+    `;
+    adminList.appendChild(div);
   });
 }
 
-function openModal() { modal.style.display = 'flex'; }
-function closeModalFunc() { 
-  modal.style.display = 'none'; 
-  propertyForm.reset(); 
-  editId=null;
-  modalTitleText.textContent='إضافة عقار جديد';
+function deleteProperty(idx) {
+  if(!confirm('هل تريد حذف هذا العقار؟')) return;
+  properties.splice(idx,1);
+  localStorage.setItem('rs_local_props', JSON.stringify(properties));
+  displayAdminProperties();
 }
 
-addBtn.addEventListener('click',()=>{ openModal(); });
-closeModal.addEventListener('click', closeModalFunc);
-window.onclick = e => { if(e.target==modal) closeModalFunc(); }
-
-propertyForm.addEventListener('submit', e=>{
+form.addEventListener('submit', e => {
   e.preventDefault();
   const newProp = {
-    id: editId || Date.now(),
-    title: document.getElementById('propTitle').value,
-    area: document.getElementById('propArea').value,
-    type: document.getElementById('propType').value,
-    city: document.getElementById('propCity').value.trim(),
-    price: document.getElementById('propPrice').value,
-    img: document.getElementById('propImg').value,
-    desc: document.getElementById('propDesc').value,
-    slider: document.getElementById('propSlider').checked
+    id: Date.now(),
+    title: document.getElementById('title').value.trim(),
+    type: document.getElementById('type').value,
+    size: document.getElementById('size').value,
+    city: document.getElementById('city').value.trim(),
+    rooms: document.getElementById('rooms').value,
+    price: document.getElementById('price').value.trim(),
+    img: document.getElementById('img').value.trim(),
+    desc: document.getElementById('desc').value.trim(),
+    inSlider: document.getElementById('inSlider').checked
   };
-  if(editId){
-    properties = properties.map(p=>p.id===editId ? newProp : p);
-  }else{
-    properties.push(newProp);
-  }
+
+  properties.unshift(newProp); // يضيف في البداية
   localStorage.setItem('rs_local_props', JSON.stringify(properties));
-  renderProperties();
-  closeModalFunc();
-  alert('تم حفظ العقار ✅');
+  displayAdminProperties();
+  form.reset();
+  alert('تم إضافة العقار بنجاح ✅');
 });
 
-function editProperty(id){
-  const prop = properties.find(p=>p.id===id);
-  if(!prop) return;
-  editId=id;
-  modalTitleText.textContent='تعديل العقار';
-  document.getElementById('propTitle').value=prop.title;
-  document.getElementById('propArea').value=prop.area;
-  document.getElementById('propType').value=prop.type;
-  document.getElementById('propCity').value=prop.city;
-  document.getElementById('propPrice').value=prop.price;
-  document.getElementById('propImg').value=prop.img;
-  document.getElementById('propDesc').value=prop.desc || '';
-  document.getElementById('propSlider').checked=prop.slider || false;
-  openModal();
-}
-
-function deleteProperty(id){
-  if(confirm('هل تريد مسح هذا العقار؟')){
-    properties = properties.filter(p=>p.id!==id);
-    localStorage.setItem('rs_local_props', JSON.stringify(properties));
-    renderProperties();
-  }
-}
-
-renderProperties();
+// عرض العقارات عند تحميل الصفحة
+displayAdminProperties();
 </script>
-
 </body>
 </html>
