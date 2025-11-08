@@ -1,37 +1,33 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>تسجيل الدخول / إنشاء حساب | Moaz Elsawy</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    body { background: #f4f8ff; font-family: "Cairo", sans-serif; }
-    .auth-container { display:flex; justify-content:center; align-items:center; min-height:100vh; }
-    .auth-box { background:white; padding:30px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.2); width:90%; max-width:400px; text-align:center; }
-    .auth-box h2 { color:#0a74da; margin-bottom:20px; }
-    .auth-box input { width:100%; padding:12px; margin:10px 0; border-radius:6px; border:1px solid #ccc; }
-    .auth-box button { width:100%; padding:12px; margin-top:10px; border:none; border-radius:6px; font-weight:bold; cursor:pointer; background:#f5b800; color:#000; transition:0.3s; }
-    .auth-box button:hover { background:#ffcc33; }
-    .toggle-link { margin-top:15px; display:block; cursor:pointer; color:#0a74da; text-decoration:underline; }
-    .error { color:red; margin-top:10px; font-size:14px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تسجيل/دخول | Moaz Elsawy</title>
+<style>
+  body { font-family: "Cairo", sans-serif; background:#f4f8ff; display:flex; justify-content:center; align-items:center; min-height:100vh; }
+  .auth-container { background:white; padding:30px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.2); width:90%; max-width:400px; text-align:center; }
+  h2 { color:#0a74da; margin-bottom:20px; }
+  input { width:100%; padding:12px; margin:8px 0; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; }
+  button { width:100%; padding:12px; background:#f5b800; border:none; border-radius:6px; cursor:pointer; font-weight:bold; margin-top:10px; }
+  button:hover { background:#ffcc33; }
+  .switch { margin-top:15px; color:#0a74da; cursor:pointer; text-decoration:underline; }
+  .error { color:red; font-size:14px; margin-top:10px; }
+</style>
 </head>
 <body>
 
 <div class="auth-container">
-  <div class="auth-box" id="authBox">
-    <h2 id="authTitle">تسجيل الدخول</h2>
-    <form id="authForm">
-      <input type="email" id="email" placeholder="البريد الإلكتروني" required>
-      <input type="text" id="name" placeholder="الاسم الكامل" style="display:none;">
-      <input type="password" id="password" placeholder="كلمة المرور" required>
-      <input type="tel" id="phone" placeholder="رقم الهاتف (اختياري)">
-      <div class="error" id="errorMsg"></div>
-      <button type="submit" id="submitBtn">تسجيل الدخول</button>
-    </form>
-    <span class="toggle-link" id="toggleLink">ليس لديك حساب؟ إنشاء حساب جديد</span>
-  </div>
+  <h2 id="formTitle">تسجيل الدخول</h2>
+  <div class="error" id="errorMsg"></div>
+  <form id="authForm">
+    <input type="text" id="name" placeholder="الاسم الكامل" style="display:none;" />
+    <input type="email" id="email" placeholder="البريد الإلكتروني" required />
+    <input type="password" id="password" placeholder="كلمة المرور" required />
+    <input type="tel" id="phone" placeholder="رقم الموبايل (اختياري)" />
+    <button type="submit" id="submitBtn">تسجيل الدخول</button>
+  </form>
+  <div class="switch" id="switchForm">ليس لديك حساب؟ سجل الآن</div>
 </div>
 
 <script>
@@ -40,123 +36,127 @@ const REPO = 'Moaz-Elsawy';
 const FILE_PATH = 'data/users.json';
 const GITHUB_TOKEN = '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';
 
-let allUsers = [];
 let currentFileSHA = null;
+let allUsers = [];
 let isRegister = false;
 
+const formTitle = document.getElementById('formTitle');
 const authForm = document.getElementById('authForm');
-const authTitle = document.getElementById('authTitle');
-const toggleLink = document.getElementById('toggleLink');
 const submitBtn = document.getElementById('submitBtn');
+const switchForm = document.getElementById('switchForm');
 const errorMsg = document.getElementById('errorMsg');
 const nameInput = document.getElementById('name');
+const phoneInput = document.getElementById('phone');
+const emailInput = document.getElementById('email');
+const passwordInput = document.getElementById('password');
 
-// بيانات الأدمن
-const ADMIN = { email: "admin@moazelsawy.com", password: "admin123" };
-
-// ======== Toggle بين تسجيل الدخول / إنشاء حساب ========
-toggleLink.onclick = () => {
-  isRegister = !isRegister;
-  nameInput.style.display = isRegister ? 'block' : 'none';
-  submitBtn.textContent = isRegister ? 'إنشاء الحساب' : 'تسجيل الدخول';
-  authTitle.textContent = isRegister ? 'إنشاء حساب جديد' : 'تسجيل الدخول';
-  toggleLink.textContent = isRegister ? 'لديك حساب؟ تسجيل الدخول' : 'ليس لديك حساب؟ إنشاء حساب جديد';
-  errorMsg.textContent = '';
-}
-
-// ======== Fetch المستخدمين من GitHub ========
+// ===================================
+// جلب بيانات المستخدمين وSHA
+// ===================================
 async function fetchUsers() {
   try {
     const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`, {
-      headers: { "Authorization": `token ${GITHUB_TOKEN}` }
+      headers: { Authorization: `token ${GITHUB_TOKEN}` }
     });
-    if (!res.ok) throw new Error('HTTP error ' + res.status);
+    if (!res.ok) throw new Error('فشل جلب البيانات');
     const data = await res.json();
     currentFileSHA = data.sha;
     allUsers = JSON.parse(atob(data.content));
-  } catch (err) {
-    console.error('فشل جلب المستخدمين:', err);
+  } catch(e) {
+    // إذا الملف غير موجود نبدأ بمصفوفة فارغة
     allUsers = [];
     currentFileSHA = null;
   }
 }
 
-// ======== Update المستخدمين على GitHub ========
-async function updateUsers() {
-  if (!currentFileSHA) {
-    await fetchUsers(); // تأكد من جلب SHA
-    if (!currentFileSHA) return false;
-  }
-  const payload = {
-    message: "تحديث المستخدمين",
-    content: btoa(JSON.stringify(allUsers,null,2)),
-    sha: currentFileSHA
-  };
+// ===================================
+// حفظ المستخدمين على GitHub
+// ===================================
+async function saveUsers(commitMsg) {
+  const content = btoa(JSON.stringify(allUsers, null, 2));
+  const payload = { message: commitMsg, content };
+  if(currentFileSHA) payload.sha = currentFileSHA;
+
   try {
     const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`, {
-      method: "PUT",
-      headers: { "Authorization": `token ${GITHUB_TOKEN}`, "Content-Type": "application/json" },
+      method: 'PUT',
+      headers: { Authorization: `token ${GITHUB_TOKEN}`, 'Content-Type':'application/json' },
       body: JSON.stringify(payload)
     });
+    if (!res.ok) throw new Error('فشل في الحفظ على GitHub');
     const result = await res.json();
     currentFileSHA = result.content.sha;
     return true;
-  } catch (err) {
-    console.error('فشل التحديث:', err);
+  } catch(e) {
+    console.error(e);
     return false;
   }
 }
 
-// ======== التعامل مع الفورم ========
+// ===================================
+// تبديل بين تسجيل الدخول والتسجيل
+// ===================================
+switchForm.onclick = () => {
+  isRegister = !isRegister;
+  if(isRegister) {
+    formTitle.textContent = 'تسجيل حساب جديد';
+    submitBtn.textContent = 'تسجيل';
+    switchForm.textContent = 'لديك حساب بالفعل؟ تسجيل الدخول';
+    nameInput.style.display = 'block';
+    phoneInput.style.display = 'block';
+  } else {
+    formTitle.textContent = 'تسجيل الدخول';
+    submitBtn.textContent = 'تسجيل الدخول';
+    switchForm.textContent = 'ليس لديك حساب؟ سجل الآن';
+    nameInput.style.display = 'none';
+    phoneInput.style.display = 'none';
+  }
+  errorMsg.textContent = '';
+}
+
+// ===================================
+// التعامل مع النموذج
+// ===================================
 authForm.onsubmit = async (e) => {
   e.preventDefault();
   errorMsg.textContent = '';
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value.trim();
-  const name = document.getElementById('name').value.trim();
-  const phone = document.getElementById('phone').value.trim();
+
+  const email = emailInput.value.trim().toLowerCase();
+  const password = passwordInput.value.trim();
+  const name = nameInput.value.trim();
+  const phone = phoneInput.value.trim();
 
   await fetchUsers();
 
-  if (isRegister) {
-    if (allUsers.find(u => u.email === email)) {
-      errorMsg.textContent = 'هذا البريد مسجل مسبقاً!';
+  if(isRegister) {
+    if(!name) { errorMsg.textContent='أدخل الاسم الكامل'; return; }
+    if(allUsers.some(u=>u.email.toLowerCase()===email)) {
+      errorMsg.textContent='هذا البريد مسجل بالفعل';
       return;
     }
-    const newUser = { email, password, name, phone: phone || "" };
+    const newUser = { id: Date.now(), email, password, name };
+    if(phone) newUser.phone = phone;
     allUsers.push(newUser);
-    const success = await updateUsers();
-    if (success) {
-      localStorage.setItem('realestate_user', JSON.stringify({ email, is_admin:false }));
-      alert('تم إنشاء الحساب بنجاح!');
-      window.location.href = 'index.html';
+    const saved = await saveUsers(`تم إضافة مستخدم جديد: ${email}`);
+    if(saved){
+      alert('تم إنشاء الحساب بنجاح ✅');
+      switchForm.click(); // العودة لتسجيل الدخول
+      emailInput.value=''; passwordInput.value=''; nameInput.value=''; phoneInput.value='';
     } else {
-      errorMsg.textContent = 'فشل إنشاء الحساب. حاول لاحقاً.';
+      errorMsg.textContent='فشل إنشاء الحساب';
     }
   } else {
-    // تسجيل الدخول
-    let user = allUsers.find(u => u.email === email && u.password === password);
-    if (!user) {
-      // التحقق من الأدمن
-      if (email === ADMIN.email && password === ADMIN.password) {
-        user = { email, is_admin:true };
-        localStorage.setItem('realestate_user', JSON.stringify(user));
-        alert('تم تسجيل الدخول كأدمن ✅');
-        window.location.href = 'admin.html';
-      } else {
-        errorMsg.textContent = 'بيانات غير صحيحة!';
-      }
-    } else {
-      localStorage.setItem('realestate_user', JSON.stringify({ email, is_admin:false }));
+    // تسجيل دخول
+    const user = allUsers.find(u=>u.email.toLowerCase()===email && u.password===password);
+    if(user){
+      localStorage.setItem('realestate_user', JSON.stringify(user));
       alert('تم تسجيل الدخول ✅');
-      window.location.href = 'index.html';
-    }
+      // إذا كنت تريد إعادة توجيه الأدمن:
+      if(email==='admin@moazelsawy.com') window.location.href='admin.html';
+      else window.location.href='index.html';
+    } else errorMsg.textContent='بيانات الدخول غير صحيحة';
   }
 }
-
-// تحميل المستخدمين عند بدء الصفحة
-fetchUsers();
 </script>
-
 </body>
 </html>
