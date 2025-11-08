@@ -1,213 +1,209 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Moaz Elsawy | تسويق عقاري</title>
-<link rel="stylesheet" href="style.css">
-<style>
-  /* ===== إضافات السلايدر ===== */
-  .slider-container {
-    position: relative;
-    overflow: hidden;
-    width: 100%;
-    max-width: 1200px;
-    margin: 40px auto;
-  }
-  .slider-track {
-    display: flex;
-    transition: transform 0.5s ease;
-  }
-  .slide {
-    min-width: 300px;
-    margin: 0 10px;
-    border-radius: 10px;
-    overflow: hidden;
-    cursor: pointer;
-    flex-shrink: 0;
-    position: relative;
-  }
-  .slide img {
-    width: 100%;
-    display: block;
-    border-radius: 10px;
-  }
-  .slide .caption {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    background: rgba(0,0,0,0.6);
-    color: #fff;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 16px;
-  }
-  .arrow {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(0,0,0,0.5);
-    color: #fff;
-    border: none;
-    font-size: 30px;
-    cursor: pointer;
-    z-index: 10;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-  }
-  .arrow.left { left: 10px; }
-  .arrow.right { right: 10px; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Moaz Elsawy | العقارات</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+    * { margin:0; padding:0; box-sizing:border-box; font-family:"Cairo",sans-serif; }
+    body { background:#f4f8ff; color:#222; }
+    .btn { display:inline-block; text-align:center; text-decoration:none; border:none; cursor:pointer; padding:8px 14px; border-radius:8px; transition:0.3s; }
+    .header { background:linear-gradient(90deg,#0a74da,#0066cc); color:white; display:flex; justify-content:space-between; align-items:center; padding:15px 40px; box-shadow:0 4px 10px rgba(0,0,0,0.1); }
+    .header .logo { font-weight:700; font-size:20px; }
+    .header nav a { color:white; text-decoration:none; margin-left:20px; font-weight:500; }
+    .header nav a.btn, .header .btn { background:#f5b800; color:#000 !important; }
+    .header nav a.btn:hover, .header .btn:hover { background:#ffcc33; }
+
+    /* السلايدر */
+    .slider-section { padding:40px 0; overflow:hidden; }
+    .slider-wrapper { display:flex; gap:20px; padding:20px 0; transition: transform 0.4s ease; cursor: grab; }
+    .slider-wrapper.active { cursor: grabbing; }
+    .slide-item { flex:0 0 250px; border-radius:12px; overflow:hidden; position:relative; transition: transform 0.3s, opacity 0.3s; opacity:0.6; }
+    .slide-item.active { flex:0 0 320px; opacity:1; transform:scale(1.05); z-index:10; }
+    .slide-item img { width:100%; display:block; }
+    .slide-item .caption { position:absolute; bottom:10px; right:10px; background:rgba(0,0,0,0.6); color:#fff; padding:5px 10px; border-radius:5px; font-size:16px; text-align:right; }
+
+    /* العقارات */
+    .properties { padding:60px 20px; text-align:center; }
+    .properties h2 { color:#0a74da; margin-bottom:20px; font-size:28px; }
+    .property-list { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:20px; padding:20px; }
+    .property-card { background:white; border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,0.1); overflow:hidden; transition:0.3s; cursor:pointer; }
+    .property-card:hover { transform:translateY(-5px); box-shadow:0 8px 20px rgba(0,0,0,0.15); }
+    .property-card img { width:100%; height:180px; object-fit:cover; }
+    .property-info { padding:15px; text-align:right; }
+    .property-info h3 { color:#333; font-size:18px; }
+    .property-info p { color:#666; font-size:14px; margin:5px 0; }
+    .property-info span { display:inline-block; color:#f5b800; font-weight:bold; margin-top:5px; }
+
+    /* المودال */
+    .modal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.7); }
+    .modal-content { background-color:#fefefe; margin:5% auto; padding:25px; border-radius:12px; width:90%; max-width:700px; position:relative; animation:slideIn 0.3s; }
+    @keyframes slideIn { from { top:-300px; opacity:0; } to { top:0; opacity:1; } }
+    .close-button { color:#aaa; float:left; font-size:32px; font-weight:bold; cursor:pointer; line-height:1; }
+    .close-button:hover, .close-button:focus { color:#000; text-decoration:none; }
+    #modalDetails img { width:100%; max-height:400px; object-fit:cover; border-radius:8px; margin-bottom:20px; }
+    #modalDetails h2 { color:#0a74da; margin-bottom:15px; }
+    #modalDetails p { margin:10px 0; font-size:16px; border-bottom:1px dashed #eee; padding-bottom:5px; }
+    #modalDetails p strong { color:#333; font-weight:700; }
+    .whatsapp-btn { display:block; width:100%; margin-top:30px; background:#25d366 !important; color:white !important; padding:15px 0; text-align:center; font-size:18px; text-decoration:none; font-weight:bold; border-radius:8px; }
+    .whatsapp-btn:hover { background:#128c7e !important; }
+
+    /* تواصل معنا */
+    .contact { background:#fff; padding:50px 20px; text-align:center; }
+    .contact h2 { color:#0a74da; margin-bottom:20px; }
+    .contact form { display:flex; flex-direction:column; align-items:center; gap:10px; width:90%; max-width:400px; margin:auto; }
+    .contact input, .contact textarea { width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; }
+    .contact button { background:#f5b800; border:none; padding:10px 20px; border-radius:6px; cursor:pointer; font-weight:600; }
+    .contact button:hover { background:#ffcc33; }
+
+    footer { background:#0a74da; color:white; text-align:center; padding:15px; margin-top:40px; }
+    @media(max-width:768px){ .header{ flex-direction:column; align-items:flex-start; padding:15px 20px; } .header nav{ margin-top:10px; display:flex; flex-wrap:wrap; } .header nav a{ margin:5px 10px 5px 0; } .slider-section, .slide-item { height:300px; } }
+  </style>
 </head>
 <body>
+  <header class="header">
+    <div class="logo">🏠 Moaz Elsawy</div>
+    <nav>
+      <a href="index.html">الرئيسية</a>
+      <a href="#properties">العقارات</a>
+      <a href="#contact">تواصل معنا</a>
+      <a href="login.html" class="btn" id="loginBtn">تسجيل الدخول</a>
+    </nav>
+  </header>
 
-<header class="header">
-  <div class="logo">🏠 Moaz Elsawy</div>
-  <nav>
-    <a href="index.html">الرئيسية</a>
-    <a href="#properties">العقارات</a>
-    <a href="#contact">تواصل معنا</a>
-    <a href="login.html" class="btn" id="loginBtn">تسجيل الدخول</a>
-  </nav>
-</header>
+  <!-- السلايدر -->
+  <section class="slider-section">
+    <div class="slider-wrapper" id="propertySlider"></div>
+  </section>
 
-<!-- سلايدر أفقي للأفلام/العقارات -->
-<div class="slider-container">
-  <button class="arrow left">&#10094;</button>
-  <div class="slider-track" id="sliderTrack">
-    <div class="slide"><img src="https://picsum.photos/300/200?random=1"><div class="caption">شقة فاخرة</div></div>
-    <div class="slide"><img src="https://picsum.photos/300/200?random=2"><div class="caption">فيلا مستقلة</div></div>
-    <div class="slide"><img src="https://picsum.photos/300/200?random=3"><div class="caption">شقة على البحر</div></div>
-    <div class="slide"><img src="https://picsum.photos/300/200?random=4"><div class="caption">شقة مفروشة</div></div>
-    <div class="slide"><img src="https://picsum.photos/300/200?random=5"><div class="caption">استوديو حديث</div></div>
-  </div>
-  <button class="arrow right">&#10095;</button>
-</div>
+  <!-- العقارات -->
+  <section id="properties" class="properties">
+    <h2>العقارات المتاحة</h2>
+    <div id="property-list" class="property-list"></div>
+  </section>
 
-<section id="properties" class="properties">
-  <h2>العقارات المتاحة</h2>
-  <div id="property-list" class="property-list"></div>
-</section>
+  <!-- تواصل معنا -->
+  <section id="contact" class="contact">
+    <h2>تواصل معنا</h2>
+    <form id="contactForm">
+      <input type="text" placeholder="الاسم الكامل" required />
+      <input type="email" placeholder="البريد الإلكتروني" required />
+      <textarea placeholder="رسالتك..." required></textarea>
+      <button type="submit">إرسال</button>
+    </form>
+  </section>
 
-<section id="contact" class="contact">
-  <h2>تواصل معنا</h2>
-  <form id="contactForm">
-    <input type="text" placeholder="الاسم الكامل" required />
-    <input type="email" placeholder="البريد الإلكتروني" required />
-    <textarea placeholder="رسالتك..." required></textarea>
-    <button type="submit">إرسال</button>
-  </form>
-</section>
-
-<footer>
-  <p>© 2025 Moaz Elsawy | جميع الحقوق محفوظة</p>
-</footer>
-
-<!-- مودال العقار -->
-<div id="propertyModal" class="modal">
-  <div class="modal-content">
-    <span class="close-button">&times;</span>
-    <div id="modalDetails">
-      <img id="modalImg" src="" alt="صورة العقار">
-      <h2 id="modalTitle"></h2>
-      <p><strong>السعر:</strong> <span id="modalPriceDetail"></span></p>
-      <p><strong>الموقع:</strong> <span id="modalCity"></span></p>
-      <p><strong>النوع:</strong> <span id="modalType"></span></p>
-      <p><strong>عدد الغرف:</strong> <span id="modalRooms"></span></p>
-      <p><strong>الوصف:</strong> <span id="modalDesc"></span></p>
-      <a id="whatsappLink" href="#" target="_blank" class="btn whatsapp-btn">تواصل واتساب</a>
+  <!-- المودال -->
+  <div id="propertyModal" class="modal">
+    <div class="modal-content">
+      <span class="close-button">&times;</span>
+      <div id="modalDetails">
+        <img id="modalImg" src="" alt="صورة العقار">
+        <h2 id="modalTitle"></h2>
+        <p><strong>السعر:</strong> <span id="modalPriceDetail"></span></p>
+        <p><strong>الموقع:</strong> <span id="modalCity"></span></p>
+        <p><strong>النوع:</strong> <span id="modalType"></span></p>
+        <p><strong>عدد الغرف:</strong> <span id="modalRooms"></span></p>
+        <p><strong>الوصف:</strong> <span id="modalDesc"></span></p>
+        <a id="whatsappLink" href="#" target="_blank" class="btn whatsapp-btn">تواصل واتساب</a>
+      </div>
     </div>
   </div>
-</div>
 
-<script>
-  // ===== السلايدر =====
-  const track = document.getElementById('sliderTrack');
-  const slides = document.querySelectorAll('.slide');
-  const leftArrow = document.querySelector('.arrow.left');
-  const rightArrow = document.querySelector('.arrow.right');
-  let currentIndex = 0;
-  const slideWidth = slides[0].offsetWidth + 20;
-  let autoSlide;
+  <script>
+    const ADMIN_EMAIL = 'admin@moazelsawy.com';
+    const SELLER_PHONE = '+201115134784';
+    let currentIndex = 0;
+    const sliderWrapper = document.getElementById('propertySlider');
+    let ALL_PROPERTIES = [
+      {id:1,title:"شقة فاخرة للبيع",city:"التجمع الخامس",price:"2,000,000 جنيه",img:"https://picsum.photos/400/250?random=11"},
+      {id:2,title:"فيلا مستقلة بمساحة 400م",city:"مدينة الشيخ زايد",price:"6,500,000 جنيه",img:"https://picsum.photos/400/250?random=12"},
+      {id:3,title:"شقة على البحر مباشرة",city:"الإسكندرية",price:"3,200,000 جنيه",img:"https://picsum.photos/400/250?random=13"},
+      {id:4,title:"شقة مفروشة للإيجار الشهري",city:"مدينة نصر",price:"15,000 جنيه / شهر",img:"https://picsum.photos/400/250?random=14"},
+    ];
 
-  function updateSlider() { track.style.transform = `translateX(${-currentIndex*slideWidth}px)`; }
-  rightArrow.addEventListener('click', () => { currentIndex = (currentIndex+1)%slides.length; updateSlider(); resetAutoSlide(); });
-  leftArrow.addEventListener('click', () => { currentIndex = (currentIndex-1+slides.length)%slides.length; updateSlider(); resetAutoSlide(); });
-
-  function startAutoSlide() { autoSlide = setInterval(()=>{ currentIndex = (currentIndex+1)%slides.length; updateSlider(); },3000); }
-  function resetAutoSlide(){ clearInterval(autoSlide); startAutoSlide(); }
-  startAutoSlide();
-
-  // ===== العقارات =====
-  let ALL_PROPERTIES = [
-    {"id":1,"title":"شقة فاخرة للبيع","city":"التجمع الخامس","price":"2,000,000 جنيه","type":"شقة","rooms":4,"desc":"شقة فاخرة مع خدمات ممتازة","img":"https://picsum.photos/400/250?random=1"},
-    {"id":2,"title":"فيلا مستقلة بمساحة 400م","city":"مدينة الشيخ زايد","price":"6,500,000 جنيه","type":"فيلا","rooms":5,"desc":"فيلا مستقلة بمساحة كبيرة","img":"https://picsum.photos/400/250?random=2"},
-    {"id":3,"title":"شقة على البحر مباشرة","city":"الإسكندرية","price":"3,200,000 جنيه","type":"شقة","rooms":3,"desc":"شقة على البحر مباشرة","img":"https://picsum.photos/400/250?random=3"},
-  ];
-
-  function displayProperties(properties){
     const listContainer = document.getElementById("property-list");
-    listContainer.innerHTML='';
-    properties.forEach((prop)=>{
-      const card = document.createElement("div");
-      card.className="property-card";
-      card.dataset.id=prop.id;
-      card.innerHTML = `
-        <img src="${prop.img}" alt="${prop.title}">
-        <div class="property-info">
-          <h3>${prop.title}</h3>
-          <p><strong>الموقع:</strong> ${prop.city}</p>
-          <p><strong>الغرف:</strong> ${prop.rooms}</p>
-          <span>${prop.price}</span>
-        </div>
-      `;
-      listContainer.appendChild(card);
-      card.addEventListener('click',()=>openModal(prop.id));
-    });
-  }
-
-  function openModal(propertyId){
-    const prop = ALL_PROPERTIES.find(p=>p.id==propertyId);
-    if(!prop) return;
-    document.getElementById('modalImg').src=prop.img;
-    document.getElementById('modalTitle').textContent=prop.title;
-    document.getElementById('modalPriceDetail').textContent=prop.price;
-    document.getElementById('modalCity').textContent=prop.city;
-    document.getElementById('modalType').textContent=prop.type;
-    document.getElementById('modalRooms').textContent=prop.rooms;
-    document.getElementById('modalDesc').textContent=prop.desc;
-    document.getElementById('whatsappLink').href=`https://wa.me/201115134784?text=${encodeURIComponent('أريد الاستفسار عن '+prop.title)}`;
-    document.getElementById('propertyModal').style.display='block';
-  }
-
-  document.querySelector('.close-button').onclick=function(){document.getElementById('propertyModal').style.display='none';};
-  window.onclick=function(e){if(e.target==document.getElementById('propertyModal')){document.getElementById('propertyModal').style.display='none';}};
-
-  displayProperties(ALL_PROPERTIES);
-
-  // ===== نموذج التواصل =====
-  document.getElementById("contactForm")?.addEventListener("submit", e=>{
-    e.preventDefault();
-    alert("تم إرسال رسالتك بنجاح ✅");
-    e.target.reset();
-  });
-
-  // ===== تسجيل الدخول/الخروج =====
-  function checkLogin(){
-    const user = JSON.parse(localStorage.getItem('realestate_user')||'{}');
-    const loginBtn = document.getElementById('loginBtn');
-    if(user.email){
-      loginBtn.textContent='تسجيل خروج';
-      loginBtn.href='#';
-      loginBtn.onclick=(e)=>{e.preventDefault(); localStorage.removeItem('realestate_user'); location.reload();};
-    }else{
-      loginBtn.textContent='تسجيل الدخول';
-      loginBtn.href='login.html';
+    function displayProperties(properties){
+      listContainer.innerHTML = '';
+      properties.forEach(prop=>{
+        const card=document.createElement('div');
+        card.className='property-card';
+        card.dataset.id=prop.id;
+        card.innerHTML=`<img src="${prop.img}" alt="${prop.title}"><div class="property-info"><h3>${prop.title}</h3><p><strong>الموقع:</strong> ${prop.city}</p><span>${prop.price}</span></div>`;
+        listContainer.appendChild(card);
+        card.addEventListener('click',()=> openModal(prop.id));
+      });
     }
-  }
-  checkLogin();
 
-</script>
+    // المودال
+    function openModal(id){
+      const prop = ALL_PROPERTIES.find(p=>p.id==id);
+      if(!prop) return;
+      document.getElementById('modalImg').src=prop.img;
+      document.getElementById('modalTitle').textContent=prop.title;
+      document.getElementById('modalPriceDetail').textContent=prop.price;
+      document.getElementById('modalCity').textContent=prop.city;
+      document.getElementById('modalType').textContent=prop.type||'غير محدد';
+      document.getElementById('modalRooms').textContent=prop.rooms||'؟';
+      document.getElementById('modalDesc').textContent=prop.desc||'لا يوجد وصف';
+      const message=`مرحباً، أود الاستفسار عن العقار: ${prop.title}، في مدينة: ${prop.city}. سعره: ${prop.price}. هل هو متاح؟`;
+      document.getElementById('whatsappLink').href=`https://wa.me/${SELLER_PHONE}?text=${encodeURIComponent(message)}`;
+      document.getElementById('propertyModal').style.display='block';
+    }
+
+    document.querySelector('.close-button').onclick = ()=>{ document.getElementById('propertyModal').style.display='none'; }
+    window.onclick = e=>{ if(e.target==document.getElementById('propertyModal')) document.getElementById('propertyModal').style.display='none'; }
+
+    // سلايدر
+    function initSlider(){
+      sliderWrapper.innerHTML='';
+      ALL_PROPERTIES.forEach((prop,index)=>{
+        const slide=document.createElement('div');
+        slide.className='slide-item';
+        if(index==0) slide.classList.add('active');
+        slide.innerHTML=`<img src="${prop.img}" alt="${prop.title}"><div class="caption">${prop.title}</div>`;
+        slide.addEventListener('click',()=>openModal(prop.id));
+        sliderWrapper.appendChild(slide);
+      });
+      updateSliderPosition();
+    }
+
+    function updateSliderPosition(){
+      const slides=document.querySelectorAll('.slide-item');
+      slides.forEach(s=>s.classList.remove('active'));
+      slides[currentIndex].classList.add('active');
+      const offset=-currentIndex*(slides[currentIndex].offsetWidth+20);
+      sliderWrapper.style.transform=`translateX(${offset}px)`;
+    }
+
+    function nextSlide(){ currentIndex=(currentIndex+1)%ALL_PROPERTIES.length; updateSliderPosition(); }
+    function prevSlide(){ currentIndex=(currentIndex-1+ALL_PROPERTIES.length)%ALL_PROPERTIES.length; updateSliderPosition(); }
+
+    // Drag
+    let isDragging=false,startPos=0;
+    sliderWrapper.addEventListener('mousedown',e=>{isDragging=true; startPos=e.pageX; sliderWrapper.classList.add('active');});
+    sliderWrapper.addEventListener('mouseup',e=>{isDragging=false; sliderWrapper.classList.remove('active'); const diff=e.pageX-startPos; if(diff<-50) nextSlide(); else if(diff>50) prevSlide(); else updateSliderPosition();});
+    sliderWrapper.addEventListener('mouseleave',()=>{if(isDragging){isDragging=false; sliderWrapper.classList.remove('active'); updateSliderPosition();}});
+    sliderWrapper.addEventListener('mousemove',e=>{if(!isDragging) return; const diff=e.pageX-startPos; sliderWrapper.style.transform=`translateX(${ -currentIndex*(sliderWrapper.children[currentIndex].offsetWidth+20) + diff }px)`;});
+
+    // Touch
+    sliderWrapper.addEventListener('touchstart',e=>{isDragging=true; startPos=e.touches[0].clientX; sliderWrapper.classList.add('active');});
+    sliderWrapper.addEventListener('touchend',e=>{isDragging=false; sliderWrapper.classList.remove('active'); const diff=e.changedTouches[0].clientX-startPos; if(diff<-50) nextSlide(); else if(diff>50) prevSlide(); else updateSliderPosition();});
+    sliderWrapper.addEventListener('touchmove',e=>{if(!isDragging) return; const diff=e.touches[0].clientX-startPos; sliderWrapper.style.transform=`translateX(${ -currentIndex*(sliderWrapper.children[currentIndex].offsetWidth+20) + diff }px)`;});
+
+    setInterval(nextSlide,3000);
+
+    // تسجيل دخول / خروج
+    const loginBtn=document.getElementById('loginBtn');
+    const user=JSON.parse(localStorage.getItem('realestate_user')||'{}');
+    if(user.is_admin && user.email===ADMIN_EMAIL){ loginBtn.textContent='لوحة الأدمن'; loginBtn.href='admin.html'; }
+    else if(user.email){ loginBtn.textContent='تسجيل خروج'; loginBtn.href='#'; loginBtn.onclick=e=>{e.preventDefault(); localStorage.removeItem('realestate_user'); location.reload(); } }
+
+    document.getElementById('contactForm').addEventListener('submit',e=>{ e.preventDefault(); alert('تم إرسال رسالتك ✅'); e.target.reset(); });
+
+    displayProperties(ALL_PROPERTIES);
+    initSlider();
+  </script>
 </body>
 </html>
