@@ -1,143 +1,162 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>تسجيل الدخول / التسجيل | Moaz Elsawy</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    body { background: #f4f8ff; font-family: "Cairo", sans-serif; }
-    .auth-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-    .auth-box { background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 400px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-    h2 { text-align: center; color: #0a74da; margin-bottom: 20px; }
-    input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 6px; border: 1px solid #ccc; }
-    button { width: 100%; padding: 12px; border-radius: 6px; border: none; background: #f5b800; font-weight: bold; cursor: pointer; }
-    button:hover { background: #ffcc33; }
-    .switch-link { text-align: center; margin-top: 10px; cursor: pointer; color: #0a74da; text-decoration: underline; }
-    .error { color: red; text-align: center; margin-top: 5px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تسجيل / دخول | Moaz Elsawy</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'Cairo',sans-serif}
+  body{background:#f4f8ff;color:#222;display:flex;justify-content:center;align-items:center;height:100vh}
+  .auth-box{background:#fff;padding:30px;border-radius:12px;box-shadow:0 4px 15px rgba(0,0,0,0.2);width:90%;max-width:400px;text-align:center}
+  h2{color:#0a74da;margin-bottom:20px}
+  input{width:100%;padding:12px;margin:10px 0;border:1px solid #ccc;border-radius:6px;font-size:16px}
+  button{width:100%;padding:12px;margin-top:15px;background:#f5b800;border:none;border-radius:6px;cursor:pointer;font-weight:bold;transition:.3s}
+  button:hover{background:#ffcc33}
+  .toggle-link{margin-top:15px;color:#0a74da;cursor:pointer;display:block;text-decoration:underline}
+  .error{color:red;font-size:14px;margin-top:10px}
+</style>
 </head>
 <body>
 
-<div class="auth-container">
-  <div class="auth-box">
-    <!-- Login Form -->
-    <div id="loginFormDiv">
-      <h2>تسجيل الدخول</h2>
-      <form id="loginForm">
-        <input type="email" id="loginEmail" placeholder="البريد الإلكتروني" required>
-        <input type="password" id="loginPassword" placeholder="كلمة المرور" required>
-        <div class="error" id="loginError"></div>
-        <button type="submit">تسجيل الدخول</button>
-      </form>
-      <div class="switch-link" onclick="showRegister()">ليس لديك حساب؟ سجل الآن</div>
-    </div>
-
-    <!-- Register Form -->
-    <div id="registerFormDiv" style="display:none;">
-      <h2>تسجيل جديد</h2>
-      <form id="registerForm">
-        <input type="text" id="regName" placeholder="الاسم الكامل" required>
-        <input type="email" id="regEmail" placeholder="البريد الإلكتروني" required>
-        <input type="password" id="regPassword" placeholder="كلمة المرور" required>
-        <input type="tel" id="regPhone" placeholder="رقم الموبايل (اختياري)">
-        <div class="error" id="regError"></div>
-        <button type="submit">تسجيل جديد</button>
-      </form>
-      <div class="switch-link" onclick="showLogin()">لديك حساب؟ تسجيل الدخول</div>
-    </div>
-  </div>
+<div class="auth-box">
+  <h2 id="formTitle">تسجيل الدخول</h2>
+  <div id="errorMsg" class="error"></div>
+  <form id="authForm">
+    <input type="text" id="name" placeholder="الاسم الكامل" style="display:none" required />
+    <input type="email" id="email" placeholder="البريد الإلكتروني" required />
+    <input type="password" id="password" placeholder="كلمة المرور" required />
+    <input type="tel" id="phone" placeholder="رقم الهاتف (اختياري)" pattern="[0-9]{10,15}" style="display:none" />
+    <button type="submit" id="submitBtn">تسجيل الدخول</button>
+  </form>
+  <span class="toggle-link" id="toggleForm">إنشاء حساب جديد</span>
 </div>
 
 <script>
-const OWNER = 'kaidowork112';
-const REPO = 'Moaz-Elsawy';
-const FILE_PATH = 'data/users.json';
-const GITHUB_TOKEN = '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'; // ضع التوكن هنا
-let currentFileSHA = '';
+const OWNER = "kaidowork112";
+const REPO = "Moaz-Elsawy";
+const FILE_PATH = "data/users.json";
+const GITHUB_TOKEN = "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"; // ضع توكنك هنا
 
-// --- تبديل بين الفورمات ---
-function showRegister() {
-  document.getElementById('loginFormDiv').style.display = 'none';
-  document.getElementById('registerFormDiv').style.display = 'block';
-}
-function showLogin() {
-  document.getElementById('loginFormDiv').style.display = 'block';
-  document.getElementById('registerFormDiv').style.display = 'none';
-}
+const ADMIN_EMAIL = "admin@moazelsawy.com";
+const ADMIN_PASSWORD = "admin123";
 
-// --- جلب المستخدمين من GitHub ---
+let currentFileSHA = null;
+let allUsers = [];
+
+const authForm = document.getElementById("authForm");
+const formTitle = document.getElementById("formTitle");
+const toggleLink = document.getElementById("toggleForm");
+const submitBtn = document.getElementById("submitBtn");
+const nameInput = document.getElementById("name");
+const phoneInput = document.getElementById("phone");
+const errorMsg = document.getElementById("errorMsg");
+
+let isRegister = false;
+
+// ===== جلب البيانات من GitHub =====
 async function fetchUsers() {
-  const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`, {
-    headers: { Authorization: `token ${GITHUB_TOKEN}` }
-  });
-  const data = await res.json();
-  currentFileSHA = data.sha;
-  return JSON.parse(atob(data.content));
+  try {
+    const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`, {
+      headers: { "Authorization": `token ${GITHUB_TOKEN}` }
+    });
+    const data = await res.json();
+    currentFileSHA = data.sha;
+    allUsers = JSON.parse(atob(data.content));
+  } catch (err) {
+    console.error("فشل جلب البيانات:", err);
+    allUsers = [];
+  }
 }
 
-// --- تحديث المستخدمين على GitHub ---
-async function updateUsers(users, commitMsg) {
-  const content = btoa(JSON.stringify(users, null, 2));
-  await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`, {
-    method: 'PUT',
-    headers: { Authorization: `token ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message: commitMsg, content, sha: currentFileSHA })
-  });
-}
-
-// --- تسجيل الدخول ---
-document.getElementById('loginForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const email = document.getElementById('loginEmail').value.trim();
-  const password = document.getElementById('loginPassword').value.trim();
-  const users = await fetchUsers();
-
-  const user = users.find(u => u.email === email && u.password === password);
-  if (!user) {
-    document.getElementById('loginError').textContent = 'البريد الإلكتروني أو كلمة المرور غير صحيحة!';
-    return;
-  }
-
-  localStorage.setItem('realestate_user', JSON.stringify(user));
-
-  if (user.is_admin) {
-    alert('تم تسجيل الدخول كأدمن ✅');
-    window.location.href = 'admin.html';
-  } else {
-    alert('تم تسجيل الدخول كمستخدم عادي ✅');
-    window.location.href = 'index.html';
-  }
-});
-
-// --- تسجيل جديد ---
-document.getElementById('registerForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const name = document.getElementById('regName').value.trim();
-  const email = document.getElementById('regEmail').value.trim();
-  const password = document.getElementById('regPassword').value.trim();
-  const phone = document.getElementById('regPhone').value.trim();
-
-  let users = await fetchUsers();
-  if (users.some(u => u.email === email)) {
-    document.getElementById('regError').textContent = 'البريد الإلكتروني مسجل مسبقًا!';
-    return;
-  }
-
-  const newUser = {
-    id: Date.now(),
-    name,
-    email,
-    password,
-    phone: phone || '',
-    is_admin: false
+// ===== تحديث البيانات على GitHub =====
+async function updateUsers() {
+  if (!currentFileSHA) { alert("SHA غير موجود! تأكد من قراءة البيانات."); return false; }
+  const payload = {
+    message: "تحديث المستخدمين",
+    content: btoa(JSON.stringify(allUsers,null,2)),
+    sha: currentFileSHA
   };
+  try {
+    const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`, {
+      method:"PUT",
+      headers: {
+        "Authorization": `token ${GITHUB_TOKEN}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+    const result = await res.json();
+    currentFileSHA = result.content.sha;
+    return true;
+  } catch (err) {
+    console.error("فشل التحديث:", err);
+    return false;
+  }
+}
 
-  users.push(newUser);
-  await updateUsers(users, `إضافة مستخدم جديد: ${email}`);
-  alert('تم التسجيل بنجاح ✅');
-  showLogin();
-});
+// ===== تبديل بين تسجيل الدخول والتسجيل =====
+toggleLink.onclick = () => {
+  isRegister = !isRegister;
+  if(isRegister){
+    formTitle.textContent = "إنشاء حساب جديد";
+    submitBtn.textContent = "تسجيل جديد";
+    nameInput.style.display = "block";
+    phoneInput.style.display = "block";
+    toggleLink.textContent = "العودة لتسجيل الدخول";
+  } else {
+    formTitle.textContent = "تسجيل الدخول";
+    submitBtn.textContent = "تسجيل الدخول";
+    nameInput.style.display = "none";
+    phoneInput.style.display = "none";
+    toggleLink.textContent = "إنشاء حساب جديد";
+  }
+  errorMsg.textContent = "";
+}
+
+// ===== عند إرسال الفورم =====
+authForm.onsubmit = async (e) => {
+  e.preventDefault();
+  errorMsg.textContent = "";
+
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const name = nameInput.value.trim();
+  const phone = phoneInput.value.trim();
+
+  if(isRegister){
+    // التحقق إذا البريد موجود
+    if(allUsers.find(u=>u.email===email)){
+      errorMsg.textContent = "هذا البريد مستخدم بالفعل!";
+      return;
+    }
+    const newUser = {email,password,name,phone};
+    allUsers.push(newUser);
+    const success = await updateUsers();
+    if(success){
+      localStorage.setItem("realestate_user",JSON.stringify({email,is_admin:false}));
+      alert("تم إنشاء الحساب بنجاح ✅");
+      window.location.href="index.html";
+    } else {
+      errorMsg.textContent = "فشل إنشاء الحساب!";
+    }
+  } else {
+    // تسجيل دخول
+    await fetchUsers(); // جلب آخر البيانات
+    const user = allUsers.find(u=>u.email===email && u.password===password);
+    if(user){
+      const isAdmin = email===ADMIN_EMAIL && password===ADMIN_PASSWORD;
+      localStorage.setItem("realestate_user",JSON.stringify({email,is_admin:isAdmin}));
+      alert(isAdmin?"تم تسجيل الدخول كأدمن ✅":"تم تسجيل الدخول ✅");
+      window.location.href = isAdmin?"admin.html":"index.html";
+    } else {
+      errorMsg.textContent = "البريد الإلكتروني أو كلمة المرور غير صحيحة!";
+    }
+  }
+}
+
+// ===== تحميل البيانات عند بدء الصفحة =====
+fetchUsers();
 </script>
 </body>
 </html>
