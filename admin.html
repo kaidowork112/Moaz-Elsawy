@@ -1,529 +1,69 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>لوحة الأدمن — Moaz Elsawy (آمن - تخزين محلي)</title>
-  <meta name="robots" content="noindex">
-  <style>
-    :root{
-      --gold:#c49a3a; --lightblue:#9fd7ff; --bg:#f7f9fb; --card:#fff; --muted:#667; --accent:#0a74da;
-      --maxw:1100px;
-    }
-    *{box-sizing:border-box}
-    body{margin:0;padding:18px;font-family:'Cairo',sans-serif;background:linear-gradient(180deg,#fff 0%,var(--bg) 100%);color:#222}
-    .container{max-width:var(--maxw);margin:0 auto}
-    header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
-    .brand{display:flex;align-items:center;gap:12px}
-    .logo{width:52px;height:52px;border-radius:10px;background:var(--lightblue);display:flex;align-items:center;justify-content:center;font-weight:800;color:#033}
-    h1{font-size:18px;margin:0}
-    .lead{color:var(--muted);font-size:13px;margin-top:4px}
-    .token-bar{display:flex;gap:8px;align-items:center}
-    .token-bar input{padding:10px;border-radius:8px;border:1px solid #e6eef8;width:320px;background:white}
-    .btn{background:var(--gold);color:#111;padding:9px 12px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
-    .btn.secondary{background:var(--accent);color:#fff}
-    .btn.ghost{background:#fff;border:1px solid #e6eef8;color:#222}
-    .card{background:var(--card);border-radius:12px;padding:14px;box-shadow:0 10px 30px rgba(12,35,60,0.04)}
-    .layout{display:grid;grid-template-columns:1fr 340px;gap:16px;align-items:start}
-    .form{display:flex;flex-direction:column;gap:10px}
-    .form input,.form textarea{padding:10px;border-radius:8px;border:1px solid #e6eef8;background:white}
-    .grid-list{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
-    .card-item{background:#fff;border-radius:10px;overflow:hidden;border:1px solid #f1f6ff;display:flex;flex-direction:column}
-    .card-thumb{height:140px;background:#eee;overflow:hidden}
-    .card-thumb img{width:100%;height:100%;object-fit:cover}
-    .card-body{padding:10px;text-align:right}
-    .card-body h3{margin:0;font-size:15px}
-    .meta{color:var(--muted);font-size:13px;margin-top:6px}
-    .card-foot{display:flex;gap:8px;padding:10px;border-top:1px solid #f5f9ff;justify-content:flex-end}
-    .small{font-size:13px;color:var(--muted)}
-    .overlay{position:fixed;inset:0;background:rgba(8,20,40,0.45);display:none;align-items:center;justify-content:center;z-index:9999;padding:16px}
-    .overlay.show{display:flex}
-    .modal{width:100%;max-width:900px;background:white;border-radius:12px;padding:14px;box-shadow:0 30px 80px rgba(12,30,60,0.18);transform:translateY(12px);opacity:0;transition:all .22s ease-in-out}
-    .overlay.show .modal{transform:translateY(0);opacity:1}
-    .modal .m-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-    .modal .m-body{display:flex;gap:14px}
-    .m-left{flex:1;min-width:40%}
-    .m-left img{width:100%;height:320px;object-fit:cover;border-radius:8px}
-    .m-right{flex:1;display:flex;flex-direction:column;gap:8px}
-    .m-right input,.m-right textarea{padding:8px;border-radius:8px;border:1px solid #eef6ff}
-    .m-foot{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
-    .preview{display:flex;gap:12px;align-items:flex-start}
-    .p-thumb{width:44%;border-radius:10px;overflow:hidden}
-    .p-thumb img{width:100%;height:100%;object-fit:cover}
-    @media (max-width:1000px){.layout{grid-template-columns:1fr 300px}.grid-list{grid-template-columns:repeat(2,1fr)}}
-    @media (max-width:700px){header{flex-direction:column;align-items:flex-start} .token-bar input{width:100%} .layout{grid-template-columns:1fr} .grid-list{grid-template-columns:1fr} .m-left img{height:220px}}
-    .muted{color:var(--muted)}
-    .sep{height:1px;background:#f1f6ff;margin:10px 0;border-radius:2px}
-    .danger{background:#ff5c5c;color:#fff}
-    .float-add{position:fixed;bottom:22px;left:22px;background:var(--gold);color:#111;border:none;padding:14px;border-radius:50%;font-size:20px;box-shadow:0 10px 30px rgba(0,0,0,0.12);cursor:pointer;z-index:999}
-    .note{background:#fff7e6;border-left:4px solid var(--gold);padding:10px;border-radius:6px;margin-top:8px}
-  </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>لوحة الأدمن</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <header>
-      <div class="brand">
-        <div class="logo">عق</div>
-        <div>
-          <h1>Moaz Elsawy — لوحة الأدمن</h1>
-          <div class="lead">تحكم كامل في منشورات العقارات — التوكين يُخزن محلياً (مش آمن للعموم)</div>
-        </div>
-      </div>
-
-      <div class="token-bar">
-        <input id="tokenInput" type="password" placeholder="ألصق GitHub Personal Access Token هنا" />
-        <button id="saveToken" class="btn">حفظ</button>
-        <button id="logoutBtn" class="btn ghost">خروج (مسح التوكين)</button>
-      </div>
-    </header>
-
-    <div class="card">
-      <div class="layout">
-        <div>
-          <div class="form">
-            <label class="small">أضف عقار جديد</label>
-            <input id="f_name" placeholder="اسم العقار" />
-            <input id="f_location" placeholder="الموقع" />
-            <input id="f_price" placeholder="السعر" />
-            <input id="f_rooms" placeholder="عدد الغرف" />
-            <input id="f_area" placeholder="المساحة (م²)" />
-            <input id="f_image" placeholder="رابط صورة" />
-            <textarea id="f_desc" rows="3" placeholder="وصف مختصر"></textarea>
-
-            <div style="display:flex;gap:8px;align-items:center">
-              <button id="addBtn" class="btn secondary">➕ إضافة</button>
-              <button id="refreshBtn" class="btn">تحديث</button>
-              <input id="commitMsg" placeholder="رسالة Commit (اختياري)" style="flex:1;padding:10px;border-radius:8px;border:1px solid #e6eef8" />
-            </div>
-
-            <div class="note">
-              <strong>ملاحظة أمنية:</strong> التوكين مخزن مشفّر (base64) فقط في هذا المتصفح. لو أعطيت هذا المتصفح لشخص آخر، احذفه عبر زر الخروج أو من صفحة GitHub → Settings → Developer settings → Personal access tokens.
-            </div>
-          </div>
-
-          <div class="sep"></div>
-
-          <div id="listWrap">
-            <div class="grid-list" id="gridList"></div>
-          </div>
-        </div>
-
-        <aside>
-          <div class="card" style="padding:12px;background:linear-gradient(90deg,var(--lightblue),#e6f8ff);border-radius:10px">
-            <div style="display:flex;flex-direction:column;gap:8px">
-              <div><strong>المستودع:</strong> <span id="repoLabel">kaidowork112 / Moaz-Elsawy</span></div>
-              <div class="small muted">الملف: data/properties.json</div>
-              <div class="small muted">واتساب تلقائي: <strong>+20 10 23871213</strong></div>
-              <div style="margin-top:8px"><button id="openPreviewAll" class="btn">معاينة أول 3</button></div>
-              <div style="margin-top:12px"><button id="downloadJSON" class="btn ghost">تحميل JSON</button></div>
-            </div>
-          </div>
-        </aside>
-      </div>
+  <header>
+    <div class="logo">
+      <div class="mark">عق</div>
+      <div><div style="font-weight:800">لوحة الأدمن</div></div>
     </div>
-  </div>
-
-  <button id="fabAdd" class="float-add" title="أضف عقار سريع">+</button>
-
-  <!-- Edit / Preview Modal -->
-  <div id="overlay" class="overlay" aria-hidden="true">
-    <div class="modal" role="dialog" aria-modal="true">
-      <div class="m-head">
-        <strong id="modalTitle">تفاصيل العقار</strong>
-        <div><button id="closeModal" class="btn ghost">إغلاق</button></div>
-      </div>
-
-      <div class="m-body">
-        <div class="m-left">
-          <img id="modalImg" src="" alt="صورة العقار">
-        </div>
-        <div class="m-right">
-          <input id="m_name" placeholder="اسم العقار" />
-          <input id="m_location" placeholder="الموقع" />
-          <input id="m_price" placeholder="السعر" />
-          <input id="m_rooms" placeholder="عدد الغرف" />
-          <input id="m_area" placeholder="المساحة (م²)" />
-          <input id="m_image" placeholder="رابط الصورة" />
-          <textarea id="m_desc" rows="5" placeholder="الوصف"></textarea>
-
-          <div class="m-foot">
-            <button id="previewBtn" class="btn">معاينة</button>
-            <button id="saveBtn" class="btn secondary">حفظ</button>
-            <button id="delBtn" class="btn danger">حذف</button>
-          </div>
-        </div>
-      </div>
+    <div style="margin-left:auto;padding-right:16px">
+      <button class="btn" id="toHome">الرئيسية</button>
+      <button class="btn" id="logout">خروج</button>
     </div>
-  </div>
+  </header>
 
-  <!-- Preview modal -->
-  <div id="overlayPreview" class="overlay" aria-hidden="true">
-    <div class="modal" role="dialog">
-      <div class="m-head">
-        <strong>معاينة العقار</strong>
-        <div><button id="closePreview" class="btn ghost">إغلاق</button></div>
-      </div>
-      <div class="m-body" style="padding:6px">
-        <div id="previewContent"></div>
-      </div>
+  <main class="container" style="max-width:800px;margin-top:20px">
+    <div class="auth-area">
+      <h3>إضافة عقار جديد</h3>
+      <form id="addProp">
+        <input id="title" placeholder="العنوان" required />
+        <input id="price" placeholder="السعر" required />
+        <input id="rooms" placeholder="عدد الغرف (رقم)" required />
+        <input id="type" placeholder="النوع (apartment/villa/shop)" required />
+        <input id="city" placeholder="المدينة" required />
+        <input id="img" placeholder="رابط الصورة" required />
+        <textarea id="desc" placeholder="الوصف"></textarea>
+        <button class="btn" type="submit">إضافة (محليًا)</button>
+      </form>
+      <p style="margin-top:12px;color:#666">ملاحظة: الإضافة هنا تحفظ محليًا في المتصفح فقط. لتخزين دائم على الموقع، افتح ملف <code>data/properties.json</code> في الريبو وعدل هناك يدوياً، أو ربط GitHub API لاحقًا.</p>
     </div>
-  </div>
+  </main>
 
-<script>
-/* CONFIG */
-const repoOwner = 'kaidowork112';
-const repoName = 'Moaz-Elsawy';
-const filePath = 'data/properties.json';
-const whatsappNumber = '201023871213'; // بدون +
-/* /CONFIG */
-
-/* base64 helpers (UTF-8 safe) */
-function b64EncodeUnicode(str){ return btoa(unescape(encodeURIComponent(str))); }
-function b64DecodeUnicode(str){ return decodeURIComponent(escape(atob(str))); }
-
-/* small obfuscation for token in localStorage (NOT real encryption) */
-function storeTokenRaw(t){ localStorage.setItem('gh_tok_b64', btoa(t)); }
-function readTokenRaw(){ const v = localStorage.getItem('gh_tok_b64'); return v? atob(v) : null; }
-function clearTokenRaw(){ localStorage.removeItem('gh_tok_b64'); }
-
-/* state */
-let githubToken = readTokenRaw() || '';
-let currentList = [];
-let currentSha = null;
-let editingIndex = null;
-
-/* dom */
-const tokenInput = document.getElementById('tokenInput');
-const saveToken = document.getElementById('saveToken');
-const logoutBtn = document.getElementById('logoutBtn');
-const gridList = document.getElementById('gridList');
-const addBtn = document.getElementById('addBtn');
-const refreshBtn = document.getElementById('refreshBtn');
-const overlay = document.getElementById('overlay');
-const closeModal = document.getElementById('closeModal');
-const overlayPreview = document.getElementById('overlayPreview');
-const closePreview = document.getElementById('closePreview');
-const previewContent = document.getElementById('previewContent');
-const fabAdd = document.getElementById('fabAdd');
-const commitMsgInput = document.getElementById('commitMsg');
-
-/* add form */
-const f_name = document.getElementById('f_name');
-const f_location = document.getElementById('f_location');
-const f_price = document.getElementById('f_price');
-const f_rooms = document.getElementById('f_rooms');
-const f_area = document.getElementById('f_area');
-const f_image = document.getElementById('f_image');
-const f_desc = document.getElementById('f_desc');
-
-/* modal fields */
-const modalImg = document.getElementById('modalImg');
-const m_name = document.getElementById('m_name');
-const m_location = document.getElementById('m_location');
-const m_price = document.getElementById('m_price');
-const m_rooms = document.getElementById('m_rooms');
-const m_area = document.getElementById('m_area');
-const m_image = document.getElementById('m_image');
-const m_desc = document.getElementById('m_desc');
-const saveBtn = document.getElementById('saveBtn');
-const delBtn = document.getElementById('delBtn');
-const previewBtn = document.getElementById('previewBtn');
-const openPreviewAll = document.getElementById('openPreviewAll');
-const downloadJSON = document.getElementById('downloadJSON');
-
-/* init */
-tokenInput.value = githubToken || '';
-if(githubToken) loadFromGitHub();
-
-/* token actions */
-saveToken.addEventListener('click', ()=>{
-  const t = tokenInput.value.trim();
-  if(!t) return alert('ألصق التوكين أولًا');
-  storeTokenRaw(t);
-  githubToken = t;
-  alert('تم حفظ التوكين (base64) محلياً في هذا المتصفح ✅');
-  loadFromGitHub();
-});
-logoutBtn.addEventListener('click', ()=>{
-  if(!confirm('هل تريد حذف التوكين من هذا المتصفح؟')) return;
-  clearTokenRaw(); githubToken = ''; tokenInput.value=''; alert('تم المسح');
-});
-
-/* fetch from GitHub (with token) */
-async function loadFromGitHub(){
-  if(!githubToken){
-    // try public raw fetch for read-only
-    try{
-      const rawUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/${filePath}`;
-      const r = await fetch(rawUrl, {cache:'no-store'});
-      if(r.ok){
-        const arr = await r.json();
-        if(Array.isArray(arr)){ currentList = arr; renderGrid(); return; }
-      }
-    }catch(e){}
-    alert('لم يتم وضع توكين — يمكنك وضعه للحفظ، الآن سيعرض فقط للقراءة إن كان الملف عام.');
-    return;
-  }
-  try{
-    const res = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`, {
-      headers: { Authorization: `token ${githubToken}` }
-    });
-    if(res.status === 404){
-      // create empty array file
-      currentList = [];
-      currentSha = null;
-      renderGrid();
-      return;
+  <script>
+    // guard: only allow admin
+    const user = JSON.parse(localStorage.getItem('realestate_user') || '{}');
+    if(!user.email || user.email.toLowerCase() !== 'kaidowork112@gmail.com'){
+      alert('غير مسموح: ادخل كأدمن');
+      location.href = 'login.html';
     }
-    if(!res.ok) throw new Error('fetch failed: ' + res.status);
-    const data = await res.json();
-    currentSha = data.sha;
-    const raw = b64DecodeUnicode(data.content || '');
-    currentList = JSON.parse(raw || '[]');
-    renderGrid();
-  }catch(err){
-    console.error(err);
-    alert('خطأ أثناء تحميل الملف. تأكد من صلاحيات التوكين (repo contents) وأن المسار صحيح.');
-  }
-}
+    document.getElementById('toHome').onclick = ()=>location.href='index.html';
+    document.getElementById('logout').onclick = ()=>{ localStorage.removeItem('realestate_user'); location.href='index.html'; }
 
-/* render grid */
-function renderGrid(){
-  gridList.innerHTML = '';
-  if(!Array.isArray(currentList) || currentList.length === 0){
-    gridList.innerHTML = '<div class="small muted">لا توجد عقارات حالياً.</div>';
-    return;
-  }
-  currentList.forEach((p,i)=>{
-    const el = document.createElement('div');
-    el.className = 'card-item';
-    el.innerHTML = `
-      <div class="card-thumb"><img src="${escapeHtml(p.image||'')}" alt=""></div>
-      <div class="card-body">
-        <h3>${escapeHtml(p.name||'بدون عنوان')}</h3>
-        <div class="meta">${escapeHtml(p.location||'')} — <strong style="color:var(--gold)">${escapeHtml(p.price||'')}</strong></div>
-        <div class="meta small">غرف: ${escapeHtml(String(p.rooms||''))} · مساحة: ${escapeHtml(String(p.area||''))} م²</div>
-      </div>
-      <div class="card-foot">
-        <button class="btn ghost" onclick="openPreview(${i})">عرض</button>
-        <button class="btn secondary" onclick="openEdit(${i})">تعديل</button>
-        <button class="btn danger" onclick="confirmDelete(${i})">حذف</button>
-      </div>
-    `;
-    gridList.appendChild(el);
-  });
-}
-
-/* helpers */
-function escapeHtml(s){ if(!s && s!=='0') return ''; return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
-
-/* add new */
-addBtn.addEventListener('click', async (e)=>{
-  e.preventDefault();
-  const newP = {
-    name: f_name.value.trim() || 'بدون عنوان',
-    location: f_location.value.trim() || '',
-    price: f_price.value.trim() || '',
-    rooms: Number(f_rooms.value.trim()||0),
-    area: f_area.value.trim() || '',
-    image: f_image.value.trim() || '',
-    description: f_desc.value.trim() || ''
-  };
-  currentList.unshift(newP);
-  const commitMsg = commitMsgInput.value.trim() || `Add property: ${newP.name}`;
-  await saveToGitHub(commitMsg);
-  f_name.value=''; f_location.value=''; f_price.value=''; f_rooms.value=''; f_area.value=''; f_image.value=''; f_desc.value='';
-});
-
-/* save (PUT to GitHub) */
-async function saveToGitHub(commitMsg){
-  if(!githubToken) return alert('أدخل التوكين ثم حفظ');
-  try{
-    const content = b64EncodeUnicode(JSON.stringify(currentList, null, 2));
-    const body = { message: commitMsg||'Update properties', content: content };
-    if(currentSha) body.sha = currentSha;
-    const res = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`, {
-      method: 'PUT',
-      headers: { Authorization: `token ${githubToken}`, 'Content-Type':'application/json' },
-      body: JSON.stringify(body)
-    });
-    if(!res.ok){
-      const err = await res.json().catch(()=>({message:'error'}));
-      console.error('save error', err);
-      alert('فشل الحفظ: تأكد من صلاحيات التوكين وأنه يملك صلاحية الكتابة في المستودع.');
-      return;
+    document.getElementById('addProp').onsubmit = (e)=>{
+      e.preventDefault();
+      const obj = {
+        id: Date.now(),
+        title: document.getElementById('title').value,
+        price: document.getElementById('price').value,
+        rooms: Number(document.getElementById('rooms').value),
+        type: document.getElementById('type').value,
+        city: document.getElementById('city').value,
+        img: document.getElementById('img').value,
+        desc: document.getElementById('desc').value
+      };
+      const existing = JSON.parse(localStorage.getItem('rs_local_props')||'[]');
+      existing.unshift(obj);
+      localStorage.setItem('rs_local_props', JSON.stringify(existing));
+      alert('تم الإضافة محليًا — لتصبح عامة حرّف الملف data/properties.json في الريبو وادمج السجل');
+      // optional: redirect to home
+      location.href='index.html';
     }
-    const data = await res.json();
-    currentSha = data.content.sha;
-    await loadFromGitHub();
-  }catch(err){
-    console.error(err);
-    alert('حدث خطأ أثناء الحفظ');
-  }
-}
-
-/* edit flow */
-window.openEdit = function(index){
-  editingIndex = index;
-  const p = currentList[index];
-  if(!p) return alert('العقار غير موجود');
-  document.getElementById('modalTitle').textContent = 'تعديل العقار';
-  modalImg.src = p.image || '';
-  m_name.value = p.name || '';
-  m_location.value = p.location || '';
-  m_price.value = p.price || '';
-  m_rooms.value = p.rooms || '';
-  m_area.value = p.area || '';
-  m_image.value = p.image || '';
-  m_desc.value = p.description || '';
-  overlay.classList.add('show'); overlay.setAttribute('aria-hidden','false');
-};
-
-saveBtn.addEventListener('click', async ()=>{
-  if(editingIndex===null) return;
-  const p = currentList[editingIndex];
-  p.name = m_name.value.trim();
-  p.location = m_location.value.trim();
-  p.price = m_price.value.trim();
-  p.rooms = Number(m_rooms.value.trim()||0);
-  p.area = m_area.value.trim();
-  p.image = m_image.value.trim();
-  p.description = m_desc.value.trim();
-  const commitMsg = commitMsgInput.value.trim() || `Edit property: ${p.name}`;
-  await saveToGitHub(commitMsg);
-  closeModal();
-});
-
-/* delete */
-window.confirmDelete = function(index){
-  if(!confirm('هل تريد حذف هذا العقار؟')) return;
-  currentList.splice(index,1);
-  saveToGitHub('Delete property');
-};
-delBtn.addEventListener('click', async ()=>{
-  if(editingIndex===null) return;
-  if(!confirm('تأكيد حذف هذا العقار؟')) return;
-  currentList.splice(editingIndex,1);
-  await saveToGitHub('Delete property');
-  closeModal();
-});
-
-/* preview */
-window.openPreview = function(index){
-  const p = currentList[index];
-  if(!p) return alert('العقار غير موجود');
-  showPreview(p);
-  overlayPreview.classList.add('show'); overlayPreview.setAttribute('aria-hidden','false');
-};
-previewBtn.addEventListener('click', ()=>{
-  const p = {
-    name: m_name.value, location: m_location.value, price: m_price.value,
-    rooms: m_rooms.value, area: m_area.value, image: m_image.value, description: m_desc.value
-  };
-  showPreview(p); overlayPreview.classList.add('show'); overlayPreview.setAttribute('aria-hidden','false');
-});
-
-function showPreview(p){
-  const lang = (navigator.language && navigator.language.startsWith('ar')) ? 'ar' : 'en';
-  const waText = makeWhatsappText(p, lang);
-  previewContent.innerHTML = `
-    <div class="preview" style="width:100%">
-      <div class="p-thumb"><img src="${escapeHtml(p.image||'')}" alt=""></div>
-      <div class="p-info">
-        <h3 style="margin:0">${escapeHtml(p.name||'')}</h3>
-        <div class="small muted">${escapeHtml(p.location||'')}</div>
-        <p style="margin:10px 0;color:#333">${escapeHtml(p.description||'')}</p>
-        <div style="font-weight:800;color:var(--gold);margin-bottom:8px">${escapeHtml(p.price||'')}</div>
-        <div style="display:flex;gap:8px;justify-content:flex-end">
-          <a class="btn" target="_blank" href="https://wa.me/${whatsappNumber}?text=${encodeURIComponent(waText)}">كلمني واتساب</a>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-/* modal controls */
-function closeModal(){ overlay.classList.remove('show'); overlay.setAttribute('aria-hidden','true'); editingIndex = null; }
-closeModal.addEventListener('click', closeModal);
-overlay.addEventListener('click', (ev)=>{ if(ev.target === overlay) closeModal(); });
-closePreview.addEventListener('click', ()=>{ overlayPreview.classList.remove('show'); overlayPreview.setAttribute('aria-hidden','true'); });
-overlayPreview.addEventListener('click', (ev)=>{ if(ev.target === overlayPreview) { overlayPreview.classList.remove('show'); overlayPreview.setAttribute('aria-hidden','true'); } });
-
-/* open preview all */
-openPreviewAll.addEventListener('click', ()=>{
-  const sample = currentList.slice(0,3);
-  if(sample.length===0) return alert('لا توجد عقارات للمعاينة');
-  let html = '';
-  sample.forEach(p=>{ html += `<div style="margin-bottom:12px">${createPreviewHtml(p)}</div>`; });
-  previewContent.innerHTML = html;
-  overlayPreview.classList.add('show'); overlayPreview.setAttribute('aria-hidden','false');
-});
-
-function createPreviewHtml(p){
-  const lang = (navigator.language && navigator.language.startsWith('ar')) ? 'ar' : 'en';
-  const waText = makeWhatsappText(p, lang);
-  return `
-    <div style="display:flex;gap:12px;align-items:flex-start">
-      <div class="p-thumb" style="width:40%"><img src="${escapeHtml(p.image||'')}" alt=""></div>
-      <div style="flex:1">
-        <h3 style="margin:0">${escapeHtml(p.name||'')}</h3>
-        <div class="small muted">${escapeHtml(p.location||'')}</div>
-        <p style="margin:8px 0">${escapeHtml(p.description||'')}</p>
-        <div style="font-weight:800;color:var(--gold)">${escapeHtml(p.price||'')}</div>
-        <div style="display:flex;justify-content:flex-end;margin-top:8px">
-          <a class="btn" target="_blank" href="https://wa.me/${whatsappNumber}?text=${encodeURIComponent(waText)}">كلمني واتساب</a>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-/* whatsapp message builder */
-function makeWhatsappText(p, lang){
-  if(!lang) lang = (navigator.language && navigator.language.startsWith('ar')) ? 'ar' : 'en';
-  if(lang === 'ar'){
-    return `أهلاً، أنا مهتم بالعقار "${p.name}" في ${p.location}. السعر: ${p.price}. عدد الغرف: ${p.rooms}. المساحة: ${p.area} م². ممكن تبعتلي تفاصيل أكتر؟`;
-  } else {
-    return `Hello, I'm interested in the property "${p.name}" located in ${p.location}. Price: ${p.price}. Rooms: ${p.rooms}. Area: ${p.area} sqm. Can you share more details?`;
-  }
-}
-
-/* download JSON */
-downloadJSON.addEventListener('click', ()=>{
-  const blob = new Blob([JSON.stringify(currentList, null, 2)], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = 'properties.json'; a.click(); URL.revokeObjectURL(url);
-});
-
-/* fab add */
-fabAdd.addEventListener('click', ()=> {
-  // scroll to top and focus add name
-  window.scrollTo({top:0,behavior:'smooth'});
-  f_name.focus();
-});
-
-/* keyboard ESC */
-document.addEventListener('keydown', (e)=>{
-  if(e.key === 'Escape'){
-    if(overlay.classList.contains('show')) closeModal();
-    if(overlayPreview.classList.contains('show')) { overlayPreview.classList.remove('show'); overlayPreview.setAttribute('aria-hidden','true'); }
-  }
-});
-
-/* try load public raw if no token */
-(async function tryLoadPublic(){
-  if(!githubToken){
-    try{
-      const rawUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/${filePath}`;
-      const r = await fetch(rawUrl, {cache:'no-store'});
-      if(r.ok){
-        const arr = await r.json();
-        if(Array.isArray(arr)){ currentList = arr; renderGrid(); }
-      }
-    }catch(e){}
-  }
-})();
-
-</script>
+  </script>
 </body>
 </html>
