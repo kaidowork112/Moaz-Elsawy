@@ -14,8 +14,8 @@
       min-height: 100vh;
       background: linear-gradient(120deg, #0a74da, #005bb5);
       color: white;
+      padding: 20px;
     }
-
     .login-box {
       background: white;
       color: #000;
@@ -23,42 +23,38 @@
       border-radius: 12px;
       width: 90%;
       max-width: 400px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     }
-
     .login-box h2 {
       text-align: center;
       margin-bottom: 20px;
       color: #0a74da;
     }
-
     .login-box input {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       margin: 10px 0;
       border-radius: 6px;
       border: 1px solid #ccc;
+      box-sizing: border-box;
     }
-
     .login-box button {
       width: 100%;
       background: #f5b800;
       color: #000;
-      padding: 10px;
+      padding: 12px;
       border: none;
       border-radius: 6px;
       font-weight: bold;
       cursor: pointer;
+      transition: 0.3s;
     }
-
     .login-box button:hover {
       background: #ffcc33;
     }
-
     .verify {
       display: none;
     }
-
     .error {
       color: red;
       font-size: 14px;
@@ -72,12 +68,14 @@
     <div class="login-box">
       <h2>تسجيل الدخول</h2>
       <form id="loginForm">
-        <input type="text" id="email" placeholder="البريد الإلكتروني" required />
+        <input type="email" id="email" placeholder="البريد الإلكتروني" required />
         <input type="password" id="password" placeholder="كلمة المرور" required />
-        <input type="tel" id="phone" placeholder="رقم الموبايل" required pattern="[0-9]{11}" />
+        <input type="tel" id="phone" placeholder="رقم الموبايل (مثال: 010xxxxxxxx)" required pattern="[0-9]{11}" />
+        
         <div class="verify">
-          <input type="text" id="code" placeholder="أدخل كود التأكيد" />
+          <input type="text" id="code" placeholder="أدخل كود التأكيد المرسل" />
         </div>
+        
         <div class="error" id="errorMsg"></div>
         <button type="submit">تسجيل الدخول</button>
       </form>
@@ -89,7 +87,7 @@
     const verifyDiv = document.querySelector(".verify");
     const errorMsg = document.getElementById("errorMsg");
 
-    // بيانات الدخول التجريبية
+    // ⭐ بيانات الأدمن: يجب أن تتطابق مع التوكن المستخدم في admin.html
     const ADMIN = {
       email: "admin@moazelsawy.com",
       password: "admin123",
@@ -98,6 +96,9 @@
 
     let codeSent = false;
     let generatedCode = "";
+    
+    // لإخفاء أي رسالة خطأ سابقة
+    errorMsg.textContent = "";
 
     form.addEventListener("submit", (e) => {
       e.preventDefault();
@@ -107,32 +108,46 @@
       const phone = document.getElementById("phone").value.trim();
 
       if (!codeSent) {
+        // الخطوة الأولى: التحقق من البيانات وإرسال كود التأكيد
         if (!email || !password || !phone) {
           errorMsg.textContent = "من فضلك أدخل جميع البيانات";
           return;
         }
-
+        
         // توليد كود عشوائي (محاكاة تأكيد الموبايل)
         generatedCode = Math.floor(1000 + Math.random() * 9000).toString();
         alert("كود التأكيد المرسل هو: " + generatedCode + " (تجريبي فقط)");
         verifyDiv.style.display = "block";
+        errorMsg.textContent = "";
         codeSent = true;
+        // تغيير نص الزر
+        form.querySelector('button[type="submit"]').textContent = 'تأكيد الكود والدخول';
+
       } else {
+        // الخطوة الثانية: التحقق من الكود والدخول
         const code = document.getElementById("code").value.trim();
         if (code === generatedCode) {
+          
+          let userObject = { email: email, is_admin: false }; // افتراضياً مستخدم عادي
+
           if (
             email === ADMIN.email &&
             password === ADMIN.password &&
             phone === ADMIN.phone
           ) {
+            // ⭐ حفظ حالة الأدمن في LocalStorage
+            userObject.is_admin = true;
+            localStorage.setItem('realestate_user', JSON.stringify(userObject));
             alert("تم تسجيل الدخول كأدمن ✅");
             window.location.href = "admin.html";
           } else {
+            // ⭐ حفظ حالة المستخدم العادي في LocalStorage
+            localStorage.setItem('realestate_user', JSON.stringify(userObject));
             alert("تم تسجيل الدخول كمستخدم عادي ✅");
             window.location.href = "index.html";
           }
         } else {
-          errorMsg.textContent = "كود التأكيد غير صحيح!";
+          errorMsg.textContent = "كود التأكيد غير صحيح! حاول مرة أخرى.";
         }
       }
     });
