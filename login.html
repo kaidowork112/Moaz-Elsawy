@@ -1,135 +1,96 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>تسجيل الدخول / إنشاء حساب</title>
-  <style>
-    body { font-family: "Cairo", sans-serif; background:#f4f8ff; display:flex; justify-content:center; align-items:center; min-height:100vh; }
-    .container { background:white; padding:30px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width:400px; text-align:center; }
-    h2 { color:#0a74da; margin-bottom:20px; }
-    input { width:100%; padding:12px; margin:8px 0; border-radius:6px; border:1px solid #ccc; }
-    button { width:100%; padding:12px; background:#f5b800; border:none; border-radius:6px; font-weight:bold; cursor:pointer; margin-top:10px; }
-    button:hover { background:#ffcc33; }
-    .toggle { margin-top:15px; color:#0a74da; cursor:pointer; text-decoration:underline; }
-    .error { color:red; margin:10px 0; font-size:14px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تسجيل الدخول | Moaz Elsawy</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.login-container{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(120deg,#0a74da,#005bb5);padding:20px;color:white}
+.login-box{background:white;color:#000;padding:30px;border-radius:12px;width:90%;max-width:400px;box-shadow:0 4px 15px rgba(0,0,0,0.3)}
+.login-box h2{text-align:center;margin-bottom:20px;color:#0a74da}
+.login-box input{width:100%;padding:12px;margin:10px 0;border-radius:6px;border:1px solid #ccc;box-sizing:border-box}
+.login-box button{width:100%;background:#f5b800;color:#000;padding:12px;border:none;border-radius:6px;font-weight:bold;cursor:pointer;transition:0.3s}
+.login-box button:hover{background:#ffcc33}
+.error{color:red;font-size:14px;text-align:center}
+</style>
 </head>
 <body>
-
-<div class="container">
-  <h2 id="formTitle">تسجيل الدخول</h2>
-  <div class="error" id="errorMsg"></div>
-  <form id="authForm">
-    <input type="text" id="name" placeholder="الاسم الكامل" style="display:none;" />
-    <input type="email" id="email" placeholder="البريد الإلكتروني" required />
-    <input type="password" id="password" placeholder="كلمة المرور" required />
-    <input type="tel" id="phone" placeholder="رقم الهاتف (اختياري)" style="display:none;" />
-    <button type="submit" id="submitBtn">دخول</button>
-  </form>
-  <div class="toggle" id="toggleForm">إنشاء حساب جديد</div>
+<div class="login-container">
+  <div class="login-box">
+    <h2>تسجيل الدخول / إنشاء حساب</h2>
+    <form id="loginForm">
+      <input type="text" id="name" placeholder="الاسم الكامل (للتسجيل فقط)">
+      <input type="email" id="email" placeholder="البريد الإلكتروني" required>
+      <input type="password" id="password" placeholder="كلمة المرور" required>
+      <input type="tel" id="phone" placeholder="رقم الموبايل (اختياري)" pattern="[0-9]{11}">
+      <div class="error" id="errorMsg"></div>
+      <button type="submit">تسجيل / تسجيل دخول</button>
+    </form>
+  </div>
 </div>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-  import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getFirestore, collection, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyBxEWaPWqpUIgZtasxnE7-82SN6OEzSx7Q",
-    authDomain: "moaz-elsawy.firebaseapp.com",
-    projectId: "moaz-elsawy",
-    storageBucket: "moaz-elsawy.firebasestorage.app",
-    messagingSenderId: "859568017117",
-    appId: "1:859568017117:web:38a7d0c96532f0f7681534",
-    measurementId: "G-JY1XN1VRCP"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyBxEWaPWqpUIgZtasxnE7-82SN6OEzSx7Q",
+  authDomain: "moaz-elsawy.firebaseapp.com",
+  projectId: "moaz-elsawy",
+  storageBucket: "moaz-elsawy.firebasestorage.app",
+  messagingSenderId: "859568017117",
+  appId: "1:859568017117:web:38a7d0c96532f0f7681534",
+  measurementId: "G-JY1XN1VRCP"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+const ADMIN_EMAIL = "admin@moazelsawy.com"; // الأدمن الافتراضي
 
-  const authForm = document.getElementById("authForm");
-  const toggleForm = document.getElementById("toggleForm");
-  const formTitle = document.getElementById("formTitle");
-  const submitBtn = document.getElementById("submitBtn");
-  const nameInput = document.getElementById("name");
-  const phoneInput = document.getElementById("phone");
-  const errorMsg = document.getElementById("errorMsg");
+const form = document.getElementById("loginForm");
+const errorMsg = document.getElementById("errorMsg");
 
-  let isRegister = false;
+form.addEventListener("submit", async (e)=>{
+  e.preventDefault();
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const phone = document.getElementById("phone").value.trim();
 
-  toggleForm.addEventListener("click", () => {
-    isRegister = !isRegister;
-    if(isRegister){
-      formTitle.textContent = "إنشاء حساب جديد";
-      submitBtn.textContent = "تسجيل";
-      nameInput.style.display = "block";
-      phoneInput.style.display = "block";
-      toggleForm.textContent = "لدي حساب بالفعل";
-    } else {
-      formTitle.textContent = "تسجيل الدخول";
-      submitBtn.textContent = "دخول";
-      nameInput.style.display = "none";
-      phoneInput.style.display = "none";
-      toggleForm.textContent = "إنشاء حساب جديد";
-    }
-    errorMsg.textContent = "";
-  });
+  if(!email || !password){
+    errorMsg.textContent = "البريد وكلمة المرور مطلوبان";
+    return;
+  }
 
-  authForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    errorMsg.textContent = "";
+  try {
+    const userRef = doc(db, "users", email);
+    const userSnap = await getDoc(userRef);
 
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value.trim();
-    const name = document.getElementById("name").value.trim();
-    const phone = document.getElementById("phone").value.trim();
+    let userObj = { email, is_admin: false, name: name || "", phone: phone || "" };
 
-    if(isRegister){
-      if(!name) { errorMsg.textContent = "الاسم مطلوب"; return; }
-      try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-        await addDoc(collection(db,"users"), {
-          uid: user.uid,
-          name,
-          email,
-          phone: phone || null,
-          isAdmin: false
-        });
-        alert("تم إنشاء الحساب بنجاح ✅");
-        authForm.reset();
-        isRegister = false;
-        toggleForm.click();
-      } catch (error) {
-        errorMsg.textContent = "فشل إنشاء الحساب: " + error.message;
+    if(userSnap.exists()){
+      const data = userSnap.data();
+      if(data.password !== password){
+        errorMsg.textContent = "كلمة المرور غير صحيحة";
+        return;
       }
+      userObj = data;
     } else {
-      try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-
-        // جلب بيانات المستخدم من Firestore
-        const q = query(collection(db,"users"), where("uid","==",user.uid));
-        const snapshot = await getDocs(q);
-        if(snapshot.empty){ errorMsg.textContent = "بيانات المستخدم غير موجودة"; return; }
-        const userData = snapshot.docs[0].data();
-
-        if(userData.isAdmin){
-          alert("تم تسجيل الدخول كأدمن ✅");
-          window.location.href = "admin.html";
-        } else {
-          alert("تم تسجيل الدخول كمستخدم عادي ✅");
-          window.location.href = "index.html";
-        }
-
-      } catch (error) {
-        errorMsg.textContent = "بيانات المستخدم غير صحيحة أو غير موجودة";
-      }
+      // تسجيل جديد
+      if(!name){ errorMsg.textContent = "الاسم مطلوب للتسجيل"; return; }
+      if(email===ADMIN_EMAIL) userObj.is_admin=true; // أدمن افتراضي
+      await setDoc(userRef, userObj);
     }
-  });
+
+    localStorage.setItem("realestate_user", JSON.stringify(userObj));
+    if(userObj.is_admin) window.location.href="admin.html";
+    else window.location.href="index.html";
+  } catch(err){
+    console.error(err);
+    errorMsg.textContent = "حدث خطأ، حاول مرة أخرى";
+  }
+});
 </script>
-
 </body>
 </html>
