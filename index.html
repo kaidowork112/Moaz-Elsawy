@@ -13,41 +13,114 @@
     <a href="index.html">الرئيسية</a>
     <a href="#properties">العقارات</a>
     <a href="#contact">تواصل معنا</a>
-    <a href="login.html" class="btn" id="loginBtn">تسجيل الدخول</a>
+    <a href="login-register.html" class="btn" id="loginBtn">تسجيل الدخول</a>
   </nav>
 </header>
 
-<!-- سلايدر العقارات -->
 <section class="slider" id="slider">
   <div class="slides-container" id="sliderContainer"></div>
 </section>
 
-<!-- العقارات -->
 <section id="properties" class="properties">
   <h2>العقارات المتاحة</h2>
   <div id="property-list" class="property-list"></div>
 </section>
 
-<!-- مودال التفاصيل -->
-<div id="propertyModal" class="modal">
-  <div class="modal-content">
-    <span class="close-button">&times;</span>
-    <div id="modalDetails">
-      <img id="modalImg" src="" alt="صورة العقار">
-      <h2 id="modalTitle"></h2>
-      <p><strong>السعر:</strong> <span id="modalPriceDetail"></span></p>
-      <p><strong>الموقع:</strong> <span id="modalCity"></span></p>
-      <p><strong>النوع:</strong> <span id="modalType"></span></p>
-      <p><strong>المساحة:</strong> <span id="modalSize"></span></p>
-      <p><strong>عدد الغرف:</strong> <span id="modalRooms"></span></p>
-      <p><strong>الوصف:</strong> <span id="modalDesc"></span></p>
-      <a id="whatsappLink" href="#" target="_blank" class="btn whatsapp-btn">
-        تواصل واتساب (استفسر الآن)
-      </a>
-    </div>
-  </div>
-</div>
+<section id="contact" class="contact">
+  <h2>تواصل معنا</h2>
+  <form id="contactForm">
+    <input type="text" placeholder="الاسم الكامل" required>
+    <input type="email" placeholder="البريد الإلكتروني" required>
+    <textarea placeholder="رسالتك..." required></textarea>
+    <button type="submit">إرسال</button>
+  </form>
+</section>
 
-<script src="script.js"></script>
+<footer>
+<p>© 2025 Moaz Elsawy | جميع الحقوق محفوظة</p>
+</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBxEWaPWqpUIgZtasxnE7-82SN6OEzSx7Q",
+  authDomain: "moaz-elsawy.firebaseapp.com",
+  projectId: "moaz-elsawy",
+  storageBucket: "moaz-elsawy.firebasestorage.app",
+  messagingSenderId: "859568017117",
+  appId: "1:859568017117:web:38a7d0c96532f0f7681534",
+  measurementId: "G-JY1XN1VRCP",
+  databaseURL: "https://moaz-elsawy-default-rtdb.firebaseio.com"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// =========================
+// التعامل مع تسجيل الدخول
+// =========================
+const loginBtn = document.getElementById('loginBtn');
+const user = JSON.parse(localStorage.getItem('realestate_user')||'{}');
+if(user.email){
+  loginBtn.textContent = 'تسجيل خروج';
+  loginBtn.href = '#';
+  loginBtn.onclick = e=>{ e.preventDefault(); localStorage.removeItem('realestate_user'); location.reload(); };
+}
+
+// =========================
+// عرض العقارات والسلايدر
+// =========================
+const sliderContainer = document.getElementById('sliderContainer');
+const propertyList = document.getElementById('property-list');
+
+onValue(ref(db,'properties/'), snapshot=>{
+  const data = snapshot.val()||{};
+  sliderContainer.innerHTML = '';
+  propertyList.innerHTML = '';
+  Object.values(data).forEach(p=>{
+    if(p.inSlider){
+      const div = document.createElement('div');
+      div.className='slide';
+      div.style.backgroundImage=`url(${p.img})`;
+      sliderContainer.appendChild(div);
+    }
+    if(p.city){
+      const card = document.createElement('div');
+      card.className='property-card';
+      card.innerHTML = `
+        <img src="${p.img}" alt="${p.title}">
+        <div class="property-info">
+          <h3>${p.title}</h3>
+          <p><strong>الموقع:</strong> ${p.city}</p>
+          <p><strong>النوع:</strong> ${p.type}</p>
+          <p><strong>المساحة:</strong> ${p.size}م²</p>
+          <p><strong>الغرف:</strong> ${p.rooms}</p>
+          <span>${p.price}</span>
+        </div>
+      `;
+      propertyList.appendChild(card);
+    }
+  });
+  // تشغيل السلايدر تلقائي
+  const slides = document.querySelectorAll('.slide');
+  let current = 0;
+  function nextSlide(){
+    slides.forEach(s=>s.style.opacity=0);
+    slides[current].style.opacity=1;
+    current=(current+1)%slides.length;
+  }
+  if(slides.length) setInterval(nextSlide,3000);
+});
+
+// نموذج التواصل
+document.getElementById('contactForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  alert('تم إرسال رسالتك بنجاح ✅');
+  e.target.reset();
+});
+</script>
+
 </body>
 </html>
