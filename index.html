@@ -12,8 +12,8 @@ body { font-family:"Cairo",sans-serif; margin:0; background:#f4f8ff; min-height:
 .header nav a.btn { background:#f5b800; color:#000; padding:6px 12px; border-radius:6px; cursor:pointer; }
 
 .slider { position:relative; width:100%; height:250px; overflow:hidden; margin-bottom:15px; }
-.slides-container { display:flex; transition:transform 0.3s ease-in-out; cursor:grab; }
-.slide { flex:0 0 calc(33.333% - 10px); height:250px; background-size:cover; background-position:center; border-radius:12px; cursor:pointer; margin-right:10px; position:relative; }
+.slides-container { display:flex; transition:transform 0.4s ease-in-out; cursor:grab; }
+.slide { min-width:32%; height:250px; background-size:cover; background-position:center; border-radius:12px; cursor:pointer; margin-right:10px; position:relative; }
 .caption { position:absolute; bottom:10px; right:10px; background:rgba(0,0,0,0.5); color:#fff; padding:5px 10px; border-radius:5px; font-size:14px; }
 
 .search-container { display:flex; gap:10px; justify-content:center; margin-bottom:20px; flex-wrap:wrap; }
@@ -188,38 +188,35 @@ function openModal(id){
   modal.style.display="block";
 }
 
-// سلايدر تلقائي + سحب + 3 كاردات
+// السلايدر 3 كروت + سحب + حركة تلقائية
 let isDragging=false, startX=0, scrollLeft=0;
-let autoSlideInterval;
-
 function startSlider(){
   const slides = slidesContainer.children;
-  const slideWidth = slides[0].offsetWidth + 10; // margin-right
-  let currentIndex = 0;
+  if(slides.length <= 3) return;
+  const slideWidth = slides[0].offsetWidth + 10;
+  let currentIndex=0;
 
   function autoSlide(){
     currentIndex++;
-    if(currentIndex > slides.length - 3){ // 3 كاردات تظهر
-      currentIndex = 0;
-    }
+    if(currentIndex > slides.length - 3) currentIndex=0;
     slidesContainer.style.transform = `translateX(-${currentIndex*slideWidth}px)`;
   }
 
-  autoSlideInterval = setInterval(autoSlide, 3000);
+  let autoInterval = setInterval(autoSlide,3000);
 
-  function stopAuto(){ clearInterval(autoSlideInterval); }
-  function startAuto(){ autoSlideInterval = setInterval(autoSlide, 3000); }
+  function stopAuto(){ clearInterval(autoInterval); }
+  function startAuto(){ autoInterval=setInterval(autoSlide,3000); }
 
   slidesContainer.addEventListener("mousedown", e=>{
     isDragging=true; startX=e.pageX; scrollLeft=currentIndex*slideWidth; stopAuto();
   });
   slidesContainer.addEventListener("mouseup", ()=>{
-    isDragging=false; currentIndex = Math.round((scrollLeft - (startX - event.pageX))/slideWidth); 
+    isDragging=false; currentIndex=Math.round((scrollLeft - (startX - event.pageX))/slideWidth);
     if(currentIndex<0) currentIndex=0;
-    if(currentIndex>slides.length - 3) currentIndex = slides.length - 3;
+    if(currentIndex>slides.length-3) currentIndex=slides.length-3;
     slidesContainer.style.transform = `translateX(-${currentIndex*slideWidth}px)`; startAuto();
   });
-  slidesContainer.addEventListener("mouseleave", ()=>{ if(isDragging){ isDragging=false; startAuto(); }});
+  slidesContainer.addEventListener("mouseleave", ()=>{ if(isDragging){ isDragging=false; startAuto(); } });
   slidesContainer.addEventListener("mousemove", e=>{
     if(!isDragging) return;
     const x=e.pageX-startX;
@@ -230,9 +227,9 @@ function startSlider(){
     isDragging=true; startX=e.touches[0].pageX; scrollLeft=currentIndex*slideWidth; stopAuto();
   });
   slidesContainer.addEventListener("touchend", ()=>{
-    isDragging=false; currentIndex = Math.round((scrollLeft - (startX - event.changedTouches[0].pageX))/slideWidth);
+    isDragging=false; currentIndex=Math.round((scrollLeft - (startX - event.changedTouches[0].pageX))/slideWidth);
     if(currentIndex<0) currentIndex=0;
-    if(currentIndex>slides.length - 3) currentIndex = slides.length - 3;
+    if(currentIndex>slides.length-3) currentIndex=slides.length-3;
     slidesContainer.style.transform = `translateX(-${currentIndex*slideWidth}px)`; startAuto();
   });
   slidesContainer.addEventListener("touchmove", e=>{
