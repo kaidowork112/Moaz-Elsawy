@@ -6,83 +6,43 @@
   <title>Moaz Elsawy | تسويق عقاري</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    /* ----- السلايدر ----- */
-    .slider {
-      position: relative;
-      width: 100%;
-      height: 300px;
-      overflow: hidden;
-      margin-bottom: 30px;
-    }
-    .slides-container {
-      display: flex;
-      transition: transform 0.5s ease-in-out;
-    }
-    .slide {
-      min-width: 100%;
-      height: 300px;
-      background-size: cover;
-      background-position: center;
-      border-radius: 12px;
-      cursor: pointer;
-      margin: 0 5px;
-    }
-    .caption {
-      position: absolute;
-      bottom: 15px;
-      right: 20px;
-      background: rgba(0,0,0,0.5);
-      color: #fff;
-      padding: 8px 15px;
-      border-radius: 6px;
-    }
+    body { font-family: "Cairo", sans-serif; background:#f4f8ff; margin:0; }
+    .header { background:#0a74da; color:white; display:flex; justify-content:space-between; align-items:center; padding:15px 20px; }
+    .header nav a { color:white; text-decoration:none; margin-left:15px; }
+    .header nav a.btn { background:#f5b800; color:#000; padding:6px 12px; border-radius:6px; }
 
-    /* ----- العقارات ----- */
-    .properties {
-      padding: 20px;
-      text-align: center;
-    }
-    .property-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      justify-content: center;
-    }
-    .property-card {
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      width: 280px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    .property-card:hover { transform: translateY(-5px); }
-    .property-card img {
-      width: 100%;
-      height: 180px;
-      border-top-left-radius: 12px;
-      border-top-right-radius: 12px;
-      object-fit: cover;
-    }
-    .property-info { padding: 10px; text-align: right; }
-    .property-info h3 { color: #333; margin-bottom: 5px; }
-    .property-info p { font-size: 14px; color: #666; margin: 3px 0; }
-    .property-info span { color: #f5b800; font-weight: bold; display: block; margin-top: 5px; }
+    /* السلايدر */
+    .slider { position:relative; width:100%; height:300px; overflow:hidden; margin-bottom:30px; }
+    .slides-container { display:flex; transition: transform 0.5s ease-in-out; }
+    .slide { min-width:100%; height:300px; background-size:cover; background-position:center; border-radius:12px; cursor:pointer; margin:0 5px; position:relative; }
+    .caption { position:absolute; bottom:15px; right:20px; background:rgba(0,0,0,0.5); color:#fff; padding:8px 15px; border-radius:6px; }
 
-    /* ----- المودال ----- */
-    .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:1000; }
-    .modal-content { background:#fff; max-width:700px; margin:50px auto; border-radius:12px; padding:20px; position: relative; }
-    .close-button { position: absolute; left:20px; top:10px; font-size:28px; cursor:pointer; color:#aaa; }
+    /* العقارات */
+    .properties { padding:20px; text-align:center; }
+    .property-list { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; }
+    .property-card { background:#fff; border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,0.1); width:280px; cursor:pointer; transition:0.3s; }
+    .property-card:hover { transform:translateY(-5px); }
+    .property-card img { width:100%; height:180px; border-top-left-radius:12px; border-top-right-radius:12px; object-fit:cover; }
+    .property-info { padding:10px; text-align:right; }
+    .property-info h3 { color:#333; margin-bottom:5px; }
+    .property-info p { font-size:14px; color:#666; margin:3px 0; }
+    .property-info span { color:#f5b800; font-weight:bold; display:block; margin-top:5px; }
+
+    /* المودال */
+    .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:1000; }
+    .modal-content { background:#fff; max-width:700px; margin:50px auto; border-radius:12px; padding:20px; position:relative; }
+    .close-button { position:absolute; left:20px; top:10px; font-size:28px; cursor:pointer; color:#aaa; }
     .close-button:hover { color:#000; }
     #modalDetails img { width:100%; max-height:400px; object-fit:cover; border-radius:8px; margin-bottom:15px; }
     #modalDetails h2 { color:#0a74da; margin-bottom:10px; }
     #modalDetails p { margin:8px 0; font-size:15px; }
     .whatsapp-btn { display:block; width:100%; text-align:center; background:#25d366; color:#fff; padding:12px 0; font-weight:bold; border-radius:8px; text-decoration:none; margin-top:15px; }
 
-    /* ----- الهيدر ----- */
-    .header { background:#0a74da; color:white; display:flex; justify-content:space-between; align-items:center; padding:15px 20px; }
-    .header nav a { color:white; text-decoration:none; margin-left:15px; }
-    .header nav a.btn { background:#f5b800; color:#000; padding:6px 12px; border-radius:6px; }
+    /* تواصل معنا */
+    .contact { background:#fff; padding:50px 20px; text-align:center; }
+    .contact input, .contact textarea, .contact button { width:90%; max-width:400px; margin:5px 0; padding:10px; border-radius:6px; border:1px solid #ccc; }
+    .contact button { background:#f5b800; border:none; cursor:pointer; font-weight:600; }
+    .contact button:hover { background:#ffcc33; }
   </style>
 </head>
 <body>
@@ -97,7 +57,7 @@
     </nav>
   </header>
 
-  <!-- سلايدر -->
+  <!-- السلايدر -->
   <section class="slider" id="slider">
     <div class="slides-container" id="slidesContainer"></div>
   </section>
@@ -131,124 +91,160 @@
         <p><strong>النوع:</strong> <span id="modalType"></span></p>
         <p><strong>عدد الغرف:</strong> <span id="modalRooms"></span></p>
         <p><strong>الوصف:</strong> <span id="modalDesc"></span></p>
-        <a id="whatsappLink" href="#" target="_blank" class="whatsapp-btn">تواصل واتساب</a>
+        <a id="whatsappLink" href="#" target="_blank" class="whatsapp-btn">تواصل واتساب (استفسر الآن)</a>
       </div>
     </div>
   </div>
 
-  <!-- Firebase SDK -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
-    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js";
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
 
+  <script>
+    // إعداد Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyBxEWaPWqpUIgZtasxnE7-82SN6OEzSx7Q",
       authDomain: "moaz-elsawy.firebaseapp.com",
       projectId: "moaz-elsawy",
-      storageBucket: "moaz-elsawy.appspot.com",
+      storageBucket: "moaz-elsawy.firebasestorage.app",
       messagingSenderId: "859568017117",
       appId: "1:859568017117:web:38a7d0c96532f0f7681534",
       measurementId: "G-JY1XN1VRCP"
     };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    const slidesContainer = document.getElementById('slidesContainer');
-    const propertyList = document.getElementById('property-list');
-    const propertyModal = document.getElementById('propertyModal');
-    const closeButton = document.querySelector('.close-button');
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
     let ALL_PROPERTIES = [];
-    let sliderIndex = 0;
+    let SLIDER_PROPERTIES = [];
+    let currentSlide = 0;
 
+    // تحميل العقارات
     async function loadProperties() {
-      ALL_PROPERTIES = [];
-      propertyList.innerHTML = '';
-      slidesContainer.innerHTML = '';
+      const querySnapshot = await db.collection("properties").get();
+      const allProps = [];
+      const sliderProps = [];
 
-      const querySnapshot = await getDocs(collection(db, "properties"));
-      querySnapshot.forEach((docSnap) => {
-        const prop = docSnap.data();
-        prop.id = docSnap.id;
-        ALL_PROPERTIES.push(prop);
+      querySnapshot.forEach(doc => {
+        const prop = { id: doc.id, ...doc.data() };
+        allProps.push(prop);
+        if (prop.slider) sliderProps.push(prop);
+      });
 
-        // السلايدر
-        if(prop.showSlider) {
-          const slideDiv = document.createElement('div');
-          slideDiv.className = 'slide';
-          slideDiv.style.backgroundImage = `url(${prop.img})`;
-          slideDiv.dataset.id = prop.id;
-          const caption = document.createElement('div');
-          caption.className = 'caption';
-          caption.innerText = prop.title;
-          slideDiv.appendChild(caption);
-          slidesContainer.appendChild(slideDiv);
+      ALL_PROPERTIES = allProps;
+      SLIDER_PROPERTIES = sliderProps;
 
-          slideDiv.addEventListener('click', ()=> openModal(prop.id));
-        }
+      displayProperties(ALL_PROPERTIES);
+      displaySlider(SLIDER_PROPERTIES);
+    }
 
-        // البطاقات
-        if(prop.location){
-          const card = document.createElement('div');
-          card.className = 'property-card';
-          card.dataset.id = prop.id;
-          card.innerHTML = `
-            <img src="${prop.img}">
-            <div class="property-info">
-              <h3>${prop.title}</h3>
-              <p><strong>الموقع:</strong> ${prop.location}</p>
-              <p><strong>الغرف:</strong> ${prop.rooms}</p>
-              <span>${prop.price}</span>
-            </div>
-          `;
-          card.addEventListener('click', ()=> openModal(prop.id));
-          propertyList.appendChild(card);
-        }
+    function displayProperties(properties) {
+      const listContainer = document.getElementById("property-list");
+      listContainer.innerHTML = '';
+      if (!properties.length) {
+        listContainer.innerHTML = '<p style="text-align:center; padding: 40px 0; color:#666;">لا توجد عقارات متاحة حالياً.</p>';
+        return;
+      }
+
+      properties.forEach(prop => {
+        const card = document.createElement("div");
+        card.className = "property-card";
+        card.dataset.id = prop.id;
+
+        card.innerHTML = `
+          <img src="${prop.img}" alt="${prop.title}">
+          <div class="property-info">
+            <h3>${prop.title}</h3>
+            <p><strong>الموقع:</strong> ${prop.location || 'غير محدد'}</p>
+            <p><strong>الغرف:</strong> ${prop.rooms || '؟'}</p>
+            <span>${prop.price}</span>
+          </div>
+        `;
+
+        card.addEventListener('click', () => openModal(prop.id));
+        listContainer.appendChild(card);
       });
     }
 
-    function openModal(id){
-      const prop = ALL_PROPERTIES.find(p => p.id === id);
-      if(!prop) return;
+    function displaySlider(sliderProps) {
+      const container = document.getElementById("slidesContainer");
+      container.innerHTML = '';
+
+      sliderProps.forEach(prop => {
+        const slide = document.createElement("div");
+        slide.className = "slide";
+        slide.style.backgroundImage = `url(${prop.img})`;
+        const caption = document.createElement("div");
+        caption.className = "caption";
+        caption.textContent = prop.title;
+        slide.appendChild(caption);
+        slide.addEventListener("click", () => openModal(prop.id));
+        container.appendChild(slide);
+      });
+
+      startSlider();
+    }
+
+    function startSlider() {
+      const slides = document.querySelectorAll(".slide");
+      if (!slides.length) return;
+
+      setInterval(() => {
+        currentSlide = (currentSlide + 1) % slides.length;
+        const container = document.getElementById("slidesContainer");
+        container.style.transform = `translateX(-${currentSlide * 100}%)`;
+      }, 3000);
+    }
+
+    // مودال التفاصيل
+    function openModal(propertyId) {
+      const prop = ALL_PROPERTIES.find(p => p.id === propertyId);
+      if (!prop) return;
+
       document.getElementById('modalImg').src = prop.img;
       document.getElementById('modalTitle').textContent = prop.title;
       document.getElementById('modalPriceDetail').textContent = prop.price;
       document.getElementById('modalCity').textContent = prop.location || 'غير محدد';
-      document.getElementById('modalType').textContent = prop.type;
-      document.getElementById('modalRooms').textContent = prop.rooms;
-      document.getElementById('modalDesc').textContent = prop.desc || '-';
-      document.getElementById('whatsappLink').href = `https://wa.me/+201115134784?text=${encodeURIComponent("مرحباً، أريد الاستفسار عن العقار: " + prop.title)}`;
-      propertyModal.style.display = 'block';
+      document.getElementById('modalType').textContent = prop.type || 'غير محدد';
+      document.getElementById('modalRooms').textContent = prop.rooms || '؟';
+      document.getElementById('modalDesc').textContent = prop.desc || 'لا يوجد وصف متاح لهذا العقار.';
+      const encodedMessage = encodeURIComponent(`مرحباً، أود الاستفسار عن العقار: ${prop.title}، في مدينة: ${prop.location || 'غير محدد'}. سعره: ${prop.price}. هل هو متاح؟`);
+      document.getElementById('whatsappLink').href = `https://wa.me/+201115134784?text=${encodedMessage}`;
+
+      document.getElementById('propertyModal').style.display = 'block';
     }
 
-    closeButton.onclick = ()=> propertyModal.style.display='none';
-    window.onclick = (e)=> { if(e.target == propertyModal) propertyModal.style.display='none'; }
+    document.querySelector('.close-button').onclick = () => {
+      document.getElementById('propertyModal').style.display = 'none';
+    };
+    window.onclick = (event) => {
+      if (event.target == document.getElementById('propertyModal')) {
+        document.getElementById('propertyModal').style.display = 'none';
+      }
+    };
 
-    // السلايدر التلقائي
-    setInterval(()=>{
-      const slides = document.querySelectorAll('.slide');
-      if(slides.length ===0) return;
-      sliderIndex = (sliderIndex+1)%slides.length;
-      slidesContainer.style.transform = `translateX(-${sliderIndex*100}%)`;
-    },3000);
+    document.addEventListener("DOMContentLoaded", () => {
+      loadProperties();
 
-    // التحقق من المستخدم وعرض زر الأدمن
-    const loginBtn = document.getElementById('loginBtn');
-    const user = JSON.parse(localStorage.getItem('realestate_user')|| '{}');
-    if(user.email){
-      loginBtn.textContent = 'تسجيل خروج';
-      loginBtn.onclick = ()=> { localStorage.removeItem('realestate_user'); location.reload(); };
-      if(user.is_admin) loginBtn.href='admin.html';
-    } else loginBtn.href='login.html';
+      // زر تسجيل الدخول/الخروج
+      const loginBtn = document.getElementById("loginBtn");
+      const user = JSON.parse(localStorage.getItem("realestate_user") || "{}");
+      if (user && user.email) {
+        loginBtn.textContent = "تسجيل خروج";
+        loginBtn.onclick = (e) => {
+          e.preventDefault();
+          localStorage.removeItem("realestate_user");
+          location.reload();
+        };
+      } else {
+        loginBtn.href = "login.html";
+      }
 
-    loadProperties();
-
-    // نموذج التواصل
-    document.getElementById("contactForm").addEventListener("submit", (e)=>{
-      e.preventDefault();
-      alert("تم إرسال رسالتك بنجاح ✅");
-      e.target.reset();
+      document.getElementById("contactForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        alert("تم إرسال رسالتك بنجاح ✅");
+        e.target.reset();
+      });
     });
   </script>
 </body>
