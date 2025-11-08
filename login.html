@@ -7,67 +7,78 @@
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500&display=swap" rel="stylesheet">
   <style>
     body {
-      margin: 0;
       font-family: "Cairo", sans-serif;
-      background: linear-gradient(135deg, #0a74da, #002b5b);
-      min-height: 100vh;
+      background-color: #f4f4f4;
       display: flex;
       justify-content: center;
       align-items: center;
-      color: #fff;
+      height: 100vh;
+      margin: 0;
     }
 
-    .container {
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(10px);
-      border-radius: 15px;
-      padding: 30px 40px;
-      width: 380px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      width: 360px;
+      padding: 25px;
+      text-align: center;
+      transition: 0.3s;
     }
 
     h2 {
-      text-align: center;
+      color: #333;
       margin-bottom: 20px;
     }
 
     .form-group {
+      text-align: right;
       margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      color: #555;
+      font-size: 15px;
+      margin-bottom: 5px;
     }
 
     input {
       width: 100%;
-      padding: 12px;
-      border: none;
+      padding: 10px;
+      border: 1px solid #ccc;
       border-radius: 8px;
       outline: none;
-      font-size: 15px;
-      margin-top: 5px;
+      font-size: 14px;
     }
 
     button {
       width: 100%;
-      padding: 12px;
+      padding: 10px;
+      background-color: #0078d4;
+      color: white;
       border: none;
       border-radius: 8px;
-      background-color: #f5b800;
-      color: #000;
-      font-weight: bold;
-      font-size: 16px;
       cursor: pointer;
+      font-size: 15px;
       transition: 0.3s;
-      margin-top: 10px;
     }
 
     button:hover {
-      background-color: #ffd633;
+      background-color: #005ea3;
     }
 
     .switch {
-      text-align: center;
       margin-top: 15px;
+      color: #0078d4;
       cursor: pointer;
+      font-size: 14px;
       text-decoration: underline;
+      transition: 0.2s;
+    }
+
+    .switch:hover {
+      color: #005ea3;
     }
 
     .hidden {
@@ -76,48 +87,43 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- تسجيل الدخول -->
-    <div id="loginBox">
-      <h2>تسجيل الدخول</h2>
-      <div class="form-group">
-        <label>البريد الإلكتروني</label>
-        <input type="email" id="loginEmail" placeholder="example@email.com" required />
-      </div>
-      <div class="form-group">
-        <label>كلمة المرور</label>
-        <input type="password" id="loginPassword" placeholder="••••••••" required />
-      </div>
-      <button id="loginBtn">تسجيل الدخول</button>
-      <div class="switch" id="toRegister">ليس لديك حساب؟ إنشاء حساب</div>
+  <div class="card" id="loginCard">
+    <h2>تسجيل الدخول</h2>
+    <div class="form-group">
+      <label>البريد الإلكتروني</label>
+      <input type="email" id="loginEmail" placeholder="example@email.com" required />
     </div>
+    <div class="form-group">
+      <label>كلمة المرور</label>
+      <input type="password" id="loginPassword" placeholder="••••••••" required />
+    </div>
+    <button id="loginBtn">تسجيل الدخول</button>
+    <div class="switch" id="showRegister">إنشاء حساب جديد</div>
+  </div>
 
-    <!-- إنشاء حساب -->
-    <div id="registerBox" class="hidden">
-      <h2>إنشاء حساب جديد</h2>
-      <div class="form-group">
-        <label>الاسم الكامل</label>
-        <input type="text" id="regName" placeholder="الاسم الكامل" required />
-      </div>
-      <div class="form-group">
-        <label>رقم الهاتف</label>
-        <input type="text" id="regPhone" maxlength="11" pattern="[0-9]{11}" placeholder="01123456789" required />
-      </div>
-      <div class="form-group">
-        <label>البريد الإلكتروني</label>
-        <input type="email" id="regEmail" placeholder="example@email.com" required />
-      </div>
-      <div class="form-group">
-        <label>كلمة المرور</label>
-        <input type="password" id="regPassword" placeholder="••••••••" required />
-      </div>
-      <button id="registerBtn">إنشاء الحساب</button>
-      <div class="switch" id="toLogin">لديك حساب؟ تسجيل الدخول</div>
+  <div class="card hidden" id="registerCard">
+    <h2>إنشاء حساب جديد</h2>
+    <div class="form-group">
+      <label>الاسم الكامل</label>
+      <input type="text" id="regName" placeholder="الاسم الكامل" required />
     </div>
+    <div class="form-group">
+      <label>رقم الهاتف</label>
+      <input type="text" id="regPhone" maxlength="11" placeholder="01123456789" required />
+    </div>
+    <div class="form-group">
+      <label>البريد الإلكتروني</label>
+      <input type="email" id="regEmail" placeholder="example@email.com" required />
+    </div>
+    <div class="form-group">
+      <label>كلمة المرور</label>
+      <input type="password" id="regPassword" placeholder="••••••••" required />
+    </div>
+    <button id="registerBtn">إنشاء الحساب</button>
+    <div class="switch" id="showLogin">رجوع لتسجيل الدخول</div>
   </div>
 
   <script type="module">
-    // Firebase Imports
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
@@ -138,20 +144,20 @@
     const db = getFirestore(app);
 
     // عناصر HTML
-    const loginBox = document.getElementById("loginBox");
-    const registerBox = document.getElementById("registerBox");
-    const toRegister = document.getElementById("toRegister");
-    const toLogin = document.getElementById("toLogin");
+    const loginCard = document.getElementById("loginCard");
+    const registerCard = document.getElementById("registerCard");
+    const showRegister = document.getElementById("showRegister");
+    const showLogin = document.getElementById("showLogin");
 
-    // التبديل بين النماذج
-    toRegister.addEventListener("click", () => {
-      loginBox.classList.add("hidden");
-      registerBox.classList.remove("hidden");
+    // تبديل بين النماذج
+    showRegister.addEventListener("click", () => {
+      loginCard.classList.add("hidden");
+      registerCard.classList.remove("hidden");
     });
 
-    toLogin.addEventListener("click", () => {
-      registerBox.classList.add("hidden");
-      loginBox.classList.remove("hidden");
+    showLogin.addEventListener("click", () => {
+      registerCard.classList.add("hidden");
+      loginCard.classList.remove("hidden");
     });
 
     // إنشاء حساب
@@ -174,7 +180,6 @@
       try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
-
         await updateProfile(user, { displayName: name });
 
         await setDoc(doc(db, "users", user.uid), {
@@ -190,7 +195,7 @@
         alert("تم إنشاء الحساب بنجاح ✅");
         window.location.href = "index.html";
       } catch (error) {
-        alert("خطأ أثناء إنشاء الحساب: " + error.message);
+        alert("حدث خطأ أثناء إنشاء الحساب: " + error.message);
       }
     });
 
@@ -199,24 +204,27 @@
       const email = document.getElementById("loginEmail").value.trim();
       const password = document.getElementById("loginPassword").value.trim();
 
+      if (!email || !password) {
+        alert("من فضلك أدخل البريد وكلمة المرور");
+        return;
+      }
+
       try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
-
         const userDoc = await getDoc(doc(db, "users", user.uid));
+
         if (userDoc.exists()) {
           const userData = userDoc.data();
           localStorage.setItem("user", JSON.stringify(userData));
 
           if (userData.isAdmin) {
-            alert("مرحباً أيها الأدمن 👑");
             window.location.href = "admin.html";
           } else {
-            alert("تم تسجيل الدخول بنجاح ✅");
             window.location.href = "index.html";
           }
         } else {
-          alert("لم يتم العثور على بيانات المستخدم.");
+          alert("لا توجد بيانات مستخدم مسجلة.");
         }
       } catch (error) {
         alert("فشل تسجيل الدخول: " + error.message);
