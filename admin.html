@@ -1,117 +1,130 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>لوحة الأدمن - Moaz Elsawy</title>
-<link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة الأدمن</title>
 <style>
-  /* يمكن إضافة أنماط الجدول كما في السابق */
+body { font-family: "Cairo", sans-serif; background:#f4f8ff; padding:20px; }
+.container { max-width:800px; margin:auto; background:white; padding:20px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.1); }
+h2 { color:#0a74da; text-align:center; margin-bottom:20px; }
+form input, form textarea { width:100%; padding:10px; margin:5px 0; border:1px solid #ccc; border-radius:6px; }
+form button { padding:10px 20px; background:#f5b800; border:none; border-radius:6px; cursor:pointer; font-weight:bold; margin-top:10px; }
+form button:hover { background:#ffcc33; }
+.property-list { margin-top:20px; }
+.property-card { background:#f9f9f9; padding:10px; border-radius:8px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; }
+.property-card img { width:80px; height:60px; object-fit:cover; border-radius:6px; }
+.property-card button { margin-left:5px; padding:5px 10px; border:none; border-radius:6px; cursor:pointer; }
+.edit-btn { background:#0a74da; color:white; }
+.delete-btn { background:#ff4d4d; color:white; }
 </style>
 </head>
 <body>
-<header>
-  <div class="logo">🏠 لوحة الأدمن</div>
-  <button id="logout">خروج</button>
-</header>
 
-<main class="container">
-  <h2>قائمة العقارات المنشورة</h2>
-  <table id="adminTable" border="1" width="100%" cellspacing="0" cellpadding="8">
-    <thead>
-      <tr>
-        <th>العنوان</th>
-        <th>السعر</th>
-        <th>الغرف</th>
-        <th>المدينة</th>
-        <th>إجراءات</th>
-      </tr>
-    </thead>
-    <tbody id="tableBody"></tbody>
-  </table>
-  <button id="addBtn">إضافة عقار جديد</button>
-</main>
+<div class="container">
+  <h2>لوحة الأدمن لإدارة العقارات</h2>
 
-<div id="modal" style="display:none;">
-  <!-- يمكنك إضافة نافذة منبثقة للإضافة/التعديل -->
+  <form id="propertyForm">
+    <input type="text" id="title" placeholder="عنوان العقار" required>
+    <input type="text" id="location" placeholder="الموقع" required>
+    <input type="text" id="price" placeholder="السعر" required>
+    <input type="text" id="img" placeholder="رابط صورة العقار" required>
+    <textarea id="desc" placeholder="وصف العقار"></textarea>
+    <input type="text" id="type" placeholder="نوع العقار">
+    <input type="text" id="rooms" placeholder="عدد الغرف">
+    <button type="submit">إضافة / تحديث العقار</button>
+  </form>
+
+  <div class="property-list" id="propertyList"></div>
 </div>
 
-<script>
-const GITHUB_OWNER = 'kaidowork112';
-const GITHUB_REPO = 'Moaz-Elsawy';
-const PROPERTIES_FILE = 'data/properties.json';
-const BRANCH = 'main';
-const TOKEN = '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';
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-let properties = [], currentSHA = '';
-
-const user = JSON.parse(localStorage.getItem('realestate_user')||'{}');
-if(!user.is_admin){ alert('غير مسموح، سجل الدخول كأدمن'); window.location.href='login-register.html'; }
-
-document.getElementById('logout').onclick = () => { localStorage.removeItem('realestate_user'); location.href='login-register.html'; };
-
-async function fetchProperties(){
-    const res = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${PROPERTIES_FILE}?ref=${BRANCH}`, {
-        headers: { Authorization:`token ${TOKEN}` }
-    });
-    const data = await res.json();
-    currentSHA = data.sha;
-    const content = atob(data.content);
-    properties = JSON.parse(content);
-    displayTable();
-}
-
-function displayTable(){
-    const tbody = document.getElementById('tableBody');
-    tbody.innerHTML = '';
-    properties.forEach(prop=>{
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${prop.title}</td>
-            <td>${prop.price}</td>
-            <td>${prop.rooms || ''}</td>
-            <td>${prop.city || prop.location || ''}</td>
-            <td>
-                <button onclick="editProp(${prop.id})">تعديل</button>
-                <button onclick="deleteProp(${prop.id})">حذف</button>
-            </td>
-        `;
-        tbody.appendChild(tr);
-    });
-}
-
-async function updateProperties(commitMsg){
-    const res = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${PROPERTIES_FILE}`,{
-        method:'PUT',
-        headers:{ Authorization:`token ${TOKEN}`, 'Content-Type':'application/json'},
-        body:JSON.stringify({
-            message: commitMsg,
-            content: btoa(JSON.stringify(properties,null,2)),
-            sha: currentSHA,
-            branch: BRANCH
-        })
-    });
-    const data = await res.json();
-    if(data.content){ currentSHA = data.content.sha; fetchProperties(); alert('تم الحفظ ✅'); }
-}
-
-function deleteProp(id){
-    if(!confirm('هل أنت متأكد من حذف هذا العقار؟')) return;
-    properties = properties.filter(p=>p.id!==id);
-    updateProperties(`حذف العقار ID: ${id}`);
-}
-
-function editProp(id){
-    // هنا يمكن فتح نافذة منبثقة وتعديل البيانات ثم updateProperties
-    alert('وظيفة التعديل يمكن إضافتها حسب التصميم السابق');
-}
-
-document.getElementById('addBtn').onclick = ()=>{
-    // هنا يمكن فتح نافذة منبثقة للإضافة ثم updateProperties
-    alert('وظيفة الإضافة يمكن إضافتها حسب التصميم السابق');
+const firebaseConfig = {
+  apiKey: "AIzaSyBxEWaPWqpUIgZtasxnE7-82SN6OEzSx7Q",
+  authDomain: "moaz-elsawy.firebaseapp.com",
+  projectId: "moaz-elsawy",
+  storageBucket: "moaz-elsawy.firebasestorage.app",
+  messagingSenderId: "859568017117",
+  appId: "1:859568017117:web:38a7d0c96532f0f7681534",
+  measurementId: "G-JY1XN1VRCP"
 };
 
-fetchProperties();
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const form = document.getElementById("propertyForm");
+const listContainer = document.getElementById("propertyList");
+
+let editId = null;
+
+// تحميل العقارات من Firestore
+async function loadProperties() {
+  listContainer.innerHTML = '';
+  const snapshot = await getDocs(collection(db,"properties"));
+  snapshot.forEach(docSnap => {
+    const prop = { id: docSnap.id, ...docSnap.data() };
+    const card = document.createElement("div");
+    card.className = "property-card";
+    card.innerHTML = `
+      <div>
+        <img src="${prop.img}" alt="${prop.title}">
+        <strong>${prop.title}</strong><br>
+        <span>${prop.location}</span> | <span>${prop.price}</span>
+      </div>
+      <div>
+        <button class="edit-btn">تعديل</button>
+        <button class="delete-btn">حذف</button>
+      </div>
+    `;
+    listContainer.appendChild(card);
+
+    card.querySelector(".edit-btn").onclick = () => {
+      document.getElementById("title").value = prop.title;
+      document.getElementById("location").value = prop.location;
+      document.getElementById("price").value = prop.price;
+      document.getElementById("img").value = prop.img;
+      document.getElementById("desc").value = prop.desc || '';
+      document.getElementById("type").value = prop.type || '';
+      document.getElementById("rooms").value = prop.rooms || '';
+      editId = prop.id;
+    };
+
+    card.querySelector(".delete-btn").onclick = async () => {
+      if(confirm("هل تريد حذف هذا العقار؟")){
+        await deleteDoc(doc(db,"properties",prop.id));
+        loadProperties();
+      }
+    };
+  });
+}
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const data = {
+    title: document.getElementById("title").value,
+    location: document.getElementById("location").value,
+    price: document.getElementById("price").value,
+    img: document.getElementById("img").value,
+    desc: document.getElementById("desc").value,
+    type: document.getElementById("type").value,
+    rooms: document.getElementById("rooms").value
+  };
+
+  if(editId){
+    await updateDoc(doc(db,"properties",editId), data);
+    editId = null;
+  } else {
+    await addDoc(collection(db,"properties"), data);
+  }
+  form.reset();
+  loadProperties();
+});
+
+window.onload = loadProperties;
 </script>
+
 </body>
 </html>
