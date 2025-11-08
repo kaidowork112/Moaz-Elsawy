@@ -1,7 +1,8 @@
 // ⭐ بيانات الأدمن (يجب أن تتطابق مع login.html)
-const ADMIN_EMAIL = 'admin@moazelsawy.com'; 
+const ADMIN_EMAIL = 'admin@moazelsawy.com';
+const ADMIN_PASSWORD = 'admin@moazelsawy.com';
 // رقم هاتفك (البائع) لاستخدامه في رابط الواتساب (بالكود الدولي مثل 201xxxxxxxxx)
-const SELLER_PHONE = '201xxxxxxxxx'; 
+const SELLER_PHONE = '+201115134784'; 
 
 let currentSlide = 0;
 const slides = document.querySelectorAll(".slide");
