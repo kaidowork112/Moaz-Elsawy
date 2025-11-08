@@ -1,120 +1,217 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تسجيل دخول / تسجيل جديد</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>تسجيل الدخول أو إنشاء حساب | Moaz Elsawy</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0a74da, #002b5b);
+      font-family: "Cairo", sans-serif;
+      overflow: hidden;
+    }
+    .container {
+      position: relative;
+      width: 380px;
+      height: 520px;
+      perspective: 1000px;
+    }
+    .login-box {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+      transition: transform 0.8s;
+      transform-style: preserve-3d;
+    }
+    .login-box.flipped {
+      transform: rotateY(180deg);
+    }
+    form {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      backface-visibility: hidden;
+    }
+    form h2 {
+      color: #fff;
+      text-align: center;
+      margin-bottom: 25px;
+      font-weight: 600;
+    }
+    input {
+      margin: 10px 0;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      outline: none;
+      background: rgba(255, 255, 255, 0.85);
+      font-size: 16px;
+    }
+    button {
+      margin-top: 15px;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #f5b800;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 16px;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #ffcc33;
+    }
+    .switch {
+      text-align: center;
+      margin-top: 15px;
+      color: #fff;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    .register-form {
+      transform: rotateY(180deg);
+    }
+  </style>
 </head>
+
 <body>
+  <div class="container">
+    <div class="login-box">
+      <!-- Login -->
+      <form id="loginForm">
+        <h2>تسجيل الدخول</h2>
+        <input type="email" name="email" placeholder="البريد الإلكتروني" required />
+        <input type="password" name="password" placeholder="كلمة المرور" required />
+        <button type="submit">تسجيل الدخول</button>
+        <div id="switchToRegister" class="switch">إنشاء حساب جديد</div>
+      </form>
 
-<div class="auth-area">
-  <h3 id="formTitle">تسجيل الدخول</h3>
-
-  <div class="switch-auth">
-    <button id="showLogin">تسجيل دخول</button>
-    <button id="showRegister">تسجيل جديد</button>
+      <!-- Register -->
+      <form id="registerForm" class="register-form">
+        <h2>تسجيل جديد</h2>
+        <input type="text" name="name" placeholder="الاسم الكامل" required />
+        <input type="text" name="phone" placeholder="رقم الهاتف (11 رقم)" pattern="[0-9]{11}" required />
+        <input type="email" name="email" placeholder="البريد الإلكتروني" required />
+        <input type="password" name="password" placeholder="كلمة المرور" required />
+        <button type="submit">إنشاء الحساب</button>
+        <div id="switchToLogin" class="switch">لديك حساب بالفعل؟ تسجيل الدخول</div>
+      </form>
+    </div>
   </div>
 
-  <form id="authForm">
-    <!-- للتسجيل -->
-    <div id="registerFields" style="display:none;">
-      <input type="text" id="name" placeholder="الاسم الكامل" required>
-      <input type="tel" id="phone" placeholder="رقم الموبايل" required pattern="[0-9]{11}">
-    </div>
+  <script type="module">
+    // ============ Firebase ============
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-    <input type="email" id="email" placeholder="البريد الإلكتروني" required>
-    <input type="password" id="password" placeholder="كلمة المرور" required>
-    
-    <button type="submit" id="authSubmit">تسجيل الدخول</button>
-  </form>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBxEWaPWqpUIgZtasxnE7-82SN6OEzSx7Q",
+      authDomain: "moaz-elsawy.firebaseapp.com",
+      projectId: "moaz-elsawy",
+      storageBucket: "moaz-elsawy.firebasestorage.app",
+      messagingSenderId: "859568017117",
+      appId: "1:859568017117:web:38a7d0c96532f0f7681534",
+      measurementId: "G-JY1XN1VRCP"
+    };
 
-  <div id="errorMsg" style="color:red; margin-top:10px;"></div>
-</div>
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
-  import { getDatabase, ref, push, get, child } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-database.js";
+    const loginForm = document.getElementById("loginForm");
+    const registerForm = document.getElementById("registerForm");
+    const switchToRegister = document.getElementById("switchToRegister");
+    const switchToLogin = document.getElementById("switchToLogin");
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyBxEWaPWqpUIgZtasxnE7-82SN6OEzSx7Q",
-    authDomain: "moaz-elsawy.firebaseapp.com",
-    projectId: "moaz-elsawy",
-    storageBucket: "moaz-elsawy.firebasestorage.app",
-    messagingSenderId: "859568017117",
-    appId: "1:859568017117:web:38a7d0c96532f0f7681534",
-    measurementId: "G-JY1XN1VRCP",
-    databaseURL: "https://moaz-elsawy-default-rtdb.firebaseio.com"
-  };
+    switchToRegister.addEventListener("click", () => {
+      document.querySelector(".login-box").classList.add("flipped");
+    });
+    switchToLogin.addEventListener("click", () => {
+      document.querySelector(".login-box").classList.remove("flipped");
+    });
 
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
+    // ============ Register ============
+    registerForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = e.target.name.value.trim();
+      const phone = e.target.phone.value.trim();
+      const email = e.target.email.value.trim();
+      const password = e.target.password.value.trim();
 
-  const authForm = document.getElementById('authForm');
-  const errorMsg = document.getElementById('errorMsg');
-  const registerFields = document.getElementById('registerFields');
-  const authSubmit = document.getElementById('authSubmit');
-  const formTitle = document.getElementById('formTitle');
+      if (!name || !phone || !email || !password) {
+        alert("من فضلك املأ جميع الحقول.");
+        return;
+      }
 
-  let isRegister = false;
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
 
-  document.getElementById('showLogin').onclick = () => {
-    isRegister = false;
-    registerFields.style.display = 'none';
-    authSubmit.textContent = 'تسجيل الدخول';
-    formTitle.textContent = 'تسجيل الدخول';
-    errorMsg.textContent = '';
-  };
+        await updateProfile(user, { displayName: name });
 
-  document.getElementById('showRegister').onclick = () => {
-    isRegister = true;
-    registerFields.style.display = 'block';
-    authSubmit.textContent = 'تسجيل جديد';
-    formTitle.textContent = 'تسجيل جديد';
-    errorMsg.textContent = '';
-  };
+        // أضف المستخدم لقاعدة البيانات
+        await setDoc(doc(db, "users", user.uid), {
+          name,
+          phone,
+          email,
+          isAdmin: false,
+          createdAt: new Date().toISOString(),
+        });
 
-  authForm.addEventListener('submit', async e => {
-    e.preventDefault();
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value.trim();
+        localStorage.setItem("user", JSON.stringify({ name, email, phone, isAdmin: false }));
 
-    if(isRegister){
-      const name = document.getElementById('name').value.trim();
-      const phone = document.getElementById('phone').value.trim();
-      const usersRef = ref(db, 'users/');
-      // تحقق إذا البريد موجود
-      const snapshot = await get(usersRef);
-      const users = snapshot.val() || {};
-      for(let key in users){
-        if(users[key].email === email){
-          errorMsg.textContent = 'هذا البريد مسجل مسبقاً!';
-          return;
+        alert("تم إنشاء الحساب بنجاح ✅");
+        window.location.href = "index.html";
+      } catch (error) {
+        alert("حدث خطأ أثناء إنشاء الحساب: " + error.message);
+      }
+    });
+
+    // ============ Login ============
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = e.target.email.value.trim();
+      const password = e.target.password.value.trim();
+
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // قراءة بيانات المستخدم من Firestore
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          localStorage.setItem("user", JSON.stringify(userData));
+
+          if (userData.isAdmin) {
+            alert("مرحباً أيها الأدمن 👑");
+            window.location.href = "admin.html";
+          } else {
+            alert("تم تسجيل الدخول بنجاح ✅");
+            window.location.href = "index.html";
+          }
+        } else {
+          alert("لم يتم العثور على بيانات المستخدم.");
         }
+      } catch (error) {
+        alert("بيانات غير صحيحة ❌");
       }
-      push(usersRef, {name, phone, email, password, is_admin: false})
-        .then(()=>{alert('تم التسجيل بنجاح'); window.location.href='index.html';})
-        .catch(err=>errorMsg.textContent=err);
-    } else {
-      // تسجيل الدخول
-      const snapshot = await get(ref(db,'users/'));
-      const users = snapshot.val() || {};
-      let found = null;
-      for(let key in users){
-        if(users[key].email === email && users[key].password === password){
-          found = {...users[key], id:key};
-          break;
-        }
-      }
-      if(found){
-        localStorage.setItem('realestate_user', JSON.stringify(found));
-        window.location.href='index.html';
-      } else {
-        errorMsg.textContent = 'بيانات المستخدم غير صحيحة!';
-      }
-    }
-  });
-</script>
-
+    });
+  </script>
 </body>
 </html>
