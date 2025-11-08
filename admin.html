@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة التحكم | Moaz Elsawy</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background: #f4f8ff;
+    }
+    .admin-container {
+      max-width: 600px;
+      margin: 50px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      color: #0a74da;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      background: #f5b800;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #ffcc33;
+    }
+    .output {
+      margin-top: 20px;
+      background: #eef;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 14px;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="admin-container">
+    <h2>لوحة تحكم الأدمن</h2>
+    <form id="addPropertyForm">
+      <input type="text" id="title" placeholder="عنوان العقار" required>
+      <input type="text" id="location" placeholder="الموقع" required>
+      <input type="text" id="price" placeholder="السعر" required>
+      <input type="url" id="image" placeholder="رابط صورة العقار" required>
+      <button type="submit">إضافة العقار</button>
+    </form>
+
+    <div class="output" id="output"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById("addPropertyForm");
+    const output = document.getElementById("output");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const newProperty = {
+        id: Date.now(),
+        title: document.getElementById("title").value.trim(),
+        location: document.getElementById("location").value.trim(),
+        price: document.getElementById("price").value.trim(),
+        image: document.getElementById("image").value.trim()
+      };
+
+      // لأن GitHub Pages ما بيسمحش بالكتابة على JSON، بنعرض النتيجة فقط
+      output.innerHTML = `
+        <p><strong>تم إنشاء العقار بنجاح ✅</strong></p>
+        <pre>${JSON.stringify(newProperty, null, 2)}</pre>
+        <p>انسخ هذا الكود وأضفه يدويًا داخل ملف <b>data/properties.json</b> في GitHub.</p>
+      `;
+
+      form.reset();
+    });
+  </script>
+</body>
+</html>
