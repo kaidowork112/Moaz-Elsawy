@@ -5,11 +5,49 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>لوحة الأدمن</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* أنماط جدول الإدارة */
+    .admin-table-container {
+      margin-top: 30px;
+      overflow-x: auto;
+    }
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .admin-table th, .admin-table td {
+      border: 1px solid #eee;
+      padding: 10px;
+      text-align: right;
+      font-size: 14px;
+    }
+    .admin-table th {
+      background-color: #f4f8ff;
+      color: #0a74da;
+      font-weight: 700;
+    }
+    .action-btn {
+      background: #f5b800;
+      color: #000;
+      padding: 6px 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      margin-left: 5px;
+    }
+    .action-btn.delete {
+      background: #dc3545;
+      color: white;
+    }
+  </style>
 </head>
 <body>
   <header>
     <div class="logo">
-      <div class="mark">عق</div>
+      <div class="mark">🏠</div>
       <div><div style="font-weight:800">لوحة الأدمن</div></div>
     </div>
     <div style="margin-left:auto;padding-right:16px">
@@ -18,52 +56,247 @@
     </div>
   </header>
 
-  <main class="container" style="max-width:800px;margin-top:20px">
-    <div class="auth-area">
-      <h3>إضافة عقار جديد</h3>
-      <form id="addProp">
+  <main class="container" style="max-width:90%;margin:20px auto">
+    
+    <div class="auth-area" style="max-width:700px; margin-top: 20px;">
+      <h3 id="formTitle">إضافة عقار جديد</h3>
+      <form id="propForm">
+        <input type="hidden" id="propId" />
         <input id="title" placeholder="العنوان" required />
-        <input id="price" placeholder="السعر" required />
-        <input id="rooms" placeholder="عدد الغرف (رقم)" required />
+        <input id="price" placeholder="السعر (رقم فقط)" type="number" required />
+        <input id="rooms" placeholder="عدد الغرف (رقم)" type="number" required />
         <input id="type" placeholder="النوع (apartment/villa/shop)" required />
-        <input id="city" placeholder="المدينة" required />
-        <input id="img" placeholder="رابط الصورة" required />
+        <input id="city" placeholder="المدينة/الموقع" required />
+        <input id="img" placeholder="رابط الصورة (URL)" required />
         <textarea id="desc" placeholder="الوصف"></textarea>
-        <button class="btn" type="submit">إضافة (محليًا)</button>
+        <button class="btn" type="submit" id="submitBtn">إضافة العقار (على GitHub)</button>
       </form>
-      <p style="margin-top:12px;color:#666">ملاحظة: الإضافة هنا تحفظ محليًا في المتصفح فقط. لتخزين دائم على الموقع، افتح ملف <code>data/properties.json</code> في الريبو وعدل هناك يدوياً، أو ربط GitHub API لاحقًا.</p>
+      <p style="margin-top:12px;color:#666">ملاحظة: الإضافة والتعديل هنا يتم حفظه مباشرة في ملف <code>data/properties.json</code> على الريبو الخاص بك.</p>
     </div>
+
+    <div class="admin-table-container">
+        <h2>قائمة العقارات المنشورة حالياً</h2>
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>العنوان</th>
+                    <th>السعر</th>
+                    <th>الغرف</th>
+                    <th>المدينة</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody id="adminPropsTableBody">
+                </tbody>
+        </table>
+    </div>
+
   </main>
 
   <script>
-    // guard: only allow admin
+    // ⭐ بيانات الجيتهاب - يجب استبدالها ببياناتك ⭐
+    const ADMIN_EMAIL = 'admin@moazelsawy.com';
+    const OWNER = 'kaidowork112'; 
+    const REPO = 'Moaz-Elsawy';
+    const FILE_PATH = 'data/properties.json';
+    const GITHUB_TOKEN = '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'; // توكن له صلاحية repo
+    // ----------------------------------------------
+    
+    let currentFileSHA = ''; 
+    let allProperties = [];
+    
+    // 🔒 التحقق من صلاحيات الأدمن (Admin Guard)
     const user = JSON.parse(localStorage.getItem('realestate_user') || '{}');
-    if(!user.email || user.email.toLowerCase() !== 'kaidowork112@gmail.com'){
-      alert('غير مسموح: ادخل كأدمن');
+    if(!user.is_admin || user.email !== ADMIN_EMAIL ){
+      alert('غير مسموح: ادخل كأدمن أولاً.');
+      localStorage.removeItem('realestate_user');
       location.href = 'login.html';
     }
-    document.getElementById('toHome').onclick = ()=>location.href='index.html';
-    document.getElementById('logout').onclick = ()=>{ localStorage.removeItem('realestate_user'); location.href='index.html'; }
+    
+    // وظائف التنقل
+    document.getElementById('toHome').onclick = () => location.href= 'index.html';
+    document.getElementById('logout').onclick = () => { localStorage.removeItem('realestate_user'); location.href= 'login.html'; }
+    
+    // ==========================================================
+    // دالة GitHub: جلب العقارات الحالية
+    // ==========================================================
+    async function fetchPropertiesFromGitHub() {
+        const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`;
+        
+        try {
+            const response = await fetch(url, {
+                headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
+            });
+            
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            
+            const data = await response.json();
+            currentFileSHA = data.sha; 
+            
+            // فك تشفير محتوى الملف من Base64
+            const content = atob(data.content); 
+            allProperties = JSON.parse(content);
+            
+            displayAdminTable(allProperties); 
+            return allProperties;
 
-    document.getElementById('addProp').onsubmit = (e)=>{
+        } catch (error) {
+            console.error("Failed to fetch content from GitHub:", error);
+            alert("فشل في جلب البيانات من GitHub. تحقق من إعدادات التوكن والريبو.");
+            return [];
+        }
+    }
+
+    // ==========================================================
+    // دالة GitHub: حفظ التغييرات (PUT)
+    // ==========================================================
+    async function updatePropertiesOnGitHub(newPropertiesArray, commitMessage) {
+        if (!currentFileSHA) {
+            alert("خطأ: لم يتم جلب SHA الملف. لا يمكن الحفظ.");
+            return false;
+        }
+
+        const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`;
+        
+        // تشفير المحتوى الجديد بالـ Base64
+        const newContent = btoa(JSON.stringify(newPropertiesArray, null, 2));
+
+        const payload = {
+            message: commitMessage,
+            content: newContent,
+            sha: currentFileSHA 
+        };
+        
+        // تغيير نص الزر للإشارة لعملية التحميل
+        document.getElementById('submitBtn').textContent = 'جاري الحفظ...';
+
+        try {
+            const response = await fetch(url, {
+                method: 'PUT',
+                headers: { 
+                    'Authorization': `token ${GITHUB_TOKEN}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+            const result = await response.json();
+            currentFileSHA = result.content.sha; 
+            
+            alert(`تم الحفظ بنجاح! Commit: ${commitMessage}`);
+            return true;
+
+        } catch (error) {
+            console.error("Failed to update content on GitHub:", error);
+            alert("فشل في حفظ البيانات على GitHub. قد يكون هناك تعارض.");
+            return false;
+        } finally {
+             // إعادة نص الزر إلى وضعه الأصلي بعد الانتهاء
+            document.getElementById('submitBtn').textContent = (document.getElementById('propId').value) ? 'تعديل العقار' : 'إضافة العقار (على GitHub)';
+        }
+    }
+
+    // ==========================================================
+    // دالة عرض الجدول في لوحة الأدمن
+    // ==========================================================
+    function displayAdminTable(properties) {
+        const tbody = document.getElementById('adminPropsTableBody');
+        tbody.innerHTML = '';
+        
+        properties.forEach(prop => {
+            const row = tbody.insertRow();
+            row.innerHTML = `
+                <td>${prop.title}</td>
+                <td>${prop.price}</td>
+                <td>${prop.rooms}</td>
+                <td>${prop.city || prop.location || 'N/A'}</td>
+                <td>
+                    <button class="action-btn" onclick="editProperty(${prop.id})">تعديل</button>
+                    <button class="action-btn delete" onclick="deleteProperty(${prop.id})">حذف</button>
+                </td>
+            `;
+        });
+    }
+
+    // ==========================================================
+    // دالة الإضافة والتعديل عند إرسال النموذج
+    // ==========================================================
+    document.getElementById('propForm').onsubmit = async (e) => {
       e.preventDefault();
+      
+      const isEditing = document.getElementById('propId').value !== '';
+      
       const obj = {
-        id: Date.now(),
+        id: isEditing ? Number(document.getElementById('propId').value) : Date.now(), // استخدم نفس الـ ID في حالة التعديل
         title: document.getElementById('title').value,
-        price: document.getElementById('price').value,
+        price: Number(document.getElementById('price').value),
         rooms: Number(document.getElementById('rooms').value),
         type: document.getElementById('type').value,
         city: document.getElementById('city').value,
         img: document.getElementById('img').value,
         desc: document.getElementById('desc').value
       };
-      const existing = JSON.parse(localStorage.getItem('rs_local_props')||'[]');
-      existing.unshift(obj);
-      localStorage.setItem('rs_local_props', JSON.stringify(existing));
-      alert('تم الإضافة محليًا — لتصبح عامة حرّف الملف data/properties.json في الريبو وادمج السجل');
-      // optional: redirect to home
-      location.href='index.html';
+
+      if (isEditing) {
+          // تعديل: استبدال العقار القديم بالجديد
+          const index = allProperties.findIndex(p => p.id === obj.id);
+          if (index !== -1) {
+              allProperties[index] = obj;
+              await updatePropertiesOnGitHub(allProperties, `تم تعديل العقار ID: ${obj.id}`);
+          }
+      } else {
+          // إضافة: إضافة العقار الجديد في البداية
+          allProperties.unshift(obj);
+          await updatePropertiesOnGitHub(allProperties, `تمت إضافة عقار جديد: ${obj.title}`);
+      }
+      
+      // تحديث الواجهة وتفريغ النموذج
+      resetForm();
+      fetchPropertiesFromGitHub();
     }
+    
+    // دالة التعديل (لتعبئة النموذج)
+    function editProperty(id) {
+        const prop = allProperties.find(p => p.id === id);
+        if (!prop) return;
+
+        document.getElementById('propId').value = prop.id;
+        document.getElementById('title').value = prop.title;
+        document.getElementById('price').value = prop.price;
+        document.getElementById('rooms').value = prop.rooms;
+        document.getElementById('type').value = prop.type;
+        document.getElementById('city').value = prop.city;
+        document.getElementById('img').value = prop.img;
+        document.getElementById('desc').value = prop.desc;
+        
+        document.getElementById('formTitle').textContent = 'تعديل العقار الحالي';
+        document.getElementById('submitBtn').textContent = 'تعديل العقار (على GitHub)';
+    }
+
+    // دالة الحذف
+    async function deleteProperty(id) {
+        if (!confirm('هل أنت متأكد من حذف هذا العقار؟')) return;
+
+        const newProps = allProperties.filter(p => p.id !== id);
+        
+        if (await updatePropertiesOnGitHub(newProps, `تم حذف العقار ID: ${id}`)) {
+            allProperties = newProps;
+            displayAdminTable(allProperties);
+        }
+    }
+
+    // دالة تفريغ النموذج
+    function resetForm() {
+        document.getElementById('propForm').reset();
+        document.getElementById('propId').value = '';
+        document.getElementById('formTitle').textContent = 'إضافة عقار جديد';
+        document.getElementById('submitBtn').textContent = 'إضافة العقار (على GitHub)';
+    }
+
+    // تحميل البيانات عند بدء تشغيل الصفحة
+    fetchPropertiesFromGitHub();
   </script>
 </body>
 </html>
