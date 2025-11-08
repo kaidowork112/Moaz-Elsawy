@@ -1,75 +1,51 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Moaz Elsawy | تسويق عقاري</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-  <header class="header">
-    <div class="logo">🏠 Moaz Elsawy</div>
-    <nav>
-      <a href="index.html">الرئيسية</a>
-      <a href="#properties">العقارات</a>
-      <a href="#contact">تواصل معنا</a>
-      <a href="login.html" class="btn">تسجيل الدخول</a>
-    </nav>
-  </header>
+// استبدال جزء loadProperties في script.js
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-  <section class="slider" id="slider">
-    <div class="slides-container">
-      <div class="slide active" style="background-image:url('https://picsum.photos/1200/600?random=1')">
-        <div class="caption">شقق فاخرة للبيع في القاهرة</div>
+const firebaseConfig = {
+  apiKey: "AIzaSyBxEWaPWqpUIgZtasxnE7-82SN6OEzSx7Q",
+  authDomain: "moaz-elsawy.firebaseapp.com",
+  projectId: "moaz-elsawy",
+  storageBucket: "moaz-elsawy.firebasestorage.app",
+  messagingSenderId: "859568017117",
+  appId: "1:859568017117:web:38a7d0c96532f0f7681534",
+  measurementId: "G-JY1XN1VRCP"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+async function loadProperties() {
+  const listContainer = document.getElementById("property-list");
+  listContainer.innerHTML = '';
+
+  const snapshot = await getDocs(collection(db,"properties"));
+  const allProperties = [];
+  snapshot.forEach(docSnap => allProperties.push({ id: docSnap.id, ...docSnap.data() }));
+
+  if(allProperties.length === 0){
+    listContainer.innerHTML = '<p style="text-align:center; padding:40px 0; color:#666;">لا توجد عقارات حالياً.</p>';
+    return;
+  }
+
+  allProperties.forEach((prop) => {
+    const card = document.createElement("div");
+    card.className = "property-card";
+    card.dataset.id = prop.id;
+    card.innerHTML = `
+      <img src="${prop.img}" alt="${prop.title}">
+      <div class="property-info">
+        <h3>${prop.title}</h3>
+        <p><strong>الموقع:</strong> ${prop.location}</p>
+        <p><strong>الغرف:</strong> ${prop.rooms || '؟'}</p>
+        <span>${prop.price}</span>
       </div>
-      <div class="slide" style="background-image:url('https://picsum.photos/1200/600?random=2')">
-        <div class="caption">فلل مميزة في التجمع الخامس</div>
-      </div>
-      <div class="slide" style="background-image:url('https://picsum.photos/1200/600?random=3')">
-        <div class="caption">عقارات بإطلالات بحرية رائعة</div>
-      </div>
-    </div>
-  </section>
+    `;
+    listContainer.appendChild(card);
 
-  <section id="properties" class="properties">
-    <h2>العقارات المتاحة</h2>
-    <div id="property-list" class="property-list">
-        </div>
-  </section>
+    card.addEventListener('click', () => openModal(prop.id));
+  });
+}
 
-  <section id="contact" class="contact">
-    <h2>تواصل معنا</h2>
-    <form id="contactForm">
-      <input type="text" placeholder="الاسم الكامل" required />
-      <input type="email" placeholder="البريد الإلكتروني" required />
-      <textarea placeholder="رسالتك..." required></textarea>
-      <button type="submit">إرسال</button>
-    </form>
-  </section>
-
-  <footer>
-    <p>© 2025 Moaz Elsawy | جميع الحقوق محفوظة</p>
-  </footer>
-
-  <div id="propertyModal" class="modal">
-    <div class="modal-content">
-      <span class="close-button">&times;</span>
-      <div id="modalDetails">
-        <img id="modalImg" src="" alt="صورة العقار">
-        <h2 id="modalTitle"></h2>
-        <p><strong>السعر:</strong> <span id="modalPriceDetail"></span></p>
-        <p><strong>الموقع:</strong> <span id="modalCity"></span></p>
-        <p><strong>النوع:</strong> <span id="modalType"></span></p>
-        <p><strong>عدد الغرف:</strong> <span id="modalRooms"></span></p>
-        <p><strong>الوصف:</strong> <span id="modalDesc"></span></p>
-        
-        <a id="whatsappLink" href="#" target="_blank" class="btn whatsapp-btn">
-          تواصل واتساب (استفسر الآن)
-        </a>
-      </div>
-    </div>
-  </div>
-  
-  <script src="script.js"></script>
-</body>
-</html>
+document.addEventListener("DOMContentLoaded", () => {
+  loadProperties();
+});
