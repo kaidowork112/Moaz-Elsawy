@@ -1,94 +1,201 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لوحة التحكم | Moaz Elsawy</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لوحة تحكم الأدمن - Moaz Elsawy</title>
+  <link rel="stylesheet" href="style.css" />
   <style>
     body {
       background: #f4f8ff;
+      padding: 20px;
+      font-family: "Cairo", sans-serif;
     }
     .admin-container {
-      max-width: 600px;
-      margin: 50px auto;
+      max-width: 800px;
+      margin: auto;
       background: white;
-      padding: 30px;
+      padding: 20px;
       border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-    h2 {
+    h1 {
       color: #0a74da;
       text-align: center;
-      margin-bottom: 20px;
     }
-    input, textarea {
-      width: 100%;
+    .token-box {
+      margin: 20px 0;
+      display: flex;
+      gap: 10px;
+    }
+    .token-box input {
+      flex: 1;
       padding: 10px;
-      margin: 8px 0;
       border: 1px solid #ccc;
       border-radius: 6px;
     }
-    button {
+    .token-box button {
       background: #f5b800;
       border: none;
-      padding: 10px 20px;
+      padding: 10px 15px;
       border-radius: 6px;
-      font-weight: bold;
       cursor: pointer;
     }
-    button:hover {
-      background: #ffcc33;
+    .property-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
     }
-    .output {
-      margin-top: 20px;
-      background: #eef;
+    .property-form input,
+    .property-form textarea {
       padding: 10px;
+      border: 1px solid #ccc;
       border-radius: 6px;
-      font-size: 14px;
-      word-break: break-all;
+    }
+    .property-form button {
+      background: #0a74da;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .property-list {
+      margin-top: 20px;
+    }
+    .property-item {
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 10px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .property-item button {
+      background: #ff4444;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-
   <div class="admin-container">
-    <h2>لوحة تحكم الأدمن</h2>
-    <form id="addPropertyForm">
-      <input type="text" id="title" placeholder="عنوان العقار" required>
-      <input type="text" id="location" placeholder="الموقع" required>
-      <input type="text" id="price" placeholder="السعر" required>
-      <input type="url" id="image" placeholder="رابط صورة العقار" required>
-      <button type="submit">إضافة العقار</button>
+    <h1>🛠️ لوحة تحكم الأدمن</h1>
+
+    <div class="token-box">
+      <input id="tokenInput" type="password" placeholder="أدخل GitHub Token هنا..." />
+      <button id="saveToken">حفظ التوكين</button>
+    </div>
+
+    <form class="property-form" id="addForm">
+      <input id="name" placeholder="اسم العقار" required />
+      <input id="location" placeholder="الموقع" required />
+      <input id="price" placeholder="السعر" required />
+      <input id="rooms" placeholder="عدد الغرف" required />
+      <input id="area" placeholder="المساحة بالمتر" required />
+      <input id="image" placeholder="رابط الصورة الرئيسية" required />
+      <textarea id="description" placeholder="الوصف"></textarea>
+      <button type="submit">➕ إضافة العقار</button>
     </form>
 
-    <div class="output" id="output"></div>
+    <h2>🧱 قائمة العقارات</h2>
+    <div id="propertyList" class="property-list"></div>
   </div>
 
   <script>
-    const form = document.getElementById("addPropertyForm");
-    const output = document.getElementById("output");
+    const repoOwner = "kaidowork112";
+    const repoName = "Moaz-Elsawy";
+    const filePath = "data/properties.json";
 
-    form.addEventListener("submit", async (e) => {
+    let token = localStorage.getItem("github_token") || "";
+
+    document.getElementById("saveToken").onclick = () => {
+      const val = document.getElementById("tokenInput").value.trim();
+      if (!val) return alert("أدخل التوكين أولًا");
+      token = val;
+      localStorage.setItem("github_token", val);
+      alert("تم حفظ التوكين ✅");
+      loadProperties();
+    };
+
+    async function loadProperties() {
+      if (!token) return;
+      const res = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`, {
+        headers: { Authorization: `token ${token}` }
+      });
+      const data = await res.json();
+      const content = JSON.parse(atob(data.content));
+      renderList(content, data.sha);
+    }
+
+    function renderList(properties, sha) {
+      const list = document.getElementById("propertyList");
+      list.innerHTML = "";
+      properties.forEach((p, i) => {
+        const div = document.createElement("div");
+        div.className = "property-item";
+        div.innerHTML = `
+          <div>
+            <strong>${p.name}</strong> - ${p.price} - ${p.location}
+          </div>
+          <button onclick="deleteProperty(${i},  ${sha} )">حذف</button>
+        `;
+        list.appendChild(div);
+      });
+      window.currentProps = properties;
+      window.currentSha = sha;
+    }
+
+    async function updateProperties(newData, sha, msg) {
+      const res = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `token ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          message: msg,
+          content: btoa(JSON.stringify(newData, null, 2)),
+          sha: sha
+        })
+      });
+      if (res.ok) {
+        alert("تم الحفظ بنجاح ✅");
+        loadProperties();
+      } else {
+        alert("حدث خطأ ⚠️");
+      }
+    }
+
+    document.getElementById("addForm").onsubmit = async (e) => {
       e.preventDefault();
-
-      const newProperty = {
-        id: Date.now(),
-        title: document.getElementById("title").value.trim(),
-        location: document.getElementById("location").value.trim(),
-        price: document.getElementById("price").value.trim(),
-        image: document.getElementById("image").value.trim()
+      const newProp = {
+        name: name.value,
+        location: location.value,
+        price: price.value,
+        rooms: rooms.value,
+        area: area.value,
+        image: image.value,
+        description: description.value
       };
+      window.currentProps.push(newProp);
+      await updateProperties(window.currentProps, window.currentSha, "Add new property");
+      e.target.reset();
+    };
 
-      // لأن GitHub Pages ما بيسمحش بالكتابة على JSON، بنعرض النتيجة فقط
-      output.innerHTML = `
-        <p><strong>تم إنشاء العقار بنجاح ✅</strong></p>
-        <pre>${JSON.stringify(newProperty, null, 2)}</pre>
-        <p>انسخ هذا الكود وأضفه يدويًا داخل ملف <b>data/properties.json</b> في GitHub.</p>
-      `;
+    window.deleteProperty = async (index, sha) => {
+      if (!confirm("هل أنت متأكد من الحذف؟")) return;
+      window.currentProps.splice(index, 1);
+      await updateProperties(window.currentProps, sha, "Delete property");
+    };
 
-      form.reset();
-    });
+    // تحميل عند الفتح
+    loadProperties();
   </script>
 </body>
 </html>
