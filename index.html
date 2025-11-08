@@ -17,9 +17,8 @@
     </nav>
   </header>
 
-  <!-- Slider -->
   <section class="slider" id="slider">
-    <div class="slides">
+    <div class="slides-container">
       <div class="slide active" style="background-image:url('https://picsum.photos/1200/600?random=1')">
         <div class="caption">شقق فاخرة للبيع في القاهرة</div>
       </div>
@@ -32,13 +31,12 @@
     </div>
   </section>
 
-  <!-- Properties Section -->
   <section id="properties" class="properties">
     <h2>العقارات المتاحة</h2>
-    <div id="property-list" class="property-list"></div>
+    <div id="property-list" class="property-list">
+        </div>
   </section>
 
-  <!-- Contact -->
   <section id="contact" class="contact">
     <h2>تواصل معنا</h2>
     <form id="contactForm">
@@ -53,6 +51,25 @@
     <p>© 2025 Moaz Elsawy | جميع الحقوق محفوظة</p>
   </footer>
 
+  <div id="propertyModal" class="modal">
+    <div class="modal-content">
+      <span class="close-button">&times;</span>
+      <div id="modalDetails">
+        <img id="modalImg" src="" alt="صورة العقار">
+        <h2 id="modalTitle"></h2>
+        <p><strong>السعر:</strong> <span id="modalPriceDetail"></span></p>
+        <p><strong>الموقع:</strong> <span id="modalCity"></span></p>
+        <p><strong>النوع:</strong> <span id="modalType"></span></p>
+        <p><strong>عدد الغرف:</strong> <span id="modalRooms"></span></p>
+        <p><strong>الوصف:</strong> <span id="modalDesc"></span></p>
+        
+        <a id="whatsappLink" href="#" target="_blank" class="btn whatsapp-btn">
+          تواصل واتساب (استفسر الآن)
+        </a>
+      </div>
+    </div>
+  </div>
+  
   <script src="script.js"></script>
 </body>
 </html>
