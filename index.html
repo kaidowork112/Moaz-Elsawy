@@ -11,9 +11,9 @@ body { font-family:"Cairo",sans-serif; margin:0; background:#f4f8ff; min-height:
 .header nav a { color:white; text-decoration:none; margin-left:15px; }
 .header nav a.btn { background:#f5b800; color:#000; padding:6px 12px; border-radius:6px; cursor:pointer; }
 
-.slider { position:relative; width:100%; overflow:hidden; margin-bottom:15px; }
+.slider { position:relative; width:100%; height:250px; overflow:hidden; margin-bottom:15px; }
 .slides-container { display:flex; transition:transform 0.3s ease-in-out; cursor:grab; }
-.slide { flex: 0 0 auto; height:250px; background-size:cover; background-position:center; border-radius:12px; cursor:pointer; margin-right:10px; position:relative; }
+.slide { flex:0 0 calc(33.333% - 10px); height:250px; background-size:cover; background-position:center; border-radius:12px; cursor:pointer; margin-right:10px; position:relative; }
 .caption { position:absolute; bottom:10px; right:10px; background:rgba(0,0,0,0.5); color:#fff; padding:5px 10px; border-radius:5px; font-size:14px; }
 
 .search-container { display:flex; gap:10px; justify-content:center; margin-bottom:20px; flex-wrap:wrap; }
@@ -168,7 +168,6 @@ async function loadProperties() {
   if(slidesContainer.children.length>0) startSlider();
 }
 
-// مودال
 const modal = document.getElementById("propertyModal");
 const closeBtn = document.querySelector(".close-button");
 closeBtn.onclick = ()=> modal.style.display="none";
@@ -189,8 +188,9 @@ function openModal(id){
   modal.style.display="block";
 }
 
-// سلايدر محسّن
-let isDragging=false, startX=0, scrollLeft=0, autoSlideInterval;
+// سلايدر تلقائي + سحب + 3 كاردات
+let isDragging=false, startX=0, scrollLeft=0;
+let autoSlideInterval;
 
 function startSlider(){
   const slides = slidesContainer.children;
@@ -199,7 +199,7 @@ function startSlider(){
 
   function autoSlide(){
     currentIndex++;
-    if(currentIndex > slides.length - Math.floor(slidesContainer.offsetWidth/slideWidth)){
+    if(currentIndex > slides.length - 3){ // 3 كاردات تظهر
       currentIndex = 0;
     }
     slidesContainer.style.transform = `translateX(-${currentIndex*slideWidth}px)`;
@@ -216,7 +216,7 @@ function startSlider(){
   slidesContainer.addEventListener("mouseup", ()=>{
     isDragging=false; currentIndex = Math.round((scrollLeft - (startX - event.pageX))/slideWidth); 
     if(currentIndex<0) currentIndex=0;
-    if(currentIndex>slides.length - Math.floor(slidesContainer.offsetWidth/slideWidth)) currentIndex = slides.length - Math.floor(slidesContainer.offsetWidth/slideWidth);
+    if(currentIndex>slides.length - 3) currentIndex = slides.length - 3;
     slidesContainer.style.transform = `translateX(-${currentIndex*slideWidth}px)`; startAuto();
   });
   slidesContainer.addEventListener("mouseleave", ()=>{ if(isDragging){ isDragging=false; startAuto(); }});
@@ -226,14 +226,13 @@ function startSlider(){
     slidesContainer.style.transform = `translateX(${-(scrollLeft - x)}px)`;
   });
 
-  // touch events
   slidesContainer.addEventListener("touchstart", e=>{
     isDragging=true; startX=e.touches[0].pageX; scrollLeft=currentIndex*slideWidth; stopAuto();
   });
   slidesContainer.addEventListener("touchend", ()=>{
     isDragging=false; currentIndex = Math.round((scrollLeft - (startX - event.changedTouches[0].pageX))/slideWidth);
     if(currentIndex<0) currentIndex=0;
-    if(currentIndex>slides.length - Math.floor(slidesContainer.offsetWidth/slideWidth)) currentIndex = slides.length - Math.floor(slidesContainer.offsetWidth/slideWidth);
+    if(currentIndex>slides.length - 3) currentIndex = slides.length - 3;
     slidesContainer.style.transform = `translateX(-${currentIndex*slideWidth}px)`; startAuto();
   });
   slidesContainer.addEventListener("touchmove", e=>{
@@ -278,7 +277,6 @@ loginBtn.addEventListener("click", ()=>{
   if(user.email){ localStorage.removeItem("realestate_user"); location.reload(); }
   else window.location.href="login.html";
 });
-
 document.addEventListener("DOMContentLoaded", ()=>{
   updateLoginText();
   loadProperties();
