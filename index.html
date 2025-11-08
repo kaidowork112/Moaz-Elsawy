@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Moaz Elsawy | تسويق عقاري</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="logo">🏠 Moaz Elsawy</div>
+    <nav>
+      <a href="index.html">الرئيسية</a>
+      <a href="#properties">العقارات</a>
+      <a href="#contact">تواصل معنا</a>
+      <a href="login.html" class="btn">تسجيل الدخول</a>
+    </nav>
+  </header>
+
+  <!-- Slider -->
+  <section class="slider" id="slider">
+    <div class="slides">
+      <div class="slide active" style="background-image:url('https://picsum.photos/1200/600?random=1')">
+        <div class="caption">شقق فاخرة للبيع في القاهرة</div>
+      </div>
+      <div class="slide" style="background-image:url('https://picsum.photos/1200/600?random=2')">
+        <div class="caption">فلل مميزة في التجمع الخامس</div>
+      </div>
+      <div class="slide" style="background-image:url('https://picsum.photos/1200/600?random=3')">
+        <div class="caption">عقارات بإطلالات بحرية رائعة</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Properties Section -->
+  <section id="properties" class="properties">
+    <h2>العقارات المتاحة</h2>
+    <div id="property-list" class="property-list"></div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact" class="contact">
+    <h2>تواصل معنا</h2>
+    <form id="contactForm">
+      <input type="text" placeholder="الاسم الكامل" required />
+      <input type="email" placeholder="البريد الإلكتروني" required />
+      <textarea placeholder="رسالتك..." required></textarea>
+      <button type="submit">إرسال</button>
+    </form>
+  </section>
+
+  <footer>
+    <p>© 2025 Moaz Elsawy | جميع الحقوق محفوظة</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
