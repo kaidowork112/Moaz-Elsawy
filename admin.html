@@ -119,20 +119,20 @@
 </div>
 
 <script>
-const form = document.getElementById('addPropertyForm');
-const adminList = document.getElementById('adminPropertyList');
+const form = document.getElementById( addPropertyForm );
+const adminList = document.getElementById( adminPropertyList );
 
 // تحميل العقارات من LocalStorage
-let properties = JSON.parse(localStorage.getItem('rs_local_props') || '[]');
+let properties = JSON.parse(localStorage.getItem( rs_local_props ) ||  [] );
 
 function displayAdminProperties() {
-  adminList.innerHTML = '';
+  adminList.innerHTML =   ;
   properties.forEach((p, idx) => {
-    const div = document.createElement('div');
-    div.className = 'property-card-admin';
+    const div = document.createElement( div );
+    div.className =  property-card-admin ;
     div.innerHTML = `
       <div>
-        <span>${p.title}</span> - ${p.type} - ${p.size}م² - ${p.city || 'لا يوجد موقع'} - ${p.rooms} غرف - ${p.price}
+        <span>${p.title}</span> - ${p.type} - ${p.size}م² - ${p.city ||  لا يوجد موقع } - ${p.rooms} غرف - ${p.price}
       </div>
       <button onclick="deleteProperty(${idx})">حذف</button>
     `;
@@ -141,32 +141,32 @@ function displayAdminProperties() {
 }
 
 function deleteProperty(idx) {
-  if(!confirm('هل تريد حذف هذا العقار؟')) return;
+  if(!confirm( هل تريد حذف هذا العقار؟ )) return;
   properties.splice(idx,1);
-  localStorage.setItem('rs_local_props', JSON.stringify(properties));
+  localStorage.setItem( rs_local_props , JSON.stringify(properties));
   displayAdminProperties();
 }
 
-form.addEventListener('submit', e => {
+form.addEventListener( submit , e => {
   e.preventDefault();
   const newProp = {
     id: Date.now(),
-    title: document.getElementById('title').value.trim(),
-    type: document.getElementById('type').value,
-    size: document.getElementById('size').value,
-    city: document.getElementById('city').value.trim(),
-    rooms: document.getElementById('rooms').value,
-    price: document.getElementById('price').value.trim(),
-    img: document.getElementById('img').value.trim(),
-    desc: document.getElementById('desc').value.trim(),
-    inSlider: document.getElementById('inSlider').checked
+    title: document.getElementById( title ).value.trim(),
+    type: document.getElementById( type ).value,
+    size: document.getElementById( size ).value,
+    city: document.getElementById( city ).value.trim(),
+    rooms: document.getElementById( rooms ).value,
+    price: document.getElementById( price ).value.trim(),
+    img: document.getElementById( img ).value.trim(),
+    desc: document.getElementById( desc ).value.trim(),
+    inSlider: document.getElementById( inSlider ).checked
   };
 
   properties.unshift(newProp); // يضيف في البداية
-  localStorage.setItem('rs_local_props', JSON.stringify(properties));
+  localStorage.setItem( rs_local_props , JSON.stringify(properties));
   displayAdminProperties();
   form.reset();
-  alert('تم إضافة العقار بنجاح ✅');
+  alert( تم إضافة العقار بنجاح ✅ );
 });
 
 // عرض العقارات عند تحميل الصفحة
