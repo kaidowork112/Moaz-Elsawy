@@ -13,6 +13,18 @@ body {
   color: #222;
 }
 
+/* تنسيق الأزرار العامة */
+.btn {
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 14px;
+  border-radius: 8px;
+  transition: 0.3s;
+}
+
 /* ===== الهيدر ===== */
 .header {
   background: linear-gradient(90deg, #0a74da, #0066cc);
@@ -36,19 +48,66 @@ body {
   font-weight: 500;
 }
 
-.header nav a.btn {
+/* زر الدخول في صفحة الرئيسية */
+.header nav a.btn, .header .btn {
   background: #f5b800;
-  color: #000;
+  color: #000 !important;
   padding: 8px 14px;
   border-radius: 8px;
   transition: 0.3s;
 }
 
-.header nav a.btn:hover {
+.header nav a.btn:hover, .header .btn:hover {
   background: #ffcc33;
 }
 
-/* ===== السلايدر ===== */
+/* ===== أنماط مشتركة لصفحتي (ADMIN / LOGIN) ===== */
+
+.auth-area {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  margin-top: 50px;
+  max-width: 500px;
+  margin-right: auto;
+  margin-left: auto;
+  text-align: center;
+}
+
+.auth-area h3 {
+  color: #0a74da;
+  margin-bottom: 20px;
+}
+
+.auth-area form input, 
+.auth-area form textarea {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+.auth-area form textarea {
+    resize: vertical;
+}
+
+.auth-area form .btn[type="submit"] {
+  background: #0a74da;
+  color: white !important;
+  margin-top: 15px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.auth-area form .btn[type="submit"]:hover {
+  background: #005bb5;
+}
+
+
+/* ===== السلايدر (Index) ===== */
 .slider {
   position: relative;
   width: 100%;
@@ -56,7 +115,7 @@ body {
   overflow: hidden;
 }
 
-.slides {
+.slides-container {
   display: flex;
   transition: transform 1s ease;
 }
@@ -88,7 +147,7 @@ body {
   font-size: 18px;
 }
 
-/* ===== العقارات ===== */
+/* ===== العقارات (Index) ===== */
 .properties {
   padding: 60px 20px;
   text-align: center;
@@ -113,10 +172,12 @@ body {
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   overflow: hidden;
   transition: 0.3s;
+  cursor: pointer; /* للإشارة إلى أنه قابل للنقر */
 }
 
 .property-card:hover {
   transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 }
 
 .property-card img {
@@ -148,7 +209,94 @@ body {
   margin-top: 5px;
 }
 
-/* ===== تواصل معنا ===== */
+/* ===== المودال (النافذة المنبثقة) ===== */
+.modal {
+  display: none; 
+  position: fixed; 
+  z-index: 1000; 
+  left: 0;
+  top: 0;
+  width: 100%; 
+  height: 100%; 
+  overflow: auto;
+  background-color: rgba(0,0,0,0.7); 
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 5% auto; 
+  padding: 25px;
+  border-radius: 12px;
+  width: 90%; 
+  max-width: 700px;
+  position: relative;
+  animation: slideIn 0.3s;
+}
+
+@keyframes slideIn {
+  from { top: -300px; opacity: 0; }
+  to { top: 0; opacity: 1; }
+}
+
+.close-button {
+  color: #aaa;
+  float: left;
+  font-size: 32px;
+  font-weight: bold;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.close-button:hover,
+.close-button:focus {
+  color: #000;
+  text-decoration: none;
+}
+
+#modalDetails img {
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+#modalDetails h2 {
+    color: #0a74da;
+    margin-bottom: 15px;
+}
+
+#modalDetails p {
+    margin: 10px 0;
+    font-size: 16px;
+    border-bottom: 1px dashed #eee;
+    padding-bottom: 5px;
+}
+#modalDetails p strong {
+    color: #333;
+    font-weight: 700;
+}
+
+/* زر الواتساب */
+.whatsapp-btn {
+    display: block;
+    width: 100%;
+    margin-top: 30px;
+    background: #25d366 !important;
+    color: white !important;
+    padding: 15px 0;
+    text-align: center;
+    font-size: 18px;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 8px;
+}
+
+.whatsapp-btn:hover {
+    background: #128c7e !important;
+}
+
+/* ===== تواصل معنا (Index) ===== */
 .contact {
   background: #fff;
   padding: 50px 20px;
@@ -191,11 +339,34 @@ body {
   background: #ffcc33;
 }
 
-/* ===== الفوتر ===== */
+/* ===== الفوتر (Index) ===== */
 footer {
   background: #0a74da;
   color: white;
   text-align: center;
   padding: 15px;
   margin-top: 40px;
+}
+
+/* ===== استعلامات وسائط (لتحسين العرض على الجوال) ===== */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 15px 20px;
+  }
+  
+  .header nav {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap; 
+  }
+
+  .header nav a {
+    margin: 5px 10px 5px 0; 
+  }
+
+  .slider, .slide {
+      height: 300px;
+  }
 }
