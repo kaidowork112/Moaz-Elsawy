@@ -11,9 +11,11 @@ body { font-family:"Cairo",sans-serif; margin:0; background:#f4f8ff; min-height:
 .header nav a { color:white; text-decoration:none; margin-left:15px; }
 .header nav a.btn { background:#f5b800; color:#000; padding:6px 12px; border-radius:6px; cursor:pointer; }
 
-.slider-wrapper { position:relative; overflow:hidden; margin-bottom:15px; }
-.slides-wrapper { display:flex; transition:transform 0.4s ease-in-out; cursor:grab; padding:0 10px; }
-.slide { min-width:250px; height:250px; background-size:cover; background-position:center; border-radius:12px; cursor:pointer; margin-right:10px; position:relative; flex-shrink:0; }
+/* ===== HORIZONTAL LIST ===== */
+.slider-wrapper { position:relative; overflow:hidden; margin:15px 0; }
+.slides-wrapper { display:flex; transition:transform 0.5s ease-in-out; gap:10px; padding:0 50px; }
+.slide { flex:0 0 250px; height:250px; background-size:cover; background-position:center; border-radius:12px; cursor:pointer; position:relative; transition: transform 0.5s, opacity 0.5s; opacity:0.5; }
+.slide.active { transform: scale(1.1); opacity:1; }
 .caption { position:absolute; bottom:10px; right:10px; background:rgba(0,0,0,0.5); color:#fff; padding:5px 10px; border-radius:5px; font-size:14px; }
 
 .slider-nav { position:absolute; top:50%; width:100%; display:flex; justify-content:space-between; transform:translateY(-50%); pointer-events:none; }
@@ -54,7 +56,7 @@ footer { text-align:center; padding:12px 0; color:#fff; background:#0a74da; marg
   </nav>
 </header>
 
-<!-- السلايدر -->
+<!-- HORIZONTAL SLIDER -->
 <div class="slider-wrapper">
   <div class="slides-wrapper" id="slidesWrapper"></div>
   <div class="slider-nav">
@@ -176,32 +178,39 @@ async function loadProperties() {
     searchLocation.appendChild(opt);
   });
 
+  updateSlides();
+}
+
+// تحديث السلايدر وتحديد العنصر الأوسط
+function updateSlides(){
+  const slides = document.querySelectorAll(".slide");
+  slides.forEach((s,i)=> s.classList.remove("active"));
+  if(slides.length===0) return;
+  const midIndex = Math.floor(slides.length / 2);
+  slides[midIndex].classList.add("active");
+  currentSlide = 0;
   startAutoSlide();
 }
 
-// السلايدر مع الحركة والتحكم
-function showSlide(index){
+function moveSlides(dir){
   const slides = document.querySelectorAll(".slide");
   if(slides.length===0) return;
-  const slideWidth = slides[0].offsetWidth + 10; // margin
-  const visibleCount = Math.floor(slidesWrapper.clientWidth / slideWidth);
-  const maxIndex = slides.length - visibleCount;
-  if(index > maxIndex) index = 0;
-  if(index < 0) index = maxIndex;
-  currentSlide = index;
+  currentSlide += dir;
+  if(currentSlide < 0) currentSlide = slides.length-1;
+  if(currentSlide >= slides.length) currentSlide = 0;
+  const slideWidth = slides[0].offsetWidth + 10;
   slidesWrapper.style.transform = `translateX(${-currentSlide * slideWidth}px)`;
+  slides.forEach(s=>s.classList.remove("active"));
+  slides[currentSlide].classList.add("active");
 }
-
-function nextSlide(){ showSlide(currentSlide + 1); }
-function prevSlide(){ showSlide(currentSlide - 1); }
 
 function startAutoSlide(){
   clearInterval(slideInterval);
-  slideInterval = setInterval(nextSlide, 3000);
+  slideInterval = setInterval(()=> moveSlides(1),3000);
 }
 
-document.getElementById("nextSlide").onclick = ()=> { nextSlide(); startAutoSlide(); }
-document.getElementById("prevSlide").onclick = ()=> { prevSlide(); startAutoSlide(); }
+document.getElementById("nextSlide").onclick = ()=> { moveSlides(1); startAutoSlide(); }
+document.getElementById("prevSlide").onclick = ()=> { moveSlides(-1); startAutoSlide(); }
 
 // فتح وغلق المودال
 const modal = document.getElementById("propertyModal");
