@@ -1,4 +1,3 @@
-/* ===== الأساسيات ===== */
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
 
 * {
@@ -13,360 +12,58 @@ body {
   color: #222;
 }
 
-/* تنسيق الأزرار العامة */
-.btn {
-  display: inline-block;
-  text-align: center;
-  text-decoration: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px 14px;
-  border-radius: 8px;
-  transition: 0.3s;
-}
-
-/* ===== الهيدر ===== */
+/* الهيدر */
 .header {
-  background: linear-gradient(90deg, #0a74da, #0066cc);
-  color: white;
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 40px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-.header .logo {
-  font-weight: 700;
-  font-size: 20px;
-}
-
-.header nav a {
+  padding: 1rem 2%;
+  background: linear-gradient(90deg, #0a74da, #0066cc);
   color: white;
-  text-decoration: none;
-  margin-left: 20px;
-  font-weight: 500;
 }
-
-/* زر الدخول في صفحة الرئيسية */
-.header nav a.btn, .header .btn {
-  background: #f5b800;
-  color: #000 !important;
-  padding: 8px 14px;
-  border-radius: 8px;
-  transition: 0.3s;
+.header .logo { font-weight: 700; font-size: 1.3rem; }
+.header nav a.btn {
+  background: #f5b800; color: black; padding: 0.5rem 1rem; border-radius: 6px; text-decoration: none;
 }
+.header nav a.btn:hover { background: #ffcc33; }
 
-.header nav a.btn:hover, .header .btn:hover {
-  background: #ffcc33;
+/* الأعلام */
+.language-selector {
+  display: flex; gap: 0.5rem; align-items: center; cursor: pointer;
 }
-
-/* ===== أنماط مشتركة لصفحتي (ADMIN / LOGIN) ===== */
-
-.auth-area {
-  background: white;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-  margin-top: 50px;
-  max-width: 500px;
-  margin-right: auto;
-  margin-left: auto;
-  text-align: center;
+.language-selector .flag {
+  width: 2rem; height: auto; border-radius: 3px; transition: transform 0.2s;
 }
+.language-selector .flag:hover { transform: scale(1.1); }
 
-.auth-area h3 {
-  color: #0a74da;
-  margin-bottom: 20px;
-}
+/* السلايدر */
+.slider { position: relative; width: 100%; aspect-ratio: 16/6; overflow: hidden; margin-top: 1rem; display: flex; }
+.slide { flex: 0 0 100%; background-size: cover; background-position: center; opacity: 0.5; transform: scale(0.95); transition: 0.8s ease-in-out; cursor: pointer; }
+.slide.active { opacity: 1; transform: scale(1); }
 
-.auth-area form input, 
-.auth-area form textarea {
-  width: 100%;
-  padding: 12px;
-  margin: 10px 0;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 16px;
-}
+/* العقارات */
+.properties { padding: 2rem 2%; text-align: center; }
+.properties h2 { color: #0a74da; margin-bottom: 1rem; font-size: clamp(1.5rem, 4vw, 2rem); }
+.property-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(250px,100%), 1fr)); gap: 1rem; }
+.property-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.3s; }
+.property-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+.property-card img { width: 100%; aspect-ratio: 4/3; object-fit: cover; }
+.property-info { padding: 1rem; text-align: right; }
+.property-info h3 { font-size: 1.1rem; color: #333; }
+.property-info p { font-size: 0.9rem; color: #666; margin: 0.3rem 0; }
+.property-info span { font-weight: bold; color: #f5b800; display: inline-block; margin-top: 0.5rem; }
 
-.auth-area form textarea {
-    resize: vertical;
-}
+/* المودال */
+.modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; }
+.modal-content { background: #fff; margin: 5% auto; padding: 1.5rem; border-radius: 12px; width: 90%; max-width: 700px; position: relative; animation: slideIn 0.3s; }
+@keyframes slideIn { from { top: -300px; opacity: 0; } to { top: 0; opacity: 1; } }
+.close-button { position: absolute; top: 1rem; left: 1rem; font-size: 2rem; font-weight: bold; cursor: pointer; }
+#modalDetails img { width: 100%; border-radius: 8px; margin-bottom: 1rem; object-fit: cover; }
 
-.auth-area form .btn[type="submit"] {
-  background: #0a74da;
-  color: white !important;
-  margin-top: 15px;
-  font-weight: bold;
-  font-size: 16px;
-}
+/* الزر واتساب */
+.whatsapp-btn { display: block; width: 100%; background: #25d366; color: #fff; padding: 1rem; text-align: center; font-weight: bold; border-radius: 8px; margin-top: 1rem; text-decoration: none; }
+.whatsapp-btn:hover { background: #128c7e; }
 
-.auth-area form .btn[type="submit"]:hover {
-  background: #005bb5;
-}
-
-
-/* ===== السلايدر (Index) ===== */
-.slider {
-  position: relative;
-  width: 100%;
-  height: 400px;
-  overflow: hidden;
-}
-
-.slides-container {
-  display: flex;
-  transition: transform 1s ease;
-}
-
-.slide {
-  min-width: 100%;
-  height: 400px;
-  background-size: cover;
-  background-position: center;
-  position: relative;
-  opacity: 0.5;
-  transform: scale(0.95);
-  transition: 0.8s ease-in-out;
-}
-
-.slide.active {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.caption {
-  position: absolute;
-  bottom: 30px;
-  right: 40px;
-  background: rgba(0,0,0,0.5);
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 6px;
-  font-size: 18px;
-}
-
-/* ===== العقارات (Index) ===== */
-.properties {
-  padding: 60px 20px;
-  text-align: center;
-}
-
-.properties h2 {
-  color: #0a74da;
-  margin-bottom: 20px;
-  font-size: 28px;
-}
-
-.property-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
-  padding: 20px;
-}
-
-.property-card {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  overflow: hidden;
-  transition: 0.3s;
-  cursor: pointer; /* للإشارة إلى أنه قابل للنقر */
-}
-
-.property-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-}
-
-.property-card img {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-}
-
-.property-info {
-  padding: 15px;
-  text-align: right;
-}
-
-.property-info h3 {
-  color: #333;
-  font-size: 18px;
-}
-
-.property-info p {
-  color: #666;
-  font-size: 14px;
-  margin: 5px 0;
-}
-
-.property-info span {
-  display: inline-block;
-  color: #f5b800;
-  font-weight: bold;
-  margin-top: 5px;
-}
-
-/* ===== المودال (النافذة المنبثقة) ===== */
-.modal {
-  display: none; 
-  position: fixed; 
-  z-index: 1000; 
-  left: 0;
-  top: 0;
-  width: 100%; 
-  height: 100%; 
-  overflow: auto;
-  background-color: rgba(0,0,0,0.7); 
-}
-
-.modal-content {
-  background-color: #fefefe;
-  margin: 5% auto; 
-  padding: 25px;
-  border-radius: 12px;
-  width: 90%; 
-  max-width: 700px;
-  position: relative;
-  animation: slideIn 0.3s;
-}
-
-@keyframes slideIn {
-  from { top: -300px; opacity: 0; }
-  to { top: 0; opacity: 1; }
-}
-
-.close-button {
-  color: #aaa;
-  float: left;
-  font-size: 32px;
-  font-weight: bold;
-  cursor: pointer;
-  line-height: 1;
-}
-
-.close-button:hover,
-.close-button:focus {
-  color: #000;
-  text-decoration: none;
-}
-
-#modalDetails img {
-    width: 100%;
-    max-height: 400px;
-    object-fit: cover;
-    border-radius: 8px;
-    margin-bottom: 20px;
-}
-
-#modalDetails h2 {
-    color: #0a74da;
-    margin-bottom: 15px;
-}
-
-#modalDetails p {
-    margin: 10px 0;
-    font-size: 16px;
-    border-bottom: 1px dashed #eee;
-    padding-bottom: 5px;
-}
-#modalDetails p strong {
-    color: #333;
-    font-weight: 700;
-}
-
-/* زر الواتساب */
-.whatsapp-btn {
-    display: block;
-    width: 100%;
-    margin-top: 30px;
-    background: #25d366 !important;
-    color: white !important;
-    padding: 15px 0;
-    text-align: center;
-    font-size: 18px;
-    text-decoration: none;
-    font-weight: bold;
-    border-radius: 8px;
-}
-
-.whatsapp-btn:hover {
-    background: #128c7e !important;
-}
-
-/* ===== تواصل معنا (Index) ===== */
-.contact {
-  background: #fff;
-  padding: 50px 20px;
-  text-align: center;
-}
-
-.contact h2 {
-  color: #0a74da;
-  margin-bottom: 20px;
-}
-
-.contact form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  width: 90%;
-  max-width: 400px;
-  margin: auto;
-}
-
-.contact input,
-.contact textarea {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-}
-
-.contact button {
-  background: #f5b800;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.contact button:hover {
-  background: #ffcc33;
-}
-
-/* ===== الفوتر (Index) ===== */
-footer {
-  background: #0a74da;
-  color: white;
-  text-align: center;
-  padding: 15px;
-  margin-top: 40px;
-}
-
-/* ===== استعلامات وسائط (لتحسين العرض على الجوال) ===== */
-@media (max-width: 768px) {
-  .header {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 15px 20px;
-  }
-  
-  .header nav {
-    margin-top: 10px;
-    display: flex;
-    flex-wrap: wrap; 
-  }
-
-  .header nav a {
-    margin: 5px 10px 5px 0; 
-  }
-
-  .slider, .slide {
-      height: 300px;
-  }
-}
+/* ديناميكية الابعاد */
+html { font-size: clamp(14px, 1.2vw, 18px); }
