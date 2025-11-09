@@ -13,7 +13,7 @@ body { font-family:"Cairo",sans-serif; margin:0; background:#f4f8ff; min-height:
 
 /* ===== HORIZONTAL LIST ===== */
 .slider-wrapper { position:relative; overflow:hidden; margin:15px 0; }
-.slides-wrapper { display:flex; transition:transform 0.5s ease-in-out; gap:10px; padding:0 50px; }
+.slides-wrapper { display:flex; transition:transform 0.5s ease-in-out; gap:10px; }
 .slide { flex:0 0 250px; height:250px; background-size:cover; background-position:center; border-radius:12px; cursor:pointer; position:relative; transition: transform 0.5s, opacity 0.5s; opacity:0.5; }
 .slide.active { transform: scale(1.1); opacity:1; }
 .caption { position:absolute; bottom:10px; right:10px; background:rgba(0,0,0,0.5); color:#fff; padding:5px 10px; border-radius:5px; font-size:14px; }
@@ -129,6 +129,7 @@ const searchBtn = document.getElementById("searchBtn");
 const noResults = document.getElementById("noResults");
 
 let ALL_PROPERTIES = [];
+let sliderItems = [];
 let currentSlide = 0;
 let slideInterval;
 
@@ -137,6 +138,7 @@ async function loadProperties() {
   ALL_PROPERTIES = [];
   slidesWrapper.innerHTML = "";
   propertyList.innerHTML = "";
+  sliderItems = [];
   const locationsSet = new Set();
 
   querySnapshot.forEach((doc) => {
@@ -155,6 +157,7 @@ async function loadProperties() {
       slide.appendChild(caption);
       slide.addEventListener("click", ()=> openModal(prop.id));
       slidesWrapper.appendChild(slide);
+      sliderItems.push(slide);
     }
 
     const card = document.createElement("div");
@@ -181,27 +184,23 @@ async function loadProperties() {
   updateSlides();
 }
 
-// تحديث السلايدر وتحديد العنصر الأوسط
 function updateSlides(){
-  const slides = document.querySelectorAll(".slide");
-  slides.forEach((s,i)=> s.classList.remove("active"));
-  if(slides.length===0) return;
-  const midIndex = Math.floor(slides.length / 2);
-  slides[midIndex].classList.add("active");
+  sliderItems.forEach(s=>s.classList.remove("active"));
+  if(sliderItems.length===0) return;
+  sliderItems[0].classList.add("active");
   currentSlide = 0;
+  moveSlides(0);
   startAutoSlide();
 }
 
 function moveSlides(dir){
-  const slides = document.querySelectorAll(".slide");
-  if(slides.length===0) return;
+  if(sliderItems.length===0) return;
   currentSlide += dir;
-  if(currentSlide < 0) currentSlide = slides.length-1;
-  if(currentSlide >= slides.length) currentSlide = 0;
-  const slideWidth = slides[0].offsetWidth + 10;
+  if(currentSlide < 0) currentSlide = sliderItems.length-1;
+  if(currentSlide >= sliderItems.length) currentSlide = 0;
+  const slideWidth = sliderItems[0].offsetWidth + 10;
   slidesWrapper.style.transform = `translateX(${-currentSlide * slideWidth}px)`;
-  slides.forEach(s=>s.classList.remove("active"));
-  slides[currentSlide].classList.add("active");
+  sliderItems.forEach((s,i)=> s.classList.toggle("active", i===currentSlide));
 }
 
 function startAutoSlide(){
