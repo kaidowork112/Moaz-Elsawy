@@ -4,14 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>لوحة الأدمن - إدارة العقارات</title>
-  <link rel="stylesheet" href="style.css">
   <style>
     body {
       font-family: "Cairo", sans-serif;
       background: #f4f4f4;
       padding: 20px;
     }
-
     h2 { color: #0a74da; text-align: center; margin-bottom: 20px; }
 
     .card {
@@ -22,15 +20,13 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
-    .card h3 { margin-bottom: 10px; }
-    .card label { display: block; margin: 8px 0 4px; font-weight: 600; }
-    .card input, .card select, .card textarea {
+    input, select, textarea {
       width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc;
       margin-bottom: 10px; box-sizing: border-box;
     }
 
     .btn {
-      padding: 10px 15px;
+      padding: 8px 14px;
       border: none;
       border-radius: 6px;
       cursor: pointer;
@@ -42,18 +38,53 @@
     .btn:hover { opacity: 0.9; }
 
     .flex { display: flex; gap: 10px; flex-wrap: wrap; }
-    .users-list, .properties-list { margin-top: 20px; }
-    .list-item { background: #fff; border-radius: 12px; padding: 10px; margin-bottom: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-    .list-item p { margin: 5px 0; }
+
+    .list-item {
+      background: #fff;
+      border-radius: 12px;
+      padding: 10px;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    /* مودال التعديل */
+    .modal {
+      display: none;
+      position: fixed;
+      top:0; left:0; width:100%; height:100%;
+      background: rgba(0,0,0,0.6);
+      z-index: 1000;
+    }
+    .modal-content {
+      background:#fff;
+      border-radius:12px;
+      max-width:500px;
+      margin:80px auto;
+      padding:20px;
+      position:relative;
+    }
+    .modal-content img {
+      width:100%;
+      border-radius:8px;
+      margin-bottom:10px;
+    }
+    .close-modal {
+      position:absolute;
+      left:15px;
+      top:10px;
+      cursor:pointer;
+      color:#999;
+      font-size:22px;
+    }
   </style>
 </head>
 <body>
 
   <h2>لوحة الأدمن - إدارة العقارات</h2>
 
-  <!-- فورم إضافة عقار -->
+  <!-- نموذج إضافة عقار -->
   <div class="card">
-    <h3>إضافة / تعديل عقار</h3>
+    <h3>إضافة عقار جديد</h3>
     <form id="propertyForm">
       <label>العنوان</label>
       <input type="text" id="title" required>
@@ -67,7 +98,7 @@
       <label>المساحة (م²)</label>
       <input type="number" id="area" required>
 
-      <label>الموقع (اختياري)</label>
+      <label>الموقع</label>
       <input type="text" id="location">
 
       <label>عدد الغرف</label>
@@ -76,7 +107,7 @@
       <label>السعر</label>
       <input type="text" id="price" required>
 
-      <label>رابط الصورة (URL)</label>
+      <label>رابط الصورة</label>
       <input type="url" id="img" required>
 
       <label>الوصف</label>
@@ -88,15 +119,53 @@
     </form>
   </div>
 
-  <!-- قائمة العقارات -->
   <h3>قائمة العقارات</h3>
-  <div class="properties-list" id="propertiesList"></div>
+  <div id="propertiesList"></div>
 
-  <!-- قائمة المستخدمين -->
-  <h3>قائمة المستخدمين</h3>
-  <div class="users-list" id="usersList"></div>
+  <!-- مودال التعديل -->
+  <div class="modal" id="editModal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeEditModal()">&times;</span>
+      <h3>تعديل العقار</h3>
+      <img id="editImgPreview" src="" alt="صورة العقار">
+      <form id="editForm">
+        <label>العنوان</label>
+        <input type="text" id="editTitle" required>
 
-  <!-- Firebase SDK -->
+        <label>النوع</label>
+        <select id="editType" required>
+          <option value="شقة">شقة</option>
+          <option value="فيلا">فيلا</option>
+        </select>
+
+        <label>المساحة</label>
+        <input type="number" id="editArea" required>
+
+        <label>الموقع</label>
+        <input type="text" id="editLocation">
+
+        <label>عدد الغرف</label>
+        <input type="number" id="editRooms" required>
+
+        <label>السعر</label>
+        <input type="text" id="editPrice" required>
+
+        <label>رابط الصورة</label>
+        <input type="url" id="editImg" required>
+
+        <label>الوصف</label>
+        <textarea id="editDesc" rows="3"></textarea>
+
+        <label><input type="checkbox" id="editShowSlider"> إظهار في السلايدر</label>
+
+        <div class="flex">
+          <button type="submit" class="btn btn-success">حفظ</button>
+          <button type="button" class="btn btn-danger" onclick="closeEditModal()">إلغاء</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs, updateDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js";
@@ -116,34 +185,29 @@
 
     const propertyForm = document.getElementById('propertyForm');
     const propertiesList = document.getElementById('propertiesList');
-    const usersList = document.getElementById('usersList');
+    const editModal = document.getElementById('editModal');
+    const editForm = document.getElementById('editForm');
+    let currentEditId = null;
 
-    // إضافة عقار جديد
     propertyForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const newProp = {
-        title: document.getElementById('title').value,
-        type: document.getElementById('type').value,
-        area: parseInt(document.getElementById('area').value),
-        location: document.getElementById('location').value || '',
-        rooms: parseInt(document.getElementById('rooms').value),
-        price: document.getElementById('price').value,
-        img: document.getElementById('img').value,
-        desc: document.getElementById('desc').value,
-        showSlider: document.getElementById('showSlider').checked
+        title: title.value,
+        type: type.value,
+        area: parseInt(area.value),
+        location: location.value,
+        rooms: parseInt(rooms.value),
+        price: price.value,
+        img: img.value,
+        desc: desc.value,
+        showSlider: showSlider.checked
       };
-      try {
-        await addDoc(collection(db, "properties"), newProp);
-        alert("تم إضافة العقار ✅");
-        propertyForm.reset();
-        loadProperties();
-      } catch (err) {
-        console.error(err);
-        alert("حدث خطأ أثناء إضافة العقار");
-      }
+      await addDoc(collection(db, "properties"), newProp);
+      alert("تم إضافة العقار ✅");
+      propertyForm.reset();
+      loadProperties();
     });
 
-    // تحميل العقارات
     async function loadProperties() {
       propertiesList.innerHTML = '';
       const querySnapshot = await getDocs(collection(db, "properties"));
@@ -152,63 +216,67 @@
         const div = document.createElement('div');
         div.className = 'list-item';
         div.innerHTML = `
-          <h4>${prop.title} - ${prop.type}</h4>
-          <p>المساحة: ${prop.area} م² | الغرف: ${prop.rooms} | السعر: ${prop.price}</p>
-          <p>الموقع: ${prop.location || 'غير محدد'}</p>
-          <div class="flex">
-            <button class="btn btn-success" onclick="editProperty('${docSnap.id}')">تعديل</button>
-            <button class="btn btn-danger" onclick="deleteProperty('${docSnap.id}')">حذف</button>
-          </div>
+          <h4>${prop.title}</h4>
+          <p>${prop.type} | ${prop.area}م² | ${prop.rooms} غرف | ${prop.price}</p>
+          <button class="btn btn-success" onclick="openEditModal('${docSnap.id}', ${JSON.stringify(prop).replace(/"/g, '&quot;')})">تعديل</button>
+          <button class="btn btn-danger" onclick="deleteProperty('${docSnap.id}')">حذف</button>
         `;
         propertiesList.appendChild(div);
       });
     }
 
-    window.editProperty = async (id) => {
-      const docRef = doc(db, "properties", id);
-      const docSnap = await getDocs(collection(db, "properties"));
-      const propData = (await docRef.get()).data();
-      if (!propData) return;
-      document.getElementById('title').value = propData.title;
-      document.getElementById('type').value = propData.type;
-      document.getElementById('area').value = propData.area;
-      document.getElementById('location').value = propData.location;
-      document.getElementById('rooms').value = propData.rooms;
-      document.getElementById('price').value = propData.price;
-      document.getElementById('img').value = propData.img;
-      document.getElementById('desc').value = propData.desc;
-      document.getElementById('showSlider').checked = propData.showSlider;
-      // حذف القديم بعد التعديل
-      await deleteDoc(doc(db, "properties", id));
+    window.openEditModal = (id, prop) => {
+      currentEditId = id;
+      document.getElementById('editTitle').value = prop.title;
+      document.getElementById('editType').value = prop.type;
+      document.getElementById('editArea').value = prop.area;
+      document.getElementById('editLocation').value = prop.location;
+      document.getElementById('editRooms').value = prop.rooms;
+      document.getElementById('editPrice').value = prop.price;
+      document.getElementById('editImg').value = prop.img;
+      document.getElementById('editDesc').value = prop.desc;
+      document.getElementById('editShowSlider').checked = prop.showSlider;
+      document.getElementById('editImgPreview').src = prop.img;
+      editModal.style.display = 'block';
     };
 
+    document.getElementById('editImg').addEventListener('input', (e) => {
+      document.getElementById('editImgPreview').src = e.target.value;
+    });
+
+    window.closeEditModal = () => {
+      editModal.style.display = 'none';
+      currentEditId = null;
+    };
+
+    editForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!currentEditId) return;
+      const docRef = doc(db, "properties", currentEditId);
+      await updateDoc(docRef, {
+        title: editTitle.value,
+        type: editType.value,
+        area: parseInt(editArea.value),
+        location: editLocation.value,
+        rooms: parseInt(editRooms.value),
+        price: editPrice.value,
+        img: editImg.value,
+        desc: editDesc.value,
+        showSlider: editShowSlider.checked
+      });
+      alert("تم حفظ التعديلات ✅");
+      closeEditModal();
+      loadProperties();
+    });
+
     window.deleteProperty = async (id) => {
-      if(confirm("هل تريد حذف هذا العقار؟")) {
+      if (confirm("هل تريد حذف هذا العقار؟")) {
         await deleteDoc(doc(db, "properties", id));
         loadProperties();
       }
     };
 
-    // تحميل المستخدمين
-    async function loadUsers() {
-      usersList.innerHTML = '';
-      const querySnapshot = await getDocs(collection(db, "users"));
-      querySnapshot.forEach((docSnap) => {
-        const user = docSnap.data();
-        const div = document.createElement('div');
-        div.className = 'list-item';
-        div.innerHTML = `
-          <p>الاسم: ${user.name}</p>
-          <p>الإيميل: ${user.email}</p>
-          <p>الهاتف: ${user.phone || '-'}</p>
-          <p>أدمن: ${user.isAdmin ? 'نعم' : 'لا'}</p>
-        `;
-        usersList.appendChild(div);
-      });
-    }
-
     loadProperties();
-    loadUsers();
   </script>
 </body>
 </html>
