@@ -1,50 +1,220 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>عقارات</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
+<!DOCTYPE html>    <html lang="ar" dir="rtl">    
+<head>    
+<meta charset="UTF-8">    
+<meta name="viewport" content="width=device-width, initial-scale=1.0">    
+<title>Moaz Elsawy | تسويق عقاري</title>    
+<style>    
+body { font-family:"Cairo",sans-serif; margin:0; background:#f4f8ff; min-height:100vh; display:flex; flex-direction:column; }    
+.header { background:#0a74da; color:white; display:flex; justify-content:space-between; align-items:center; padding:15px 20px; }    
+.header .logo { font-weight:700; font-size:20px; }    
+.header nav a { color:white; text-decoration:none; margin-left:15px; }    
+.header nav a.btn { background:#f5b800; color:#000; padding:6px 12px; border-radius:6px; cursor:pointer; }    .slider { position:relative; width:100%; height:250px; overflow:hidden; margin-bottom:15px; }
+.slides-container { display:flex; transition:transform 0.4s ease-in-out; cursor:grab; }
+.slide { min-width:32%; height:250px; background-size:cover; background-position:center; border-radius:12px; cursor:pointer; margin-right:10px; position:relative; }
+.caption { position:absolute; bottom:10px; right:10px; background:rgba(0,0,0,0.5); color:#fff; padding:5px 10px; border-radius:5px; font-size:14px; }
 
-<!-- الهيدر -->
-<header class="header">
-  <div class="logo">عقارات</div>
-  <nav>
-    <a id="loginBtn" class="btn" href="login.html">تسجيل الدخول</a>
-  </nav>
-  <div class="language-selector">
-    <img src="flags/egypt.png" alt="Arabic" class="flag" data-lang="ar">
-    <img src="flags/usa.png" alt="English" class="flag" data-lang="en">
-  </div>
-</header>
+.search-container { display:flex; gap:10px; justify-content:center; margin-bottom:20px; flex-wrap:wrap; }
+.search-container select, .search-container input, .search-container button { padding:6px 8px; border-radius:6px; border:1px solid #ccc; font-size:14px; }
+.search-container button { background:#0a74da; color:#fff; border:none; cursor:pointer; }
 
-<!-- السلايدر -->
-<section class="slider" id="sliderContainer"></section>
+.properties { padding:0 20px 20px; text-align:center; flex:1; }
+.property-list { display:flex; flex-wrap:wrap; gap:15px; justify-content:center; }
+.property-card { background:#fff; border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,0.1); width:200px; cursor:pointer; transition:0.3s; }
+.property-card:hover { transform:translateY(-5px); }
+.property-card img { width:100%; height:140px; border-top-left-radius:12px; border-top-right-radius:12px; object-fit:cover; }
+.property-info { padding:8px; text-align:right; }
+.property-info h3 { color:#333; margin-bottom:4px; font-size:16px; }
+.property-info p, .property-info span { font-size:13px; color:#555; margin:2px 0; }
 
-<!-- قسم العقارات -->
-<section class="properties">
-  <h2>العقارات</h2>
-  <div id="property-list" class="property-list"></div>
-</section>
+.modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:1000; }
+.modal-content { background:#fff; max-width:600px; margin:50px auto; border-radius:12px; padding:20px; position: relative; }
+.close-button { position:absolute; left:15px; top:10px; font-size:26px; cursor:pointer; color:#aaa; }
+.close-button:hover { color:#000; }
+#modalDetails img { width:100%; max-height:300px; object-fit:cover; border-radius:8px; margin-bottom:10px; }
+#modalDetails h2 { color:#0a74da; margin-bottom:8px; }
+#modalDetails p { margin:5px 0; font-size:14px; }
+.whatsapp-btn { display:block; width:100%; text-align:center; background:#25d366; color:#fff; padding:10px 0; font-weight:bold; border-radius:8px; text-decoration:none; margin-top:10px; }
 
-<!-- المودال -->
-<div id="propertyModal" class="modal">
-  <div class="modal-content" id="modalDetails">
-    <span class="close-button">&times;</span>
-    <img id="modalImg" src="" alt="Property">
-    <h2 id="modalTitle"></h2>
-    <p><strong>السعر:</strong> <span id="modalPriceDetail"></span></p>
-    <p><strong>الموقع:</strong> <span id="modalCity"></span></p>
-    <p><strong>النوع:</strong> <span id="modalType"></span></p>
-    <p><strong>المساحة:</strong> <span id="modalSize"></span></p>
-    <p><strong>الغرف:</strong> <span id="modalRooms"></span></p>
-    <p id="modalDesc"></p>
-    <a id="whatsappLink" class="whatsapp-btn" target="_blank">استفسر عبر واتساب</a>
-  </div>
-</div>
+footer { text-align:center; padding:12px 0; color:#fff; background:#0a74da; margin-top:auto; }
+</style>
 
-<script src="script.js" type="module"></script>
-</body>
+</head>    
+<body>    <header class="header">    
+  <div class="logo">🏠 Moaz Elsawy</div>    
+  <nav>    
+    <a href="#properties">العقارات</a>    
+    <a href="#" id="loginBtn" class="btn">تسجيل الدخول</a>    
+  </nav>    
+</header>    <section class="slider">    
+  <div class="slides-container" id="slidesContainer"></div>    
+</section>    <div class="search-container">    
+  <select id="searchType">    
+    <option value="">النوع</option>    
+    <option value="شقة">شقة</option>    
+    <option value="فيلا">فيلا</option>    
+  </select>    
+  <select id="searchLocation">    
+    <option value="">الموقع</option>    
+  </select>    
+  <button id="searchBtn">🔍</button>    
+</div>    <section id="properties" class="properties">    
+  <h2>العقارات المتاحة</h2>    
+  <div id="property-list" class="property-list"></div>    
+  <p id="noResults" style="display:none; color:red;">لا يوجد نتائج</p>    
+</section>    <div class="modal" id="propertyModal">    
+  <div class="modal-content">    
+    <span class="close-button">&times;</span>    
+    <div id="modalDetails">    
+      <img id="modalImg" src="" alt="صورة العقار">    
+      <h2 id="modalTitle"></h2>    
+      <p><strong>السعر:</strong> <span id="modalPrice"></span></p>    
+      <p><strong>العنوان:</strong> <span id="modalLocation"></span></p>    
+      <p><strong>النوع:</strong> <span id="modalType"></span></p>    
+      <p><strong>عدد الغرف:</strong> <span id="modalRooms"></span></p>    
+      <p><strong>المساحة:</strong> <span id="modalArea"></span></p>    
+      <p><strong>الوصف:</strong> <span id="modalDesc"></span></p>    
+      <a id="whatsappLink" href="#" target="_blank" class="whatsapp-btn">تواصل واتساب</a>    
+    </div>    
+  </div>    
+</div>    <footer>    
+  © 2025 Moaz Elsawy — جميع الحقوق محفوظة    
+</footer>    <script type="module">    
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";    
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-firestore.js";    
+  
+const firebaseConfig = {    
+  apiKey: "AIzaSyBxEWaPWqpUIgZtasxnE7-82SN6OEzSx7Q",    
+  authDomain: "moaz-elsawy.firebaseapp.com",    
+  projectId: "moaz-elsawy",    
+  storageBucket: "moaz-elsawy.appspot.com",    
+  messagingSenderId: "859568017117",    
+  appId: "1:859568017117:web:38a7d0c96532f0f7681534",    
+  measurementId: "G-JY1XN1VRCP"    
+};    
+  
+const app = initializeApp(firebaseConfig);    
+const db = getFirestore(app);    
+  
+const slidesContainer = document.getElementById("slidesContainer");    
+const propertyList = document.getElementById("property-list");    
+const searchType = document.getElementById("searchType");    
+const searchLocation = document.getElementById("searchLocation");    
+const searchBtn = document.getElementById("searchBtn");    
+const noResults = document.getElementById("noResults");    
+  
+let ALL_PROPERTIES = [];    
+  
+async function loadProperties() {    
+  const querySnapshot = await getDocs(collection(db, "properties"));    
+  ALL_PROPERTIES = [];    
+  slidesContainer.innerHTML = "";    
+  propertyList.innerHTML = "";    
+  const locationsSet = new Set();    
+  
+  querySnapshot.forEach((doc) => {    
+    const prop = doc.data();    
+    prop.id = doc.id;    
+    ALL_PROPERTIES.push(prop);    
+    if(prop.location) locationsSet.add(prop.location);    
+  
+    if(prop.showSlider){    
+      const slide = document.createElement("div");    
+      slide.className = "slide";    
+      slide.style.backgroundImage = `url(${prop.img})`;    
+      const caption = document.createElement("div");    
+      caption.className = "caption";    
+      caption.textContent = prop.title;    
+      slide.appendChild(caption);    
+      slide.addEventListener("click", ()=> openModal(prop.id));    
+      slidesContainer.appendChild(slide);    
+    }    
+  
+    const card = document.createElement("div");    
+    card.className = "property-card";    
+    card.addEventListener("click", ()=> openModal(prop.id));    
+    card.innerHTML = `    
+      <img src="${prop.img}" alt="${prop.title}">    
+      <div class="property-info">    
+        <h3>${prop.title}</h3>    
+        <p><strong>الموقع:</strong> ${prop.location || "-"}</p>    
+        <p><strong>الغرف:</strong> ${prop.rooms || "-"}</p>    
+        <span>${prop.price}</span>    
+      </div>    
+    `;    
+    propertyList.appendChild(card);    
+  });    
+  
+  searchLocation.innerHTML = "<option value=''>الموقع</option>";    
+  Array.from(locationsSet).forEach(loc=>{    
+    const opt = document.createElement("option"); opt.value=loc; opt.textContent=loc;    
+    searchLocation.appendChild(opt);    
+  });    
+}    
+  
+// فتح وغلق المودال  
+const modal = document.getElementById("propertyModal");    
+const closeBtn = document.querySelector(".close-button");    
+closeBtn.onclick = ()=> modal.style.display="none";    
+window.onclick = (e)=>{ if(e.target==modal) modal.style.display="none"; };    
+  
+function openModal(id){    
+  const prop = ALL_PROPERTIES.find(p=>p.id===id);    
+  if(!prop) return;    
+  document.getElementById("modalImg").src=prop.img;    
+  document.getElementById("modalTitle").textContent=prop.title;    
+  document.getElementById("modalPrice").textContent=prop.price;    
+  document.getElementById("modalLocation").textContent=prop.location||"-";    
+  document.getElementById("modalType").textContent=prop.type||"-";    
+  document.getElementById("modalRooms").textContent=prop.rooms||"-";    
+  document.getElementById("modalArea").textContent=prop.area||"-";    
+  document.getElementById("modalDesc").textContent=prop.desc||"-";    
+  document.getElementById("whatsappLink").href = `https://wa.me/201115134784?text=${encodeURIComponent("مرحباً، أود الاستفسار عن العقار: "+prop.title+" الموقع: "+(prop.location||"-")+" الغرف: "+(prop.rooms||"-")+" المساحة: "+(prop.area||"-")+" سعر: "+prop.price)}`;    
+  modal.style.display="block";    
+}    
+  
+// البحث  
+searchBtn.addEventListener("click", ()=>{    
+  const typeVal = searchType.value;    
+  const locVal = searchLocation.value;    
+  let results = ALL_PROPERTIES.filter(p=>(!typeVal||p.type===typeVal) && (!locVal||p.location===locVal));    
+  propertyList.innerHTML=""; noResults.style.display="none";    
+  if(results.length===0){ noResults.style.display="block"; return; }    
+  results.forEach(prop=>{    
+    const card = document.createElement("div");    
+    card.className="property-card";    
+    card.addEventListener("click", ()=> openModal(prop.id));    
+    card.innerHTML = `    
+      <img src="${prop.img}" alt="${prop.title}">    
+      <div class="property-info">    
+        <h3>${prop.title}</h3>    
+        <p><strong>الموقع:</strong> ${prop.location || "-"}</p>    
+        <p><strong>الغرف:</strong> ${prop.rooms || "-"}</p>    
+        <span>${prop.price}</span>    
+      </div>    
+    `;    
+    propertyList.appendChild(card);    
+  });    
+});    
+  
+// نظام تسجيل الدخول / الخروج زي الأدمن  
+const loginBtn = document.getElementById("loginBtn");  
+function updateLoginText() {  
+  const user = JSON.parse(localStorage.getItem("user") || "{}");  
+  loginBtn.textContent = user.email ? "تسجيل خروج" : "تسجيل الدخول";  
+}  
+loginBtn.addEventListener("click", () => {  
+  const user = JSON.parse(localStorage.getItem("user") || "{}");  
+  if (user.email) {  
+    localStorage.removeItem("user");  
+    alert("تم تسجيل الخروج بنجاح ✅");  
+    location.reload();  
+  } else {  
+    window.location.href = "login.html";  
+  }  
+});  
+document.addEventListener("DOMContentLoaded", ()=>{    
+  updateLoginText();    
+  loadProperties();    
+});    
+</script>    </body>    
 </html>
