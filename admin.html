@@ -1,282 +1,489 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>لوحة الأدمن - إدارة العقارات</title>
   <style>
-    body {
-      font-family: "Cairo", sans-serif;
-      background: #f4f4f4;
-      padding: 20px;
+    :root{
+      --blue:#0a74da; --gold:#f5b800; --muted:#666;
+      --card:#fff; --radius:12px;
     }
-    h2 { color: #0a74da; text-align: center; margin-bottom: 20px; }
-
-    .card {
-      background: #fff;
-      border-radius: 12px;
-      padding: 15px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    *{box-sizing:border-box;font-family:"Cairo",sans-serif}
+    body{margin:0;background:#f4f6fb;padding:16px;color:#111;min-height:100vh}
+    header{display:flex;align-items:center;gap:12px;justify-content:space-between;margin-bottom:14px}
+    header h1{margin:0;color:var(--blue);font-size:20px}
+    .top-actions{display:flex;gap:8px;align-items:center}
+    .btn{cursor:pointer;border:0;padding:8px 12px;border-radius:8px;font-weight:700}
+    .btn-primary{background:var(--blue);color:white}
+    .btn-danger{background:#e53e3e;color:white}
+    .btn-success{background:#16a34a;color:white}
+    .btn-warning{background:#f59e0b;color:white}
+    .card{background:var(--card);border-radius:var(--radius);padding:14px;margin-bottom:14px;box-shadow:0 6px 20px rgba(2,6,23,.04)}
+    form .row{display:flex;gap:10px;flex-wrap:wrap}
+    form label{display:block;margin:8px 0 6px;font-weight:700}
+    input[type="text"], input[type="number"], input[type="url"], select, textarea{
+      width:100%;padding:10px;border-radius:8px;border:1px solid #dde3f0;background:#fff
     }
-
-    input, select, textarea {
-      width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc;
-      margin-bottom: 10px; box-sizing: border-box;
+    textarea{min-height:72px;resize:vertical}
+    /* grid properties */
+    .controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+    .select-location{min-width:180px}
+    #propertiesGrid{
+      display:grid;
+      gap:14px;
+      grid-template-columns: repeat(1,1fr);
+      margin-bottom:18px;
+      max-height:520px;
+      overflow:auto;
+      padding-right:6px;
     }
-
-    .btn {
-      padding: 8px 14px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
+    @media(min-width:700px){
+      #propertiesGrid{grid-template-columns:repeat(2,1fr)}
     }
-    .btn-primary { background: #0a74da; color: white; }
-    .btn-danger { background: #f44336; color: white; }
-    .btn-success { background: #28a745; color: white; }
-    .btn:hover { opacity: 0.9; }
-
-    .flex { display: flex; gap: 10px; flex-wrap: wrap; }
-
-    .list-item {
-      background: #fff;
-      border-radius: 12px;
-      padding: 10px;
-      margin-bottom: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    .property-card{
+      background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 6px 18px rgba(2,6,23,.06);display:flex;flex-direction:column;height:100%;
     }
-
-    /* مودال التعديل */
-    .modal {
-      display: none;
-      position: fixed;
-      top:0; left:0; width:100%; height:100%;
-      background: rgba(0,0,0,0.6);
-      z-index: 1000;
-    }
-    .modal-content {
-      background:#fff;
-      border-radius:12px;
-      max-width:500px;
-      margin:80px auto;
-      padding:20px;
-      position:relative;
-    }
-    .modal-content img {
-      width:100%;
-      border-radius:8px;
-      margin-bottom:10px;
-    }
-    .close-modal {
-      position:absolute;
-      left:15px;
-      top:10px;
-      cursor:pointer;
-      color:#999;
-      font-size:22px;
-    }
+    .property-card img{width:100%;height:170px;object-fit:cover}
+    .property-body{padding:12px;flex:1;display:flex;flex-direction:column;justify-content:space-between}
+    .property-title{color:var(--blue);font-weight:800;margin:0 0 6px}
+    .property-meta{color:var(--muted);font-size:14px;margin-bottom:10px}
+    .property-actions{display:flex;gap:8px;justify-content:flex-start}
+    /* users list */
+    #usersList{display:flex;flex-direction:column;gap:10px;max-height:400px;overflow:auto;padding-right:6px}
+    .user-item{background:#fff;border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:6px;box-shadow:0 6px 18px rgba(2,6,23,.04)}
+    .user-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .user-data{font-size:14px;color:#222}
+    .muted{color:var(--muted);font-size:13px}
+    /* modal */
+    .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;justify-content:center;align-items:center;padding:18px}
+    .modal.open{display:flex}
+    .modal-card{background:#fff;border-radius:12px;width:100%;max-width:520px;max-height:92vh;overflow:auto;padding:18px;position:relative}
+    .modal-card img{width:100%;height:200px;object-fit:cover;border-radius:8px;margin-bottom:12px}
+    .modal-close{position:absolute;left:14px;top:14px;background:#f44336;color:white;border:0;border-radius:50%;width:34px;height:34px;font-weight:800;cursor:pointer}
+    footer{margin-top:18px;text-align:center;color:var(--muted);font-size:13px}
+    /* small helpers */
+    .small{font-size:13px;color:var(--muted)}
   </style>
 </head>
 <body>
 
-  <h2>لوحة الأدمن - إدارة العقارات</h2>
+<header>
+  <h1>لوحة الأدمن — إدارة العقارات</h1>
+  <div class="top-actions">
+    <button id="refreshBtn" class="btn btn-warning">تحديث</button>
+    <button id="logoutBtn" class="btn">تسجيل خروج</button>
+  </div>
+</header>
 
-  <!-- نموذج إضافة عقار -->
-  <div class="card">
-    <h3>إضافة عقار جديد</h3>
-    <form id="propertyForm">
+<!-- إضافة عقار -->
+<div class="card">
+  <h3>إضافة عقار جديد</h3>
+  <form id="addForm">
+    <div class="row" style="gap:12px">
+      <div style="flex:1;min-width:180px">
+        <label>العنوان</label>
+        <input id="title" type="text" required />
+      </div>
+      <div style="width:150px">
+        <label>النوع</label>
+        <select id="type">
+          <option value="شقة">شقة</option>
+          <option value="فيلا">فيلا</option>
+        </select>
+      </div>
+      <div style="width:150px">
+        <label>المساحة (م²)</label>
+        <input id="area" type="number" min="0" />
+      </div>
+    </div>
+
+    <div class="row" style="gap:12px">
+      <div style="flex:1;min-width:180px">
+        <label>الموقع</label>
+        <input id="location" type="text" />
+      </div>
+      <div style="width:150px">
+        <label>عدد الغرف</label>
+        <input id="rooms" type="number" min="0" />
+      </div>
+      <div style="width:180px">
+        <label>السعر</label>
+        <input id="price" type="text" />
+      </div>
+    </div>
+
+    <div class="row" style="gap:12px">
+      <div style="flex:1">
+        <label>رابط الصورة (URL)</label>
+        <input id="img" type="url" />
+      </div>
+      <div style="width:140px;display:flex;align-items:center;gap:8px">
+        <input id="showSlider" type="checkbox" />
+        <label for="showSlider" class="small">إظهار في السلايدر</label>
+      </div>
+    </div>
+
+    <label>الوصف</label>
+    <textarea id="desc"></textarea>
+
+    <div style="margin-top:8px">
+      <button class="btn btn-primary" type="submit">حفظ وإضافة</button>
+    </div>
+  </form>
+</div>
+
+<!-- controls: location select + search -->
+<div class="card controls" style="align-items:center;">
+  <div>
+    <label class="small">تصفية بالموقع</label>
+    <select id="locationFilter" class="select-location">
+      <option value="">الكل</option>
+    </select>
+  </div>
+
+  <div style="flex:1;min-width:180px">
+    <label class="small">بحث مباشر (العنوان أو النوع)</label>
+    <input id="liveSearch" type="text" placeholder="ابحث بالعناوين أو النوع..." />
+  </div>
+</div>
+
+<!-- grid العقارات -->
+<div class="card">
+  <h3>العقارات</h3>
+  <div id="propertiesGrid" aria-live="polite"></div>
+</div>
+
+<!-- المستخدمين -->
+<div class="card">
+  <h3>قائمة المستخدمين</h3>
+  <div id="usersList"></div>
+</div>
+
+<footer>© 2025 — لوحة إدارة العقارات</footer>
+
+<!-- modal edit -->
+<div id="editModal" class="modal" role="dialog" aria-modal="true">
+  <div class="modal-card" role="document">
+    <button class="modal-close" title="إغلاق" onclick="closeEditModal()">×</button>
+    <h3 style="text-align:center;color:var(--blue);margin-top:4px">تعديل العقار</h3>
+    <img id="editPreview" src="" alt="صورة العقار" />
+    <form id="editForm">
       <label>العنوان</label>
-      <input type="text" id="title" required>
+      <input id="editTitle" type="text" />
 
       <label>النوع</label>
-      <select id="type" required>
+      <select id="editType">
         <option value="شقة">شقة</option>
         <option value="فيلا">فيلا</option>
       </select>
 
-      <label>المساحة (م²)</label>
-      <input type="number" id="area" required>
+      <label>المساحة</label>
+      <input id="editArea" type="number" />
 
       <label>الموقع</label>
-      <input type="text" id="location">
+      <input id="editLocation" type="text" />
 
       <label>عدد الغرف</label>
-      <input type="number" id="rooms" required>
+      <input id="editRooms" type="number" />
 
       <label>السعر</label>
-      <input type="text" id="price" required>
+      <input id="editPrice" type="text" />
 
       <label>رابط الصورة</label>
-      <input type="url" id="img" required>
+      <input id="editImg" type="url" />
 
       <label>الوصف</label>
-      <textarea id="desc" rows="3"></textarea>
+      <textarea id="editDesc"></textarea>
 
-      <label><input type="checkbox" id="showSlider"> إظهار في السلايدر</label>
+      <div style="display:flex;gap:8px;align-items:center;margin:10px 0">
+        <input id="editShowSlider" type="checkbox" />
+        <label class="small">إظهار في السلايدر</label>
+      </div>
 
-      <button type="submit" class="btn btn-primary">إضافة العقار</button>
+      <div style="display:flex;gap:8px;justify-content:space-between;margin-top:12px">
+        <button id="saveEditBtn" class="btn btn-success" type="button">حفظ التعديل</button>
+        <button class="btn btn-danger" type="button" onclick="closeEditModal()">إلغاء</button>
+      </div>
     </form>
   </div>
+</div>
 
-  <h3>قائمة العقارات</h3>
-  <div id="propertiesList"></div>
+<!-- Firebase + logic -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
+  import {
+    getFirestore, collection, addDoc, getDocs, updateDoc, doc, deleteDoc
+  } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-firestore.js";
 
-  <!-- مودال التعديل -->
-  <div class="modal" id="editModal">
-    <div class="modal-content">
-      <span class="close-modal" onclick="closeEditModal()">&times;</span>
-      <h3>تعديل العقار</h3>
-      <img id="editImgPreview" src="" alt="صورة العقار">
-      <form id="editForm">
-        <label>العنوان</label>
-        <input type="text" id="editTitle" required>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBxEWaPWqpUIgZtasxnE7-82SN6OEzSx7Q",
+    authDomain: "moaz-elsawy.firebaseapp.com",
+    projectId: "moaz-elsawy",
+    storageBucket: "moaz-elsawy.appspot.com",
+    messagingSenderId: "859568017117",
+    appId: "1:859568017117:web:38a7d0f7681534",
+    measurementId: "G-JY1XN1VRCP"
+  };
 
-        <label>النوع</label>
-        <select id="editType" required>
-          <option value="شقة">شقة</option>
-          <option value="فيلا">فيلا</option>
-        </select>
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-        <label>المساحة</label>
-        <input type="number" id="editArea" required>
+  // elements
+  const addForm = document.getElementById('addForm');
+  const propertiesGrid = document.getElementById('propertiesGrid');
+  const locationFilter = document.getElementById('locationFilter');
+  const liveSearch = document.getElementById('liveSearch');
+  const usersList = document.getElementById('usersList');
+  const refreshBtn = document.getElementById('refreshBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
 
-        <label>الموقع</label>
-        <input type="text" id="editLocation">
+  // modal elements
+  const editModal = document.getElementById('editModal');
+  const editPreview = document.getElementById('editPreview');
+  const editForm = document.getElementById('editForm');
+  const saveEditBtn = document.getElementById('saveEditBtn');
 
-        <label>عدد الغرف</label>
-        <input type="number" id="editRooms" required>
+  // inputs shortcut (add form)
+  const title = document.getElementById('title');
+  const type = document.getElementById('type');
+  const area = document.getElementById('area');
+  const locationInput = document.getElementById('location');
+  const rooms = document.getElementById('rooms');
+  const price = document.getElementById('price');
+  const img = document.getElementById('img');
+  const desc = document.getElementById('desc');
+  const showSlider = document.getElementById('showSlider');
 
-        <label>السعر</label>
-        <input type="text" id="editPrice" required>
+  // edit inputs
+  const editTitle = document.getElementById('editTitle');
+  const editType = document.getElementById('editType');
+  const editArea = document.getElementById('editArea');
+  const editLocation = document.getElementById('editLocation');
+  const editRooms = document.getElementById('editRooms');
+  const editPrice = document.getElementById('editPrice');
+  const editImg = document.getElementById('editImg');
+  const editDesc = document.getElementById('editDesc');
+  const editShowSlider = document.getElementById('editShowSlider');
 
-        <label>رابط الصورة</label>
-        <input type="url" id="editImg" required>
+  // state
+  let allProperties = []; // {id, ...data}
+  let allUsers = []; // {id, ...data}
+  let currentEditId = null;
 
-        <label>الوصف</label>
-        <textarea id="editDesc" rows="3"></textarea>
+  // load properties & users
+  async function loadProperties(){
+    propertiesGrid.innerHTML = '<p class="small">جارٍ تحميل العقارات...</p>';
+    const q = await getDocs(collection(db, 'properties'));
+    allProperties = q.docs.map(d => ({ id: d.id, ...d.data() }));
+    populateLocationFilter();
+    renderProperties();
+  }
 
-        <label><input type="checkbox" id="editShowSlider"> إظهار في السلايدر</label>
+  async function loadUsers(){
+    usersList.innerHTML = '<p class="small">جارٍ تحميل المستخدمين...</p>';
+    const q = await getDocs(collection(db, 'users'));
+    allUsers = q.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderUsers();
+  }
 
-        <div class="flex">
-          <button type="submit" class="btn btn-success">حفظ</button>
-          <button type="button" class="btn btn-danger" onclick="closeEditModal()">إلغاء</button>
-        </div>
-      </form>
-    </div>
-  </div>
+  // populate unique locations into select
+  function populateLocationFilter(){
+    const locations = Array.from(new Set(allProperties.map(p => (p.location || '').trim()).filter(Boolean)));
+    locationFilter.innerHTML = '<option value="">الكل</option>';
+    locations.forEach(loc=>{
+      const opt = document.createElement('option'); opt.value = loc; opt.textContent = loc;
+      locationFilter.appendChild(opt);
+    });
+  }
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, updateDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js";
+  // rendering properties (apply current filters)
+  function renderProperties(){
+    propertiesGrid.innerHTML = '';
+    const searchVal = liveSearch.value.trim().toLowerCase();
+    const locVal = locationFilter.value;
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyBxEWaPWqpUIgZtasxnE7-82SN6OEzSx7Q",
-      authDomain: "moaz-elsawy.firebaseapp.com",
-      projectId: "moaz-elsawy",
-      storageBucket: "moaz-elsawy.appspot.com",
-      messagingSenderId: "859568017117",
-      appId: "1:859568017117:web:38a7d0c96532f0f7681534",
-      measurementId: "G-JY1XN1VRCP"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    const propertyForm = document.getElementById('propertyForm');
-    const propertiesList = document.getElementById('propertiesList');
-    const editModal = document.getElementById('editModal');
-    const editForm = document.getElementById('editForm');
-    let currentEditId = null;
-
-    propertyForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const newProp = {
-        title: title.value,
-        type: type.value,
-        area: parseInt(area.value),
-        location: location.value,
-        rooms: parseInt(rooms.value),
-        price: price.value,
-        img: img.value,
-        desc: desc.value,
-        showSlider: showSlider.checked
-      };
-      await addDoc(collection(db, "properties"), newProp);
-      alert("تم إضافة العقار ✅");
-      propertyForm.reset();
-      loadProperties();
+    const filtered = allProperties.filter(p=>{
+      const byLoc = !locVal || (p.location || '').toLowerCase() === locVal.toLowerCase();
+      const bySearch = !searchVal || ( (p.title||'').toLowerCase().includes(searchVal) || (p.type||'').toLowerCase().includes(searchVal) );
+      return byLoc && bySearch;
     });
 
-    async function loadProperties() {
-      propertiesList.innerHTML = '';
-      const querySnapshot = await getDocs(collection(db, "properties"));
-      querySnapshot.forEach((docSnap) => {
-        const prop = docSnap.data();
-        const div = document.createElement('div');
-        div.className = 'list-item';
-        div.innerHTML = `
-          <h4>${prop.title}</h4>
-          <p>${prop.type} | ${prop.area}م² | ${prop.rooms} غرف | ${prop.price}</p>
-          <button class="btn btn-success" onclick="openEditModal('${docSnap.id}', ${JSON.stringify(prop).replace(/"/g, '&quot;')})">تعديل</button>
-          <button class="btn btn-danger" onclick="deleteProperty('${docSnap.id}')">حذف</button>
-        `;
-        propertiesList.appendChild(div);
-      });
+    if(filtered.length === 0){
+      propertiesGrid.innerHTML = `<p style="text-align:center;color:var(--muted);">لا توجد عقارات مطابقة</p>`;
+      return;
     }
 
-    window.openEditModal = (id, prop) => {
-      currentEditId = id;
-      document.getElementById('editTitle').value = prop.title;
-      document.getElementById('editType').value = prop.type;
-      document.getElementById('editArea').value = prop.area;
-      document.getElementById('editLocation').value = prop.location;
-      document.getElementById('editRooms').value = prop.rooms;
-      document.getElementById('editPrice').value = prop.price;
-      document.getElementById('editImg').value = prop.img;
-      document.getElementById('editDesc').value = prop.desc;
-      document.getElementById('editShowSlider').checked = prop.showSlider;
-      document.getElementById('editImgPreview').src = prop.img;
-      editModal.style.display = 'block';
-    };
-
-    document.getElementById('editImg').addEventListener('input', (e) => {
-      document.getElementById('editImgPreview').src = e.target.value;
+    filtered.forEach(p=>{
+      const card = document.createElement('div'); card.className = 'property-card';
+      card.innerHTML = `
+        <img src="${p.img || 'https://via.placeholder.com/400x250?text=No+Image'}" alt="${escapeHtml(p.title)}" />
+        <div class="property-body">
+          <div>
+            <h4 class="property-title">${escapeHtml(p.title)}</h4>
+            <div class="property-meta">${escapeHtml(p.type)} — ${p.area ? p.area + ' م²' : '-'} — ${escapeHtml(p.location || '-')}</div>
+            <div class="small">${escapeHtml(p.desc || '')}</div>
+          </div>
+          <div style="margin-top:10px" class="property-actions">
+            <button class="btn btn-primary" onclick="openEditModal('${p.id}')">تعديل</button>
+            <button class="btn btn-danger" onclick="deleteProperty('${p.id}')">حذف</button>
+          </div>
+        </div>
+      `;
+      propertiesGrid.appendChild(card);
     });
+  }
 
-    window.closeEditModal = () => {
-      editModal.style.display = 'none';
-      currentEditId = null;
+  // render users
+  function renderUsers(){
+    usersList.innerHTML = '';
+    if(allUsers.length === 0){
+      usersList.innerHTML = `<p class="small">لا يوجد مستخدمين</p>`;
+      return;
+    }
+    allUsers.forEach(u=>{
+      const div = document.createElement('div'); div.className = 'user-item';
+      div.innerHTML = `
+        <div class="user-row">
+          <div style="flex:1">
+            <div class="user-data"><strong>${escapeHtml(u.name || 'بدون اسم')}</strong> — <span class="small">${escapeHtml(u.email || '')}</span></div>
+            <div class="muted">📱 ${escapeHtml(u.phone || '-')} — 🔐 ${escapeHtml(u.password || '-')}</div>
+            <div class="muted">🛠️ أدمن: <strong>${u.isAdmin ? 'نعم' : 'لا'}</strong></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <button class="btn ${u.isAdmin ? 'btn-warning' : 'btn-success'}" onclick="toggleAdmin('${u.id}', ${u.isAdmin})">
+              ${u.isAdmin ? 'إلغاء الأدمن' : 'تفعيل الأدمن'}
+            </button>
+            <button class="btn btn-danger" onclick="deleteUserConfirm('${u.id}')">حذف مستخدم</button>
+          </div>
+        </div>
+      `;
+      usersList.appendChild(div);
+    });
+  }
+
+  // helpers
+  function escapeHtml(str){
+    if(!str) return '';
+    return String(str).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
+  }
+
+  // add property
+  addForm.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const newProp = {
+      title: title.value || '',
+      type: type.value || '',
+      area: area.value ? Number(area.value) : null,
+      location: locationInput.value || '',
+      rooms: rooms.value ? Number(rooms.value) : null,
+      price: price.value || '',
+      img: img.value || '',
+      desc: desc.value || '',
+      showSlider: !!showSlider.checked
     };
+    try{
+      await addDoc(collection(db, 'properties'), newProp);
+      addForm.reset();
+      await loadProperties();
+      alert('✅ تم إضافة العقار');
+    }catch(err){
+      console.error(err); alert('خطأ في إضافة العقار');
+    }
+  });
 
-    editForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      if (!currentEditId) return;
-      const docRef = doc(db, "properties", currentEditId);
-      await updateDoc(docRef, {
-        title: editTitle.value,
-        type: editType.value,
-        area: parseInt(editArea.value),
-        location: editLocation.value,
-        rooms: parseInt(editRooms.value),
-        price: editPrice.value,
-        img: editImg.value,
-        desc: editDesc.value,
-        showSlider: editShowSlider.checked
-      });
-      alert("تم حفظ التعديلات ✅");
+  // delete property
+  window.deleteProperty = async (id) => {
+    if(!confirm('هل تريد حذف هذا العقار بالفعل؟')) return;
+    try{
+      await deleteDoc(doc(db, 'properties', id));
+      await loadProperties();
+    }catch(err){console.error(err); alert('خطأ أثناء الحذف')}
+  };
+
+  // open edit modal
+  window.openEditModal = (id) => {
+    const target = allProperties.find(x=>x.id===id);
+    if(!target) return alert('غير موجود');
+    currentEditId = id;
+    editTitle.value = target.title || '';
+    editType.value = target.type || 'شقة';
+    editArea.value = target.area || '';
+    editLocation.value = target.location || '';
+    editRooms.value = target.rooms || '';
+    editPrice.value = target.price || '';
+    editImg.value = target.img || '';
+    editDesc.value = target.desc || '';
+    editShowSlider.checked = !!target.showSlider;
+    editPreview.src = target.img || 'https://via.placeholder.com/600x300?text=No+Image';
+    editModal.classList.add('open');
+    // scroll top of modal content
+    document.querySelector('.modal-card').scrollTop = 0;
+  };
+
+  window.closeEditModal = ()=>{
+    editModal.classList.remove('open');
+    currentEditId = null;
+  };
+
+  editImg.addEventListener('input', ()=>{ editPreview.src = editImg.value || 'https://via.placeholder.com/600x300?text=No+Image' });
+
+  // save edit
+  saveEditBtn.addEventListener('click', async ()=>{
+    if(!currentEditId) return;
+    const docRef = doc(db, 'properties', currentEditId);
+    const updated = {
+      title: editTitle.value || '',
+      type: editType.value || '',
+      area: editArea.value ? Number(editArea.value) : null,
+      location: editLocation.value || '',
+      rooms: editRooms.value ? Number(editRooms.value) : null,
+      price: editPrice.value || '',
+      img: editImg.value || '',
+      desc: editDesc.value || '',
+      showSlider: !!editShowSlider.checked
+    };
+    try{
+      await updateDoc(docRef, updated);
+      await loadProperties();
       closeEditModal();
-      loadProperties();
-    });
+      alert('✅ تم حفظ التعديلات');
+    }catch(err){ console.error(err); alert('خطأ أثناء حفظ التعديل') }
+  });
 
-    window.deleteProperty = async (id) => {
-      if (confirm("هل تريد حذف هذا العقار؟")) {
-        await deleteDoc(doc(db, "properties", id));
-        loadProperties();
-      }
-    };
+  // users admin toggle
+  window.toggleAdmin = async (id, current) => {
+    try{
+      await updateDoc(doc(db, 'users', id), { isAdmin: !current });
+      await loadUsers();
+    }catch(err){ console.error(err); alert('خطأ أثناء تحديث صلاحية الأدمن') }
+  };
 
-    loadProperties();
-  </script>
+  // delete user
+  window.deleteUserConfirm = async (id)=>{
+    if(!confirm('هل تريد حذف هذا المستخدم؟')) return;
+    try{
+      await deleteDoc(doc(db, 'users', id));
+      await loadUsers();
+    }catch(err){ console.error(err); alert('خطأ أثناء حذف المستخدم') }
+  };
+
+  // search & filter listeners
+  liveSearch.addEventListener('input', ()=> renderProperties());
+  locationFilter.addEventListener('change', ()=> renderProperties());
+
+  // refresh & logout
+  refreshBtn.addEventListener('click', ()=> { loadProperties(); loadUsers(); });
+  logoutBtn.addEventListener('click', ()=>{
+    localStorage.removeItem('realestate_user');
+    alert('تم تسجيل الخروج');
+    location.href = 'login.html'; // or reload
+  });
+
+  // initial load
+  await loadProperties();
+  await loadUsers();
+
+</script>
 </body>
 </html>
