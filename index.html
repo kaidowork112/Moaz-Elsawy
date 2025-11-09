@@ -4,32 +4,25 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Moaz Elsawy | تسويق عقاري</title>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
 <style>
 body { font-family:"Cairo",sans-serif; margin:0; background:#f4f8ff; min-height:100vh; display:flex; flex-direction:column; }
-/* ===== الهيدر ===== */
 .header { background:#0a74da; color:white; display:flex; justify-content:space-between; align-items:center; padding:15px 20px; }
 .header .logo { font-weight:700; font-size:20px; }
 .header nav a { color:white; text-decoration:none; margin-left:15px; }
 .header nav a.btn { background:#f5b800; color:#000; padding:6px 12px; border-radius:6px; cursor:pointer; }
 
-/* ===== السلايدر الجديد ===== */
-.dark-slider { position:relative; width:100%; overflow:hidden; height:300px; margin-bottom:20px; }
-.dark-slides { display:flex; transition:transform 0.5s ease; cursor:grab; }
-.dark-slides.dragging { transition:none; }
-.slide { min-width:100%; height:300px; background-size:cover; background-position:center; border-radius:12px; position:relative; }
-.caption { position:absolute; bottom:15px; right:20px; background:rgba(0,0,0,0.5); color:#fff; padding:5px 12px; border-radius:6px; font-size:16px; }
-.slide-btn { position:absolute; top:50%; transform:translateY(-50%); background:rgba(10,116,218,0.7); color:#fff; border:none; font-size:24px; padding:8px 12px; border-radius:6px; cursor:pointer; z-index:10; user-select:none; }
-.slide-btn:hover { background:rgba(10,116,218,1); }
-.slide-btn.left { left:10px; }
-.slide-btn.right { right:10px; }
+.slider-container { position:relative; width:100%; margin-bottom:15px; overflow:hidden; }
+.slides-wrapper { display:flex; transition:transform 0.5s ease; }
+.slide { min-width:100%; height:250px; background-size:cover; background-position:center; border-radius:12px; position:relative; flex-shrink:0; }
+.caption { position:absolute; bottom:10px; right:10px; background:rgba(0,0,0,0.5); color:#fff; padding:5px 10px; border-radius:5px; font-size:14px; }
+.slider-arrow { position:absolute; top:50%; transform:translateY(-50%); font-size:30px; color:white; background:rgba(0,0,0,0.3); padding:5px 10px; border-radius:50%; cursor:pointer; z-index:10; }
+.slider-arrow.left { left:10px; }
+.slider-arrow.right { right:10px; }
 
-/* ===== البحث ===== */
 .search-container { display:flex; gap:10px; justify-content:center; margin-bottom:20px; flex-wrap:wrap; }
 .search-container select, .search-container input, .search-container button { padding:6px 8px; border-radius:6px; border:1px solid #ccc; font-size:14px; }
 .search-container button { background:#0a74da; color:#fff; border:none; cursor:pointer; }
 
-/* ===== العقارات ===== */
 .properties { padding:0 20px 20px; text-align:center; flex:1; }
 .property-list { display:flex; flex-wrap:wrap; gap:15px; justify-content:center; }
 .property-card { background:#fff; border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,0.1); width:200px; cursor:pointer; transition:0.3s; }
@@ -39,7 +32,6 @@ body { font-family:"Cairo",sans-serif; margin:0; background:#f4f8ff; min-height:
 .property-info h3 { color:#333; margin-bottom:4px; font-size:16px; }
 .property-info p, .property-info span { font-size:13px; color:#555; margin:2px 0; }
 
-/* ===== المودال ===== */
 .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:1000; }
 .modal-content { background:#fff; max-width:600px; margin:50px auto; border-radius:12px; padding:20px; position: relative; }
 .close-button { position:absolute; left:15px; top:10px; font-size:26px; cursor:pointer; color:#aaa; }
@@ -51,13 +43,16 @@ body { font-family:"Cairo",sans-serif; margin:0; background:#f4f8ff; min-height:
 
 footer { text-align:center; padding:12px 0; color:#fff; background:#0a74da; margin-top:auto; }
 
-/* ===== استجابة الجوال ===== */
-@media (max-width:768px) { .dark-slider, .slide { height:220px; } .property-card { width:45%; } }
-@media (max-width:480px) { .property-card { width:90%; } }
+@media (max-width:768px){
+  .slide { height:180px; }
+  .property-card { width:45%; }
+}
+@media (max-width:480px){
+  .property-card { width:90%; }
+}
 </style>
 </head>
 <body>
-
 <header class="header">
   <div class="logo">🏠 Moaz Elsawy</div>
   <nav>
@@ -66,11 +61,10 @@ footer { text-align:center; padding:12px 0; color:#fff; background:#0a74da; marg
   </nav>
 </header>
 
-<!-- السلايدر -->
-<section class="dark-slider">
-  <div class="dark-slides" id="darkSlidesContainer"></div>
-  <button class="slide-btn left" id="prevSlide">&#10094;</button>
-  <button class="slide-btn right" id="nextSlide">&#10095;</button>
+<section class="slider-container">
+  <div class="slides-wrapper" id="slidesWrapper"></div>
+  <div class="slider-arrow left" id="prevSlide">&#10094;</div>
+  <div class="slider-arrow right" id="nextSlide">&#10095;</div>
 </section>
 
 <div class="search-container">
@@ -129,60 +123,65 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// عناصر HTML
-const darkSlidesContainer = document.getElementById("darkSlidesContainer");
-const prevBtn = document.getElementById("prevSlide");
-const nextBtn = document.getElementById("nextSlide");
+const slidesWrapper = document.getElementById("slidesWrapper");
 const propertyList = document.getElementById("property-list");
 const searchType = document.getElementById("searchType");
 const searchLocation = document.getElementById("searchLocation");
 const searchBtn = document.getElementById("searchBtn");
 const noResults = document.getElementById("noResults");
 const loginBtn = document.getElementById("loginBtn");
-const modal = document.getElementById("propertyModal");
-const closeBtn = document.querySelector(".close-button");
 
 let ALL_PROPERTIES = [];
-let darkSlides = [];
-let currentIndex = 0;
-let autoSlideInterval;
+let currentSlide = 0;
+let slideInterval;
 
-// تحميل العقارات
 async function loadProperties() {
   const querySnapshot = await getDocs(collection(db, "properties"));
   ALL_PROPERTIES = [];
-  darkSlidesContainer.innerHTML = "";
+  slidesWrapper.innerHTML = "";
   propertyList.innerHTML = "";
   const locationsSet = new Set();
 
-  querySnapshot.forEach((doc) => {
+  querySnapshot.forEach(doc => {
     const prop = doc.data();
     prop.id = doc.id;
     ALL_PROPERTIES.push(prop);
     if(prop.location) locationsSet.add(prop.location);
+
+    // إضافة للسلايدر فقط إذا showSlider = true
+    if(prop.showSlider){
+      const slide = document.createElement("div");
+      slide.className="slide";
+      slide.style.backgroundImage=`url(${prop.img})`;
+      const caption = document.createElement("div");
+      caption.className="caption";
+      caption.textContent = prop.title;
+      slide.appendChild(caption);
+      slide.addEventListener("click", ()=> openModal(prop.id));
+      slidesWrapper.appendChild(slide);
+    }
   });
 
-  // تهيئة خيارات البحث
   searchLocation.innerHTML = "<option value=''>الموقع</option>";
   Array.from(locationsSet).forEach(loc=>{
     const opt = document.createElement("option");
-    opt.value=loc; opt.textContent=loc;
+    opt.value = loc; opt.textContent = loc;
     searchLocation.appendChild(opt);
   });
 
-  loadDarkSlider(ALL_PROPERTIES);
   displayProperties(ALL_PROPERTIES);
+  startAutoSlide();
 }
 
-// عرض العقارات
 function displayProperties(properties){
-  propertyList.innerHTML = ""; noResults.style.display="none";
+  propertyList.innerHTML="";
+  noResults.style.display="none";
   if(properties.length===0){ noResults.style.display="block"; return; }
   properties.forEach(prop=>{
     const card = document.createElement("div");
     card.className="property-card";
     card.addEventListener("click", ()=> openModal(prop.id));
-    card.innerHTML = `
+    card.innerHTML=`
       <img src="${prop.img}" alt="${prop.title}">
       <div class="property-info">
         <h3>${prop.title}</h3>
@@ -195,7 +194,6 @@ function displayProperties(properties){
   });
 }
 
-// فتح المودال
 function openModal(id){
   const prop = ALL_PROPERTIES.find(p=>p.id===id);
   if(!prop) return;
@@ -208,21 +206,62 @@ function openModal(id){
   document.getElementById("modalArea").textContent=prop.area||"-";
   document.getElementById("modalDesc").textContent=prop.desc||"-";
   document.getElementById("whatsappLink").href = `https://wa.me/201115134784?text=${encodeURIComponent("مرحباً، أود الاستفسار عن العقار: "+prop.title+" الموقع: "+(prop.location||"-")+" الغرف: "+(prop.rooms||"-")+" المساحة: "+(prop.area||"-")+" سعر: "+prop.price)}`;
-  modal.style.display="block";
+  document.getElementById("propertyModal").style.display="block";
 }
 
-// غلق المودال
-closeBtn.onclick = ()=> modal.style.display="none";
-window.onclick = (e)=>{ if(e.target==modal) modal.style.display="none"; };
+// المودال
+const modal = document.getElementById("propertyModal");
+document.querySelector(".close-button").onclick = ()=> modal.style.display="none";
+window.onclick = (e)=> { if(e.target==modal) modal.style.display="none"; };
 
 // البحث
 searchBtn.addEventListener("click", ()=>{
   const typeVal = searchType.value;
   const locVal = searchLocation.value;
-  const results = ALL_PROPERTIES.filter(p=>(!typeVal||p.type===typeVal)&&(!locVal||p.location===locVal));
+  const results = ALL_PROPERTIES.filter(p=> (!typeVal||p.type===typeVal) && (!locVal||p.location===locVal));
   displayProperties(results);
 });
 
-// تسجيل الدخول/الخروج
-function updateLoginText(){
+// تسجيل الدخول / الخروج
+function updateLoginText() {
   const user = JSON.parse(localStorage.getItem("user") || "{}");
+  loginBtn.textContent = user.email ? "تسجيل خروج" : "تسجيل الدخول";
+}
+loginBtn.addEventListener("click", () => {
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  if(user.email){ localStorage.removeItem("user"); alert("تم تسجيل الخروج بنجاح ✅"); location.reload(); }
+  else window.location.href="login.html";
+});
+
+// السلايدر
+function showSlide(index){
+  const slides = document.querySelectorAll(".slide");
+  if(slides.length===0) return;
+  if(index>=slides.length) index=0;
+  if(index<0) index=slides.length-1;
+  currentSlide=index;
+  const offset = -currentSlide*100;
+  slidesWrapper.style.transform=`translateX(${offset}%)`;
+}
+
+function nextSlide(){ showSlide(currentSlide+1); }
+function prevSlide(){ showSlide(currentSlide-1); }
+
+document.getElementById("nextSlide").onclick=()=> { nextSlide(); resetInterval(); }
+document.getElementById("prevSlide").onclick=()=> { prevSlide(); resetInterval(); }
+
+function startAutoSlide(){
+  slideInterval = setInterval(nextSlide, 3000);
+}
+function resetInterval(){
+  clearInterval(slideInterval);
+  startAutoSlide();
+}
+
+document.addEventListener("DOMContentLoaded", ()=>{
+  updateLoginText();
+  loadProperties();
+});
+</script>
+</body>
+</html>
