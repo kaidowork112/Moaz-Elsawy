@@ -11,19 +11,15 @@ body { font-family:"Cairo",sans-serif; margin:0; background:#f4f8ff; min-height:
 .header nav a { color:white; text-decoration:none; margin-left:15px; }
 .header nav a.btn { background:#f5b800; color:#000; padding:6px 12px; border-radius:6px; cursor:pointer; }
 
-/* ===== Dark Crystal Slider ===== */
-.slider-container { position:relative; width:100%; margin-bottom:20px; overflow:hidden; padding:20px 0; }
-.slides-wrapper { display:flex; transition:transform 0.5s ease; cursor:grab; }
-.slide { flex:0 0 300px; height:200px; margin:0 10px; background-size:cover; background-position:center; border-radius:12px; position:relative; box-shadow:0 8px 20px rgba(0,0,0,0.3); transition:transform 0.3s; }
-.slide:hover { transform:scale(1.05); }
-.caption { position:absolute; bottom:10px; left:10px; background:rgba(0,0,0,0.6); color:#fff; padding:5px 10px; border-radius:6px; font-size:14px; }
+.slider-wrapper { position:relative; overflow:hidden; margin-bottom:15px; }
+.slides-wrapper { display:flex; transition:transform 0.4s ease-in-out; cursor:grab; padding:0 10px; }
+.slide { min-width:250px; height:250px; background-size:cover; background-position:center; border-radius:12px; cursor:pointer; margin-right:10px; position:relative; flex-shrink:0; }
+.caption { position:absolute; bottom:10px; right:10px; background:rgba(0,0,0,0.5); color:#fff; padding:5px 10px; border-radius:5px; font-size:14px; }
 
-/* arrows */
-.slider-arrow { position:absolute; top:50%; transform:translateY(-50%); font-size:30px; color:white; background:rgba(0,0,0,0.3); padding:5px 10px; border-radius:50%; cursor:pointer; z-index:10; }
-.slider-arrow.left { left:10px; }
-.slider-arrow.right { right:10px; }
+.slider-nav { position:absolute; top:50%; width:100%; display:flex; justify-content:space-between; transform:translateY(-50%); pointer-events:none; }
+.slider-nav button { pointer-events:all; background:rgba(0,0,0,0.5); color:#fff; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; }
+.slider-nav button:hover { background:rgba(0,0,0,0.8); }
 
-/* rest of the page */
 .search-container { display:flex; gap:10px; justify-content:center; margin-bottom:20px; flex-wrap:wrap; }
 .search-container select, .search-container input, .search-container button { padding:6px 8px; border-radius:6px; border:1px solid #ccc; font-size:14px; }
 .search-container button { background:#0a74da; color:#fff; border:none; cursor:pointer; }
@@ -47,15 +43,6 @@ body { font-family:"Cairo",sans-serif; margin:0; background:#f4f8ff; min-height:
 .whatsapp-btn { display:block; width:100%; text-align:center; background:#25d366; color:#fff; padding:10px 0; font-weight:bold; border-radius:8px; text-decoration:none; margin-top:10px; }
 
 footer { text-align:center; padding:12px 0; color:#fff; background:#0a74da; margin-top:auto; }
-
-@media (max-width:768px){
-  .slide { flex:0 0 200px; height:150px; }
-  .property-card { width:45%; }
-}
-@media (max-width:480px){
-  .slide { flex:0 0 150px; height:120px; }
-  .property-card { width:90%; }
-}
 </style>
 </head>
 <body>
@@ -67,11 +54,14 @@ footer { text-align:center; padding:12px 0; color:#fff; background:#0a74da; marg
   </nav>
 </header>
 
-<section class="slider-container">
+<!-- السلايدر -->
+<div class="slider-wrapper">
   <div class="slides-wrapper" id="slidesWrapper"></div>
-  <div class="slider-arrow left" id="prevSlide">&#10094;</div>
-  <div class="slider-arrow right" id="nextSlide">&#10095;</div>
-</section>
+  <div class="slider-nav">
+    <button id="prevSlide">&#10094;</button>
+    <button id="nextSlide">&#10095;</button>
+  </div>
+</div>
 
 <div class="search-container">
   <select id="searchType">
@@ -135,7 +125,6 @@ const searchType = document.getElementById("searchType");
 const searchLocation = document.getElementById("searchLocation");
 const searchBtn = document.getElementById("searchBtn");
 const noResults = document.getElementById("noResults");
-const loginBtn = document.getElementById("loginBtn");
 
 let ALL_PROPERTIES = [];
 let currentSlide = 0;
@@ -148,46 +137,28 @@ async function loadProperties() {
   propertyList.innerHTML = "";
   const locationsSet = new Set();
 
-  querySnapshot.forEach(doc => {
+  querySnapshot.forEach((doc) => {
     const prop = doc.data();
     prop.id = doc.id;
     ALL_PROPERTIES.push(prop);
     if(prop.location) locationsSet.add(prop.location);
 
-    // Dark Crystal Slider
     if(prop.showSlider){
       const slide = document.createElement("div");
-      slide.className="slide";
-      slide.style.backgroundImage=`url(${prop.img})`;
+      slide.className = "slide";
+      slide.style.backgroundImage = `url(${prop.img})`;
       const caption = document.createElement("div");
-      caption.className="caption";
-      caption.textContent=prop.title;
+      caption.className = "caption";
+      caption.textContent = prop.title;
       slide.appendChild(caption);
       slide.addEventListener("click", ()=> openModal(prop.id));
       slidesWrapper.appendChild(slide);
     }
-  });
 
-  searchLocation.innerHTML = "<option value=''>الموقع</option>";
-  Array.from(locationsSet).forEach(loc=>{
-    const opt = document.createElement("option");
-    opt.value=loc; opt.textContent=loc;
-    searchLocation.appendChild(opt);
-  });
-
-  displayProperties(ALL_PROPERTIES);
-  startAutoSlide();
-}
-
-function displayProperties(properties){
-  propertyList.innerHTML="";
-  noResults.style.display="none";
-  if(properties.length===0){ noResults.style.display="block"; return; }
-  properties.forEach(prop=>{
     const card = document.createElement("div");
-    card.className="property-card";
+    card.className = "property-card";
     card.addEventListener("click", ()=> openModal(prop.id));
-    card.innerHTML=`
+    card.innerHTML = `
       <img src="${prop.img}" alt="${prop.title}">
       <div class="property-info">
         <h3>${prop.title}</h3>
@@ -198,7 +169,45 @@ function displayProperties(properties){
     `;
     propertyList.appendChild(card);
   });
+
+  searchLocation.innerHTML = "<option value=''>الموقع</option>";
+  Array.from(locationsSet).forEach(loc=>{
+    const opt = document.createElement("option"); opt.value=loc; opt.textContent=loc;
+    searchLocation.appendChild(opt);
+  });
+
+  startAutoSlide();
 }
+
+// السلايدر مع الحركة والتحكم
+function showSlide(index){
+  const slides = document.querySelectorAll(".slide");
+  if(slides.length===0) return;
+  const slideWidth = slides[0].offsetWidth + 10; // margin
+  const visibleCount = Math.floor(slidesWrapper.clientWidth / slideWidth);
+  const maxIndex = slides.length - visibleCount;
+  if(index > maxIndex) index = 0;
+  if(index < 0) index = maxIndex;
+  currentSlide = index;
+  slidesWrapper.style.transform = `translateX(${-currentSlide * slideWidth}px)`;
+}
+
+function nextSlide(){ showSlide(currentSlide + 1); }
+function prevSlide(){ showSlide(currentSlide - 1); }
+
+function startAutoSlide(){
+  clearInterval(slideInterval);
+  slideInterval = setInterval(nextSlide, 3000);
+}
+
+document.getElementById("nextSlide").onclick = ()=> { nextSlide(); startAutoSlide(); }
+document.getElementById("prevSlide").onclick = ()=> { prevSlide(); startAutoSlide(); }
+
+// فتح وغلق المودال
+const modal = document.getElementById("propertyModal");
+const closeBtn = document.querySelector(".close-button");
+closeBtn.onclick = ()=> modal.style.display="none";
+window.onclick = (e)=>{ if(e.target==modal) modal.style.display="none"; };
 
 function openModal(id){
   const prop = ALL_PROPERTIES.find(p=>p.id===id);
@@ -212,57 +221,44 @@ function openModal(id){
   document.getElementById("modalArea").textContent=prop.area||"-";
   document.getElementById("modalDesc").textContent=prop.desc||"-";
   document.getElementById("whatsappLink").href = `https://wa.me/201115134784?text=${encodeURIComponent("مرحباً، أود الاستفسار عن العقار: "+prop.title+" الموقع: "+(prop.location||"-")+" الغرف: "+(prop.rooms||"-")+" المساحة: "+(prop.area||"-")+" سعر: "+prop.price)}`;
-  document.getElementById("propertyModal").style.display="block";
+  modal.style.display="block";
 }
-
-// المودال
-const modal = document.getElementById("propertyModal");
-document.querySelector(".close-button").onclick = ()=> modal.style.display="none";
-window.onclick = (e)=> { if(e.target==modal) modal.style.display="none"; };
 
 // البحث
 searchBtn.addEventListener("click", ()=>{
   const typeVal = searchType.value;
   const locVal = searchLocation.value;
-  const results = ALL_PROPERTIES.filter(p=> (!typeVal||p.type===typeVal) && (!locVal||p.location===locVal));
-  displayProperties(results);
+  let results = ALL_PROPERTIES.filter(p=>(!typeVal||p.type===typeVal) && (!locVal||p.location===locVal));
+  propertyList.innerHTML=""; noResults.style.display="none";
+  if(results.length===0){ noResults.style.display="block"; return; }
+  results.forEach(prop=>{
+    const card = document.createElement("div");
+    card.className="property-card";
+    card.addEventListener("click", ()=> openModal(prop.id));
+    card.innerHTML = `
+      <img src="${prop.img}" alt="${prop.title}">
+      <div class="property-info">
+        <h3>${prop.title}</h3>
+        <p><strong>الموقع:</strong> ${prop.location || "-"}</p>
+        <p><strong>الغرف:</strong> ${prop.rooms || "-"}</p>
+        <span>${prop.price}</span>
+      </div>
+    `;
+    propertyList.appendChild(card);
+  });
 });
 
 // تسجيل الدخول / الخروج
-function updateLoginText() {
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
-  loginBtn.textContent = user.email ? "تسجيل خروج" : "تسجيل الدخول";
+const loginBtn = document.getElementById("loginBtn");
+function updateLoginText(){
+  const user = JSON.parse(localStorage.getItem("user")||"{}");
+  loginBtn.textContent = user.email?"تسجيل خروج":"تسجيل الدخول";
 }
-loginBtn.addEventListener("click", () => {
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+loginBtn.addEventListener("click", ()=>{
+  const user = JSON.parse(localStorage.getItem("user")||"{}");
   if(user.email){ localStorage.removeItem("user"); alert("تم تسجيل الخروج بنجاح ✅"); location.reload(); }
   else window.location.href="login.html";
 });
-
-// Dark Crystal Carousel Logic
-function showSlide(index){
-  const slides = document.querySelectorAll(".slide");
-  if(slides.length===0) return;
-  const maxIndex = slides.length - Math.floor(slidesWrapper.clientWidth / 310); // visible slides
-  if(index > maxIndex) index=0;
-  if(index < 0) index=maxIndex;
-  currentSlide=index;
-  slidesWrapper.style.transform=`translateX(${-currentSlide*(slides[0].offsetWidth+20)}px)`;
-}
-
-function nextSlide(){ showSlide(currentSlide+1); }
-function prevSlide(){ showSlide(currentSlide-1); }
-
-document.getElementById("nextSlide").onclick=()=> { nextSlide(); resetInterval(); }
-document.getElementById("prevSlide").onclick=()=> { prevSlide(); resetInterval(); }
-
-function startAutoSlide(){
-  slideInterval = setInterval(nextSlide, 3000);
-}
-function resetInterval(){
-  clearInterval(slideInterval);
-  startAutoSlide();
-}
 
 document.addEventListener("DOMContentLoaded", ()=>{
   updateLoginText();
